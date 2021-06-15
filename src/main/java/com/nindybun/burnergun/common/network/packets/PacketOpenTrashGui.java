@@ -38,15 +38,15 @@ public class PacketOpenTrashGui {
                     return;
 
                 ItemStack stack = ItemStack.EMPTY;
-                if (player.getHeldItemMainhand().getItem() instanceof Trash)
-                    stack = player.getHeldItemMainhand();
+                if (player.getMainHandItem().getItem() instanceof Trash)
+                    stack = player.getMainHandItem();
 
                 if( stack.isEmpty() )
                     return;
 
                 IItemHandler handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
 
-                player.openContainer(new SimpleNamedContainerProvider(
+                player.openMenu(new SimpleNamedContainerProvider(
                         (windowId, playerInv, playerEntity) -> new TrashContainer(windowId, playerInv, (TrashHandler) handler),
                         new StringTextComponent("")
                 ));

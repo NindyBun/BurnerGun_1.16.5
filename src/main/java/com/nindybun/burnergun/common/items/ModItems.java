@@ -13,14 +13,14 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class ModItems {
-    public static final Item.Properties ITEM_GROUP = new Item.Properties().group(BurnerGun.itemGroup);
+    public static final Item.Properties ITEM_GROUP = new Item.Properties().tab(BurnerGun.itemGroup);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, BurnerGun.MOD_ID);
 
     // We have a separate register just to contain all of the upgrades for quick reference
     public static final DeferredRegister<Item> UPGRADE_ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, BurnerGun.MOD_ID);
 
     public static final RegistryObject<Item> BURNER_GUN = ITEMS.register("burner_gun", () ->  new com.nindybun.burnergun.common.items.Burner_Gun.BurnerGun());
-    public static final RegistryObject<Item> LIGHT_ITEM = ITEMS.register("light", () -> new BlockItem(ModBlocks.LIGHT.get(), ITEM_GROUP.maxStackSize(1)));
+    public static final RegistryObject<Item> LIGHT_ITEM = ITEMS.register("light", () -> new BlockItem(ModBlocks.LIGHT.get(), ITEM_GROUP.stacksTo(1)));
 
     public static final RegistryObject<Item> BASE_TIER_1 = UPGRADE_ITEMS.register("base_tier_1", Upgrade.TIER_1::getCard);
     public static final RegistryObject<Item> BASE_TIER_2 = UPGRADE_ITEMS.register("base_tier_2", Upgrade.TIER_2::getCard);

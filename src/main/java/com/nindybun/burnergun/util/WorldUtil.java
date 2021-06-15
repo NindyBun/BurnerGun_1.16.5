@@ -12,14 +12,12 @@ public final class WorldUtil {
     }
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static BlockRayTraceResult getLookingAt(PlayerEntity player, RayTraceContext.FluidMode rayTraceFluid, double range) {
-        World world = player.world;
+    public static BlockRayTraceResult getLookingAt(World world, PlayerEntity player, RayTraceContext.FluidMode rayTraceFluid, double range) {
+        Vector3d look = player.getLookAngle();
+        Vector3d start = player.position().add(new Vector3d(0, player.getEyeHeight(), 0));
 
-        Vector3d look = player.getLookVec();
-        Vector3d start = new Vector3d(player.getPosX(), player.getPosY() + player.getEyeHeight(), player.getPosZ());
-
-        Vector3d end = new Vector3d(player.getPosX() + look.x * (double) range, player.getPosY() + player.getEyeHeight() + look.y * (double) range, player.getPosZ() + look.z * (double) range);
+        Vector3d end = new Vector3d(player.getX() + look.x * range, player.getY() + player.getEyeHeight() + look.y * range, player.getZ() + look.z * range);
         RayTraceContext context = new RayTraceContext(start, end, RayTraceContext.BlockMode.COLLIDER, rayTraceFluid, player);
-        return world.rayTraceBlocks(context);
+        return world.clip(context);
     }
 }

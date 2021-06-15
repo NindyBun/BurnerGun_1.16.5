@@ -9,9 +9,9 @@ import net.minecraft.client.gui.ScreenManager;
 
 public class ClientSetup {
     public static void setup(){
-        ScreenManager.registerFactory(ModContainers.BURNERGUN_CONTAINER.get(), BurnerGunScreen::new);
-        ScreenManager.registerFactory(ModContainers.AUTOFUEL_CONTAINER.get(), AutoFuelScreen::new);
-        ScreenManager.registerFactory(ModContainers.TRASH_CONTAINER.get(), TrashScreen::new);
-        ScreenManager.registerFactory(ModContainers.UPGRADE_BAG_CONTAINER.get(), UpgradeBagScreen::new);
+        ScreenManager.register(ModContainers.BURNERGUN_CONTAINER.get(), BurnerGunScreen::new);
+        ScreenManager.register(ModContainers.AUTOFUEL_CONTAINER.get(), AutoFuelScreen::new);
+        ScreenManager.register(ModContainers.TRASH_CONTAINER.get(), TrashScreen::new);
+        ScreenManager.register(ModContainers.UPGRADE_BAG_CONTAINER.get(), UpgradeBagScreen::new);
     }
 }

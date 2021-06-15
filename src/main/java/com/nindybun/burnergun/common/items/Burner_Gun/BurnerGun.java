@@ -35,9 +35,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -197,7 +199,6 @@ public class BurnerGun extends ToolItem{
                         player.inventory.removeItem(player.inventory.findSlotMatchingItem(fuelStack), 1);
                         if (player.inventory.add(containerItem))
                             player.drop(containerItem, true);
-
                     }
 
                 }
@@ -211,8 +212,8 @@ public class BurnerGun extends ToolItem{
             stack.getTag().putInt("FuelValue", getfuelValue(stack) + net.minecraftforge.common.ForgeHooks.getBurnTime(item.getStackInSlot(0)));
             ItemStack containerItem = item.getStackInSlot(0).getContainerItem();
             item.getStackInSlot(0).shrink(1);
-            if (player.inventory.addItemStackToInventory(containerItem))
-                player.entityDropItem(containerItem);
+            if (player.inventory.add(containerItem))
+                player.drop(containerItem, true);
         }
 
     }
@@ -224,7 +225,7 @@ public class BurnerGun extends ToolItem{
         }else if (use == 1 && handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
             stack.getTag().putInt("HeatValue", getheatValue(stack)+(int)getUseValue(stack));
             if (getheatValue(stack) >= base_heat_buffer){
-                player.getCooldownTracker().setCooldown(this, 100);
+                player.getCooldowns().addCooldown(this, 100);
                 stack.getTag().putInt("CoolDown", 0);
             }else{
                 stack.getTag().putInt("CoolDown", 20); //about 2 seconds
@@ -334,14 +335,14 @@ public class BurnerGun extends ToolItem{
         int xRange = xRad;
         int yRange = yRad;
         int zRange = 0;
-        if (Math.abs(ray.getFace().getDirectionVec().getY()) == 1){
+        if (Math.abs(ray.getDirection().getNormal().getY()) == 1){
             yRange = 0;
             zRange = xRad;
             if (yRad > 0 && xRad == 0){
                 yRange = yRad;
             }
             if (yRad == 0 && xRad > 0){
-                int yaw = (int)player.rotationYaw;
+                int yaw = (int)player.getYHeadRot();
                 if (yaw <0)
                     yaw += 360;
                 int facing = yaw / 45;
@@ -353,7 +354,7 @@ public class BurnerGun extends ToolItem{
                     zRange = yRad;
             }
         }
-        if (Math.abs(ray.getFace().getDirectionVec().getX()) == 1){
+        if (Math.abs(ray.getDirection().getNormal().getX()) == 1){
             zRange = xRad;
             xRange = 0;
         }
@@ -361,29 +362,32 @@ public class BurnerGun extends ToolItem{
     }
 
     public void spawnLight(World world, BlockRayTraceResult lookingAt){
-        Direction side = lookingAt.getFace();
-        BlockPos thepos = lookingAt.getPos().offset(side);
-
-        if (world.getLight(thepos) <= 8 && world.getBlockState(thepos.offset(side, -1)).getMaterial() == Material.AIR){
-            world.setBlockState(thepos.offset(side, -1), ModBlocks.LIGHT.get().getDefaultState());
+        Direction side = lookingAt.getDirection();
+        BlockPos thepos = lookingAt.getBlockPos().relative(side);
+        if (world.getBrightness(LightType.BLOCK, thepos) <= 8){
+            Material mat = world.getBlockState(thepos).getMaterial();
+            if (mat == Material.AIR || mat == Material.WATER || mat == Material.LAVA)
+                world.setBlockAndUpdate(thepos.relative(side, -1), ModBlocks.LIGHT.get().defaultBlockState());
+            else
+                world.setBlockAndUpdate(thepos, ModBlocks.LIGHT.get().defaultBlockState());
         }
     }
 
     public void magnetOn(List<ItemStack> list, BlockState state, World world, ItemStack stack, BlockPos pos, PlayerEntity player){
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             if (!list.isEmpty()){
                 list.forEach(loot -> {
                     if (getUpgradeByUpgrade(stack, Upgrade.AUTO_SMELT) != null) {
                         IInventory inv = new Inventory(1);
-                        inv.setInventorySlotContents(0, loot.copy());
-                        Optional<? extends AbstractCookingRecipe> recipe = world.getRecipeManager().getRecipe(recipeType, inv, world);
-                        loot = recipe.isPresent() ? recipe.get().getRecipeOutput().copy() : loot.copy();
+                        inv.setItem(0, loot.copy());
+                        Optional<? extends AbstractCookingRecipe> recipe = world.getRecipeManager().getRecipeFor(recipeType, inv, world);
+                        loot = recipe.isPresent() ? recipe.get().getResultItem().copy() : loot.copy();
                     }
 
                     for (int num = 0; num < getFortune(stack)+1; num++) {
                         if (getUpgradeByUpgrade(stack, Upgrade.TRASH) == null){
-                            if (!player.inventory.addItemStackToInventory(loot.copy())) {
-                                player.entityDropItem(loot.copy());
+                            if (!player.inventory.add(loot.copy())) {
+                                player.drop(loot.copy(), true);
                             }
                         }else{
                             IItemHandler trashHandler = Trash.getHandler(getStackByUpgrade(stack, Upgrade.TRASH));
@@ -394,8 +398,8 @@ public class BurnerGun extends ToolItem{
                                 }
                             }
                             if (!filter.contains(loot.copy())) {
-                                if (!player.inventory.addItemStackToInventory(loot.copy())) {
-                                    player.entityDropItem(loot.copy());
+                                if (!player.inventory.add(loot.copy())) {
+                                    player.drop(loot.copy(), true);
                                 }
                                 break;
                             }
@@ -413,12 +417,12 @@ public class BurnerGun extends ToolItem{
         IItemHandler handler = getHandler(stack);
         List<ItemStack> list = state.getDrops(new LootContext.Builder((ServerWorld) world)
                 .withParameter(LootParameters.TOOL, stack)
-                .withParameter(LootParameters.field_237457_g_, new Vector3d(pos.getX(), pos.getY(), pos.getZ()))
+                .withParameter(LootParameters.ORIGIN, new Vector3d(pos.getX(), pos.getY(), pos.getZ()))
                 .withParameter(LootParameters.BLOCK_STATE, state)
         );
         if ((getfuelValue(stack) >= getUseValue(stack) || handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())) && !(block instanceof Light)){
             setFuelValue(stack, 1, player);
-            if (state.getBlockHardness(world, pos) == -1.0 || state.getHarvestLevel() > getHarvestLevel(stack))
+            if (state.getDestroySpeed(world, pos) == -1.0 || state.getHarvestLevel() > getHarvestLevel(stack))
                 return false;
             world.destroyBlock(pos, false);
             if (getMagnet(stack)){
@@ -428,13 +432,13 @@ public class BurnerGun extends ToolItem{
                     list.forEach(loot -> {
                         if (getUpgradeByUpgrade(stack, Upgrade.AUTO_SMELT) != null) {
                             IInventory inv = new Inventory(1);
-                            inv.setInventorySlotContents(0, loot.copy());
-                            Optional<? extends AbstractCookingRecipe> recipe = world.getRecipeManager().getRecipe(recipeType, inv, world);
-                            loot = recipe.isPresent() ? recipe.get().getRecipeOutput().copy() : loot.copy();
+                            inv.setItem(0, loot.copy());
+                            Optional<? extends AbstractCookingRecipe> recipe = world.getRecipeManager().getRecipeFor(recipeType, inv, world);
+                            loot = recipe.isPresent() ? recipe.get().getResultItem().copy() : loot.copy();
                         }
                         for (int num = 0; num < getFortune(stack) + 1; num++) {
                             if (getUpgradeByUpgrade(stack, Upgrade.TRASH) == null){
-                                world.addEntity(new ItemEntity(world, pos.getX()+0.5, pos.getY()+0.5, pos.getZ()+0.5, loot.copy()));
+                                world.addFreshEntity(new ItemEntity(world, pos.getX()+0.5, pos.getY()+0.5, pos.getZ()+0.5, loot.copy()));
                             }else{
                                 IItemHandler trashHandler = Trash.getHandler(getStackByUpgrade(stack, Upgrade.TRASH));
                                 List<Item> filter = new ArrayList<>();
@@ -444,7 +448,7 @@ public class BurnerGun extends ToolItem{
                                     }
                                 }
                                 if (!filter.contains(loot.getItem())) {
-                                    world.addEntity(new ItemEntity(world, pos.getX()+0.5, pos.getY()+0.5, pos.getZ()+0.5, loot.copy()));
+                                    world.addFreshEntity(new ItemEntity(world, pos.getX()+0.5, pos.getY()+0.5, pos.getZ()+0.5, loot.copy()));
                                     break;
                                 }
                             }
@@ -475,14 +479,16 @@ public class BurnerGun extends ToolItem{
         if (ray == null)
             return;
         Vector3d size = getDim(ray, xRad, yRad, player);
-        if (yRad > 0 && xRad == 0 && ray.getFace().getAxis().isVertical()){
-            pos = new BlockPos(pos.getX(), pos.getY() - yRad*ray.getFace().getDirectionVec().getY(), pos.getZ());
+        BlockPos nPos = pos;
+        if (yRad > 0 && xRad == 0 && ray.getDirection().getAxis().isVertical()){
+            nPos = new BlockPos(pos.getX(), pos.getY() - yRad*ray.getDirection().getNormal().getY(), pos.getZ());
         }
-        for (int xPos = pos.getX() - (int)size.getX(); xPos <= pos.getX() + (int)size.getX(); ++xPos){
-            for (int yPos = pos.getY() - (int)size.getY(); yPos <= pos.getY() + (int)size.getY(); ++yPos){
-                for (int zPos = pos.getZ() - (int)size.getZ(); zPos <= pos.getZ() + (int)size.getZ(); ++zPos){
+        for (int xPos = nPos.getX() - (int)size.x(); xPos <= nPos.getX() + (int)size.x(); ++xPos){
+            for (int yPos = nPos.getY() - (int)size.y(); yPos <= nPos.getY() + (int)size.y(); ++yPos){
+                for (int zPos = nPos.getZ() - (int)size.z(); zPos <= nPos.getZ() + (int)size.z(); ++zPos){
                     if (!pos.equals(new BlockPos(xPos, yPos, zPos))){
                         BlockPos thePos = new BlockPos(xPos, yPos, zPos);
+                        LOGGER.info(thePos);
                         BlockState theState = world.getBlockState(thePos);
                         Block theBlock = theState.getBlock();
                         setFuelValue(stack, 0, player);
@@ -510,7 +516,7 @@ public class BurnerGun extends ToolItem{
             stack.getTag().putInt("CoolDown", (getCoolDown(stack) - 1) < 0 ? 0 : (getCoolDown(stack) - 1));
         }
 
-        if (getCoolDown(stack) == 0 && !((PlayerEntity)entityIn).getCooldownTracker().hasCooldown(this)){
+        if (getCoolDown(stack) == 0 && !((PlayerEntity)entityIn).getCooldowns().isOnCooldown(this)){
             stack.getTag().putInt("HeatValue", (getheatValue(stack) - (int)(25*getCooldownMultiplier(stack))) < 0 ? 0 : (getheatValue(stack) - (int)(25*getCooldownMultiplier(stack))));
         }
 
@@ -520,64 +526,70 @@ public class BurnerGun extends ToolItem{
             stack.getTag().putInt("HarvestLevel", 2);
         }
 
-        int fortune = EnchantmentHelper.getEnchantments(stack).get(Enchantments.FORTUNE) != null ? EnchantmentHelper.getEnchantments(stack).get(Enchantments.FORTUNE) : 0;
+        int fortune = EnchantmentHelper.getEnchantments(stack).get(Enchantments.BLOCK_FORTUNE) != null ? EnchantmentHelper.getEnchantments(stack).get(Enchantments.BLOCK_FORTUNE) : 0;
         int silk = EnchantmentHelper.getEnchantments(stack).get(Enchantments.SILK_TOUCH) != null ? EnchantmentHelper.getEnchantments(stack).get(Enchantments.SILK_TOUCH) : 0;
-        stack.getEnchantmentTagList().clear();
+        stack.getEnchantmentTags().clear();
 
         if (EnchantmentHelper.getEnchantments(stack).get(Enchantments.FIRE_ASPECT) == null){
             if (getfuelValue(stack) >= base_use_buffer /2 && getfuelValue(stack) < base_use_buffer *3/4){
-                stack.addEnchantment(Enchantments.FIRE_ASPECT, 1);
+                stack.enchant(Enchantments.FIRE_ASPECT, 1);
             }else if (getfuelValue(stack) >= base_use_buffer *3/4 || getHandler(stack).getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
-                stack.addEnchantment(Enchantments.FIRE_ASPECT, 2);
+                stack.enchant(Enchantments.FIRE_ASPECT, 2);
             }
         }else if (EnchantmentHelper.getEnchantments(stack).get(Enchantments.FIRE_ASPECT) == 2){
             if (getfuelValue(stack) >= base_use_buffer /2 && getfuelValue(stack) < base_use_buffer *3/4)
-                stack.addEnchantment(Enchantments.FIRE_ASPECT, 1);
+                stack.enchant(Enchantments.FIRE_ASPECT, 1);
         }
 
         if (fortune != 0)
-            stack.addEnchantment(Enchantments.FORTUNE, fortune);
+            stack.enchant(Enchantments.BLOCK_FORTUNE, fortune);
         if (silk != 0)
-            stack.addEnchantment(Enchantments.SILK_TOUCH, silk);
+            stack.enchant(Enchantments.SILK_TOUCH, silk);
     }
 
     @Override
-    public boolean hitEntity(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         int fireAspect = EnchantmentHelper.getEnchantments(stack).get(Enchantments.FIRE_ASPECT) != null ? EnchantmentHelper.getEnchantments(stack).get(Enchantments.FIRE_ASPECT) : 0;
         if (!getHandler(stack).getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
             stack.getTag().putInt("FuelValue", getfuelValue(stack)-base_use*(fireAspect*2 == 0 ? 1 : fireAspect*2));
         }
-       return super.hitEntity(stack, target, attacker);
+        return super.hurtEnemy(stack, target, attacker);
     }
 
     ////////////////////////////////////////////////////////////////////////
+
     @Nonnull
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand handIn) {
-        ItemStack stack = player.getHeldItem(handIn).getStack();
+    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand handIn) {
+        ItemStack stack = player.getItemInHand(handIn).getStack();
         IItemHandler handler = getHandler(stack);
-        if (!world.isRemote && (player.isSneaking() || !player.isSneaking()) && !player.abilities.isCreativeMode){
+        if (!world.isClientSide){
             if (getheatValue(stack) >= base_heat_buffer) {
-                return ActionResult.resultConsume(stack);
+                return ActionResult.consume(stack);
             }
-            BlockRayTraceResult ray = WorldUtil.getLookingAt(player, RayTraceContext.FluidMode.NONE, getRange(stack));
-            BlockPos pos = ray.getPos();
+            BlockRayTraceResult ray = WorldUtil.getLookingAt(world, player, RayTraceContext.FluidMode.NONE, getRange(stack));
+            BlockPos pos = ray.getBlockPos();
             BlockState state = world.getBlockState(pos);
             Block block = state.getBlock();
             setFuelValue(stack, 0, player);
             if (state.getMaterial() != Material.AIR){
                 setNBT(stack);
-                stack.addEnchantment(Enchantments.FORTUNE, getFortune(stack));
-                stack.addEnchantment(Enchantments.SILK_TOUCH, getSilkTouch(stack));
+                stack.enchant(Enchantments.BLOCK_FORTUNE, getFortune(stack));
+                stack.enchant(Enchantments.SILK_TOUCH, getSilkTouch(stack));
                 if (getfuelValue(stack) >= getUseValue(stack) || handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
-                    player.playSound(SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.VOICE, 0.5f, 1.0f);
-                    breakBlock(stack, state, block, pos, player, world, ray);
-                    areaMine(state, world, stack,  pos, player, ray);
+                    player.playSound(SoundEvents.FIRECHARGE_USE, 0.5f, 1.0f);
+                    if (player.isCrouching()){
+                        breakBlock(stack, state, block, pos, player, world, ray);
+                    }else{
+                        breakBlock(stack, state, block, pos, player, world, ray);
+                        areaMine(state, world, stack,  pos, player, ray);
+                    }
+
                 }
-                stack.getEnchantmentTagList().clear();
+                stack.getEnchantmentTags().clear();
             }
         }
-        return ActionResult.resultConsume(stack);
+        return ActionResult.consume(stack);
     }
 
     @Override

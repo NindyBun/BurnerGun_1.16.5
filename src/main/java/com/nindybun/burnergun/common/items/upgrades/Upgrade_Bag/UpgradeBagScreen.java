@@ -22,27 +22,27 @@ public class UpgradeBagScreen extends ContainerScreen<UpgradeBagContainer> {
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(matrixStack);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
-        this.renderHoveredTooltip(matrixStack, mouseX, mouseY);
+        this.renderTooltip(matrixStack, mouseX, mouseY);
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y) {
+    protected void renderBg(MatrixStack matrixStack, float partialTicks, int x, int y) {
         RenderSystem.blendColor(1.0F, 1.0F, 1.0F, 1.0F);
         //this.minecraft
-        this.minecraft.getTextureManager().bindTexture(DEFAULT_TEXTURE);
+        this.minecraft.getTextureManager().bind(DEFAULT_TEXTURE);
 
         // width and height are the size provided to the window when initialised after creation.
         // xSize, ySize are the expected size of the texture-? usually seems to be left as a default.
         // The code below is typical for vanilla containers, so I've just copied that- it appears to centre the texture within
         //  the available window
-        int edgeSpacingX = (this.width - this.xSize) / 2;
-        int edgeSpacingY = (this.height - this.ySize) / 2;
-        this.blit(matrixStack, edgeSpacingX, edgeSpacingY, 0, 0, this.xSize, this.ySize);
+        int edgeSpacingX = (this.width - this.getXSize()) / 2;
+        int edgeSpacingY = (this.height - this.getYSize()) / 2;
+        this.blit(matrixStack, edgeSpacingX, edgeSpacingY, 0, 0, this.getXSize(), this.getYSize());
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
-        this.font.drawString(matrixStack, "Upgrade Bag", 2, -8, Color.WHITE.getRGB());
+    protected void renderLabels(MatrixStack matrixStack, int x, int y) {
+        this.font.draw(matrixStack, "Upgrade Bag", 2, -8, Color.WHITE.getRGB());
     }
 
     private static final Logger LOGGER = LogManager.getLogger();

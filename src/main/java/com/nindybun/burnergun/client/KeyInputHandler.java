@@ -17,7 +17,7 @@ public class KeyInputHandler {
     public void onKeyInput(InputEvent.KeyInputEvent event)
     {
         PlayerEntity player = Minecraft.getInstance().player;
-        if (Keybinds.burnergun_gui_key.isPressed() && Minecraft.getInstance().currentScreen == null && (player.getHeldItemMainhand().getItem() instanceof BurnerGun || player.getHeldItemOffhand().getItem() instanceof BurnerGun)){
+        if (Keybinds.burnergun_gui_key.isDown() && Minecraft.getInstance().screen == null && (player.getMainHandItem().getItem() instanceof BurnerGun || player.getOffhandItem().getItem() instanceof BurnerGun)){
             PacketHandler.sendToServer(new PacketOpenBurnerGunGui());
         }
     }

@@ -86,19 +86,19 @@ public class AutoFuelContainer extends Container {
     }
 
     @Override
-    public boolean canInteractWith(PlayerEntity playerIn) {
-        ItemStack main = playerIn.getHeldItemMainhand();
-        ItemStack off = playerIn.getHeldItemOffhand();
+    public boolean stillValid(PlayerEntity playerIn) {
+        ItemStack main = playerIn.getMainHandItem();
+        ItemStack off = playerIn.getOffhandItem();
         return (!main.isEmpty() && main.getItem() instanceof AutoFuel) ||
                 (!off.isEmpty() && off.getItem() instanceof AutoFuel);
     }
 
-
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
-        super.transferStackInSlot(playerIn, index);
+    public ItemStack quickMoveStack(PlayerEntity p_82846_1_, int p_82846_2_) {
+        super.quickMoveStack(p_82846_1_, p_82846_2_);
         return ItemStack.EMPTY;
     }
 
     private static final Logger LOGGER = LogManager.getLogger();
+
 }

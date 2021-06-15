@@ -3,7 +3,7 @@ package com.nindybun.burnergun.common;
 import com.nindybun.burnergun.client.ClientSetup;
 import com.nindybun.burnergun.client.KeyInputHandler;
 import com.nindybun.burnergun.client.Keybinds;
-import com.nindybun.burnergun.client.particles.ModParticles;
+//import com.nindybun.burnergun.client.particles.ModParticles;
 import com.nindybun.burnergun.common.blocks.ModBlocks;
 import com.nindybun.burnergun.common.containers.ModContainers;
 import com.nindybun.burnergun.common.items.ModItems;
@@ -33,7 +33,7 @@ public class BurnerGun {
         ModItems.ITEMS.register(modEventBus);
         ModItems.UPGRADE_ITEMS.register(modEventBus);
         ModContainers.CONTAINERS.register(modEventBus);
-        ModParticles.PARTICLE.register(modEventBus);
+        //ModParticles.PARTICLE.register(modEventBus);
 
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::setupClient);
@@ -60,7 +60,7 @@ public class BurnerGun {
 
     public static ItemGroup itemGroup = new ItemGroup(BurnerGun.MOD_ID) {
         @Override
-        public ItemStack createIcon() {
+        public ItemStack makeIcon() {
             return new ItemStack(ModItems.BURNER_GUN.get());
         }
     };

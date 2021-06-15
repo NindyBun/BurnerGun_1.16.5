@@ -92,9 +92,9 @@ public class BurnerGunContainer extends Container {
     }
 
     @Override
-    public boolean canInteractWith(PlayerEntity playerIn) {
-        ItemStack main = playerIn.getHeldItemMainhand();
-        ItemStack off = playerIn.getHeldItemOffhand();
+    public boolean stillValid(PlayerEntity playerIn) {
+        ItemStack main = playerIn.getMainHandItem();
+        ItemStack off = playerIn.getOffhandItem();
         return (!main.isEmpty() && main.getItem() instanceof com.nindybun.burnergun.common.items.Burner_Gun.BurnerGun) ||
                 (!off.isEmpty() && off.getItem() instanceof com.nindybun.burnergun.common.items.Burner_Gun.BurnerGun);
     }
@@ -108,22 +108,22 @@ public class BurnerGunContainer extends Container {
     //   otherwise, returns a copy of the source stack
     @Nonnull
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity player, int sourceSlotIndex) {
-        Slot sourceSlot = inventorySlots.get(sourceSlotIndex);
-        if (sourceSlot == null || !sourceSlot.getHasStack()) return ItemStack.EMPTY;  //EMPTY_ITEM
-        ItemStack sourceStack = sourceSlot.getStack();
+    public ItemStack quickMoveStack(PlayerEntity player, int sourceSlotIndex) {
+        Slot sourceSlot = slots.get(sourceSlotIndex);
+        if (sourceSlot == null || !sourceSlot.hasItem()) return ItemStack.EMPTY;  //EMPTY_ITEM
+        ItemStack sourceStack = sourceSlot.getItem();
         ItemStack copyOfSourceStack = sourceStack.copy();
         final int BAG_SLOT_COUNT = handler.getSlots();
 
         // Check if the slot clicked is one of the vanilla container slots
         if (sourceSlotIndex >= VANILLA_FIRST_SLOT_INDEX && sourceSlotIndex < VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT) {
             // This is a vanilla container slot so merge the stack into the bag inventory
-            if (!mergeItemStack(sourceStack, TEST_INVENTORY_FIRST_SLOT_INDEX, TEST_INVENTORY_FIRST_SLOT_INDEX + BAG_SLOT_COUNT, false)){
+            if (!moveItemStackTo(sourceStack, TEST_INVENTORY_FIRST_SLOT_INDEX, TEST_INVENTORY_FIRST_SLOT_INDEX + BAG_SLOT_COUNT, false)){
                 return ItemStack.EMPTY;  // EMPTY_ITEM
             }
         } else if (sourceSlotIndex >= TEST_INVENTORY_FIRST_SLOT_INDEX && sourceSlotIndex < TEST_INVENTORY_FIRST_SLOT_INDEX + BAG_SLOT_COUNT) {
             // This is a bag slot so merge the stack into the players inventory
-            if (!mergeItemStack(sourceStack, VANILLA_FIRST_SLOT_INDEX, VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT, false)) {
+            if (!moveItemStackTo(sourceStack, VANILLA_FIRST_SLOT_INDEX, VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT, false)) {
                 return ItemStack.EMPTY;
             }
         } else {
@@ -133,9 +133,9 @@ public class BurnerGunContainer extends Container {
 
         // If stack size == 0 (the entire stack was moved) set slot contents to null
         if (sourceStack.getCount() == 0) {
-            sourceSlot.putStack(ItemStack.EMPTY);
+            sourceSlot.set(ItemStack.EMPTY);
         } else {
-            sourceSlot.onSlotChanged();
+            sourceSlot.setChanged();
         }
 
         sourceSlot.onTake(player, sourceStack);
@@ -143,4 +143,5 @@ public class BurnerGunContainer extends Container {
     }
 
     private static final Logger LOGGER = LogManager.getLogger();
+
 }
