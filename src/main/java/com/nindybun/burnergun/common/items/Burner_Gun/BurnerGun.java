@@ -391,13 +391,13 @@ public class BurnerGun extends ToolItem{
                             }
                         }else{
                             IItemHandler trashHandler = Trash.getHandler(getStackByUpgrade(stack, Upgrade.TRASH));
-                            List<ItemStack> filter = new ArrayList<>();
+                            List<Item> filter = new ArrayList<>();
                             for (int index = 0; index < trashHandler.getSlots(); index++) {
                                 if (trashHandler.getStackInSlot(index).getItem() != Items.AIR) {
-                                    filter.add(trashHandler.getStackInSlot(index));
+                                    filter.add(trashHandler.getStackInSlot(index).getItem());
                                 }
                             }
-                            if (!filter.contains(loot.copy())) {
+                            if (!filter.contains(loot.getItem())) {
                                 if (!player.inventory.add(loot.copy())) {
                                     player.drop(loot.copy(), true);
                                 }
