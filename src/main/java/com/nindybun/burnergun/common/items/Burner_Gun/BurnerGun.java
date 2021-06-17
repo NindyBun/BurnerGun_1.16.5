@@ -66,6 +66,7 @@ public class BurnerGun extends ToolItem{
     private static final List<Item> smeltingFilter = new ArrayList<Item>(){
         {
             add(Items.CHARCOAL);
+            add(Items.COAL);
             add(Items.IRON_INGOT);
             add(Items.GOLD_INGOT);
         }
