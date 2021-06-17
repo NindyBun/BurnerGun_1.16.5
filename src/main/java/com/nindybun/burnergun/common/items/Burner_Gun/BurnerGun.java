@@ -333,31 +333,36 @@ public class BurnerGun extends ToolItem{
 
 ////////////////////////////////////////////////////////////////////////
     public Vector3d getDim(BlockRayTraceResult ray, int xRad, int yRad, PlayerEntity player){
+        //Z Face mining by default
         int xRange = xRad;
         int yRange = yRad;
         int zRange = 0;
-        if (Math.abs(ray.getDirection().getNormal().getY()) == 1){
-            yRange = 0;
+        //X Face Mining
+        if (Math.abs(ray.getDirection().getNormal().getX()) == 1){
             zRange = xRad;
-            if (yRad > 0 && xRad == 0){
-                yRange = yRad;
-            }
-            if (yRad == 0 && xRad > 0){
+            xRange = 0;
+        }
+        //Vertical Mining needs to act like the Horizontal but based on yaw
+        if (Math.abs(ray.getDirection().getNormal().getY()) == 1){
+            yRange = yRad;
+            xRange = 0;
+            if (yRad >= 0 && xRad > 0){
                 int yaw = (int)player.getYHeadRot();
                 if (yaw <0)
                     yaw += 360;
                 int facing = yaw / 45;
 
-                if (facing == 6 || facing == 5 || facing == 2 || facing == 1) {
+                if (facing == 6 || facing == 5 || facing == 2 || facing == 1) { //X axis
                     xRange = yRad;
+                    zRange = xRad;
+                    yRange = 0;
                 }
-                if (facing == 7 || facing == 8 || facing == 0 || facing == 4 || facing == 3)
+                if (facing == 7 || facing == 8 || facing == 0 || facing == 4 || facing == 3) { //Z axis
                     zRange = yRad;
+                    xRange = xRad;
+                    yRange = 0;
+                }
             }
-        }
-        if (Math.abs(ray.getDirection().getNormal().getX()) == 1){
-            zRange = xRad;
-            xRange = 0;
         }
         return new Vector3d(xRange, yRange, zRange);
     }

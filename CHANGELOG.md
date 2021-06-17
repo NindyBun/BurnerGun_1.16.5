@@ -13,3 +13,7 @@
 ## 1.16.5
 ### v2.0.0
 - Updated to forge 1.16.5
+### v2.0.1
+- Fixed trash upgrade not working with the magnet
+### v2.0.2
+- When mining vertically with the expansion upgrades, it wasn't working as indended
