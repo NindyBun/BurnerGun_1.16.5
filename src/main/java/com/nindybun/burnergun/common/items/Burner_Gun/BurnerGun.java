@@ -494,7 +494,6 @@ public class BurnerGun extends ToolItem{
                 for (int zPos = nPos.getZ() - (int)size.z(); zPos <= nPos.getZ() + (int)size.z(); ++zPos){
                     if (!pos.equals(new BlockPos(xPos, yPos, zPos))){
                         BlockPos thePos = new BlockPos(xPos, yPos, zPos);
-                        LOGGER.info(thePos);
                         BlockState theState = world.getBlockState(thePos);
                         Block theBlock = theState.getBlock();
                         setFuelValue(stack, 0, player);
