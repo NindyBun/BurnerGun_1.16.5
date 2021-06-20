@@ -12,6 +12,7 @@ import com.nindybun.burnergun.common.items.upgrades.UpgradeCard;
 import com.nindybun.burnergun.util.WorldUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
@@ -517,7 +518,16 @@ public class BurnerGun extends ToolItem{
     }
 
     public void findHeatSources(ItemStack stack, World world, PlayerEntity player){
-
+        BlockPos playerPos = player.blockPosition();
+        int max= 0;
+        for (int y = playerPos.getY()+3; y >= playerPos.getY()-2; y--){
+            for (int x = playerPos.getX()+2; y >= playerPos.getX()-2; x--){
+                for (int z = playerPos.getZ()+2; y >= playerPos.getZ()-2; z--){
+                    int curr = world.getBrightness(LightType.BLOCK, new BlockPos(x, y, z));
+                    max = curr >= max ? curr : max;
+                }
+            }
+        }
     }
 
     @Override
@@ -532,7 +542,8 @@ public class BurnerGun extends ToolItem{
          */
         IItemHandler handler = getHandler(stack);
         if (handler.getStackInSlot(0).getItem().equals(Upgrade.AMBIENCE.getCard().getItem())){
-            findHeatSources(stack, worldIn, (PlayerEntity) entityIn);
+            int light = worldIn.getBrightness(LightType.BLOCK, entityIn.blockPosition());
+            stack.getTag().putInt("FuelValue", getfuelValue(stack) + (light >= 8 ? light : 0 ));
         }
 
         if (getCoolDown(stack) > 0){
