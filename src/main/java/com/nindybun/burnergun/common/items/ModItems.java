@@ -21,6 +21,7 @@ public class ModItems {
 
     public static final RegistryObject<Item> BURNER_GUN = ITEMS.register("burner_gun", () ->  new com.nindybun.burnergun.common.items.Burner_Gun.BurnerGun());
     public static final RegistryObject<Item> LIGHT_ITEM = ITEMS.register("light", () -> new BlockItem(ModBlocks.LIGHT.get(), ITEM_GROUP.stacksTo(1)));
+    public static final RegistryObject<Item> GLITTERING_DIAMOND = ITEMS.register("glittering_diamond", () -> new Item(new Item.Properties().tab(BurnerGun.itemGroup).stacksTo(64)));
 
     public static final RegistryObject<Item> BASE_TIER_1 = UPGRADE_ITEMS.register("base_tier_1", Upgrade.TIER_1::getCard);
     public static final RegistryObject<Item> BASE_TIER_2 = UPGRADE_ITEMS.register("base_tier_2", Upgrade.TIER_2::getCard);
@@ -36,6 +37,8 @@ public class ModItems {
     public static final RegistryObject<Item> TRASH = UPGRADE_ITEMS.register("trash_upgrade", () -> new Trash(Upgrade.TRASH));
     public static final RegistryObject<Item> UPGRADE_BAG = UPGRADE_ITEMS.register("upgrade_bag", () -> new UpgradeBag(Upgrade.UPGRADE_BAG));
     public static final RegistryObject<Item> UNIFUEL = UPGRADE_ITEMS.register("unifuel", Upgrade.UNIFUEL::getCard);
+    public static final RegistryObject<Item> AMBIENCE = UPGRADE_ITEMS.register("ambience", Upgrade.AMBIENCE::getCard);
+    public static final RegistryObject<Item> REACTOR = UPGRADE_ITEMS.register("reactor", Upgrade.REACTOR::getCard);
 
     public static final RegistryObject<Item> FORTUNE_1 = UPGRADE_ITEMS.register("fortune_1_upgrade", Upgrade.FORTUNE_1::getCard);
     public static final RegistryObject<Item> FORTUNE_2 = UPGRADE_ITEMS.register("fortune_2_upgrade", Upgrade.FORTUNE_2::getCard);

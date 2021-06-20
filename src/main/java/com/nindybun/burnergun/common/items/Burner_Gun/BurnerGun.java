@@ -132,9 +132,16 @@ public class BurnerGun extends ToolItem{
     @Override
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         IItemHandler handler = getHandler(stack);
-        if (stack.getTag().contains("FuelValue") && !handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem()))
+        if (!handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())
+                && !handler.getStackInSlot(0).getItem().equals(Upgrade.AMBIENCE.getCard().getItem())
+                && !handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())
+            )
         {
-            tooltip.add(new StringTextComponent("Fuel Level: " + getfuelValue(stack) + " / " + base_use_buffer).withStyle(TextFormatting.YELLOW));
+            tooltip.add(new StringTextComponent("Feed me fuel!").withStyle(TextFormatting.YELLOW));
+        }else if (handler.getStackInSlot(0).getItem().equals(Upgrade.AMBIENCE.getCard().getItem())){
+            tooltip.add(new StringTextComponent("Collecting heat from nearby sources!").withStyle(TextFormatting.YELLOW));
+        }else if (handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())){
+            tooltip.add(new StringTextComponent("Fusing Hydrogen into Helium!").withStyle(TextFormatting.YELLOW));
         }else if (handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
             tooltip.add(new StringTextComponent("Using the heat of the universe!").withStyle(TextFormatting.YELLOW));
         }
@@ -220,10 +227,11 @@ public class BurnerGun extends ToolItem{
     }
     public void setFuelValue(ItemStack stack, int use, PlayerEntity player){
         IItemHandler handler = getHandler(stack);
-        if (!handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
+        if (!handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())
+                && !handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
             refuel(stack, player);
             stack.getTag().putInt("FuelValue", getfuelValue(stack)-(int)getUseValue(stack)*use);
-        }else if (use == 1 && handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
+        }else if (use == 1 && handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())){
             stack.getTag().putInt("HeatValue", getheatValue(stack)+(int)getUseValue(stack));
             if (getheatValue(stack) >= base_heat_buffer){
                 player.getCooldowns().addCooldown(this, 100);
@@ -231,6 +239,8 @@ public class BurnerGun extends ToolItem{
             }else{
                 stack.getTag().putInt("CoolDown", 20); //about 2 seconds
             }
+        }else if (handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
+            //Legit do nothing to any of the fuel values
         }
 
     }
@@ -258,7 +268,7 @@ public class BurnerGun extends ToolItem{
         if (!upgrades.isEmpty()){
             extraUse = upgrades.stream().mapToInt(upgradeCard -> upgradeCard.getUpgrade().getCost()).sum();
         }
-        if (handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())) {
+        if (handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())) {
             return (base_use + extraUse) - ((base_use + extraUse) * getHeatEfficiency(stack));
         }
         return (base_use + extraUse) - ((base_use + extraUse) * getFuelEfficiency(stack));
@@ -506,6 +516,10 @@ public class BurnerGun extends ToolItem{
         }
     }
 
+    public void findHeatSources(ItemStack stack, World world, PlayerEntity player){
+
+    }
+
     @Override
     public void inventoryTick(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
         super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
@@ -516,6 +530,10 @@ public class BurnerGun extends ToolItem{
                             3 -> diamond
                             4 -> stronk
          */
+        IItemHandler handler = getHandler(stack);
+        if (handler.getStackInSlot(0).getItem().equals(Upgrade.AMBIENCE.getCard().getItem())){
+            findHeatSources(stack, worldIn, (PlayerEntity) entityIn);
+        }
 
         if (getCoolDown(stack) > 0){
             stack.getTag().putInt("CoolDown", (getCoolDown(stack) - 1) < 0 ? 0 : (getCoolDown(stack) - 1));
@@ -555,8 +573,11 @@ public class BurnerGun extends ToolItem{
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         int fireAspect = EnchantmentHelper.getEnchantments(stack).get(Enchantments.FIRE_ASPECT) != null ? EnchantmentHelper.getEnchantments(stack).get(Enchantments.FIRE_ASPECT) : 0;
-        if (!getHandler(stack).getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
+        if (!getHandler(stack).getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())
+                && !getHandler(stack).getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())) {
             stack.getTag().putInt("FuelValue", getfuelValue(stack)-base_use*(fireAspect*2 == 0 ? 1 : fireAspect*2));
+        }else if (getHandler(stack).getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())) {
+            stack.getTag().putInt("HeatValue", getheatValue(stack)-base_use*(fireAspect*2 == 0 ? 1 : fireAspect*2));
         }
         return super.hurtEnemy(stack, target, attacker);
     }

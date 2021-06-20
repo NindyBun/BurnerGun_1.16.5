@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "pattern":
+  [
+    "   ",
+    "   ",
+    "   "
+  ],
+  "ingredients": [
+    {
+      "item": "forge:gems/diamond"
+    },
+    {
+      "item": "minecraft:blaze_rod"
+    }
+  ],
+  "result":
+  {
+    "item": "burnergun:glittering_diamond",
+    "count": 1
+  }
+}

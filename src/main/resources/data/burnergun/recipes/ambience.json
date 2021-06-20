@@ -2,27 +2,27 @@
   "type": "minecraft:crafting_shaped",
   "pattern":
   [
-    "isi",
-    "ufu",
+    "iui",
+    "gfg",
     "iui"
   ],
   "key": {
     "i": {
       "tag": "forge:ingots/iron"
     },
-    "s": {
-      "item": "minecraft:dragon_breath"
+    "u": {
+      "item": "minecraft:glass"
     },
     "f": {
-      "item": "burnergun:base_tier_5"
+      "item": "burnergun:base_tier_1"
     },
     "g": {
-      "item": "minecraft:nether_star"
+      "item": "minecraft:brick"
     }
   },
   "result":
   {
-    "item": "burnergun:unifuel",
+    "item": "burnergun:ambience",
     "count": 1
   }
 }

@@ -44,6 +44,8 @@ public enum Upgrade {
     TRASH("trash", -1, 75, 1, 0, true),
     UPGRADE_BAG("upgrade_bag", -1, 0, 1, 0, false),
     UNIFUEL("unifuel", -1, 0, 1, 0, false),
+    AMBIENCE("ambience", -1, 0, 1, 0, false),
+    REACTOR("reactor", -1, 0, 1, 0, false),
     ;
 
     private final String name;
