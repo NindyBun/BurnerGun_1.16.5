@@ -40,6 +40,7 @@ import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.DimensionType;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -189,7 +190,8 @@ public class BurnerGun extends ToolItem{
 ////////////////////////////////////////////////////////////////////////
     public void refuel(ItemStack stack, PlayerEntity player){
         IItemHandler item = getHandler(stack);
-
+        if (item.getStackInSlot(0).getItem().equals(Upgrade.AMBIENCE.getCard().getItem()))
+            return;
         if (item.getStackInSlot(0).getCount() < 1  && getUpgradeByUpgrade(stack, Upgrade.AUTO_FUEL) != null){
             IItemHandler autoHandler = AutoFuel.getHandler(getStackByUpgrade(stack, Upgrade.AUTO_FUEL));
 
@@ -233,7 +235,7 @@ public class BurnerGun extends ToolItem{
             refuel(stack, player);
             stack.getTag().putInt("FuelValue", getfuelValue(stack)-(int)getUseValue(stack)*use);
         }else if (use == 1 && handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())){
-            stack.getTag().putInt("HeatValue", getheatValue(stack)+(int)getUseValue(stack));
+            stack.getTag().putInt("HeatValue", getheatValue(stack)+(int)(getUseValue(stack)*3/2));
             if (getheatValue(stack) >= base_heat_buffer){
                 player.getCooldowns().addCooldown(this, 100);
                 stack.getTag().putInt("CoolDown", 0);
@@ -543,7 +545,16 @@ public class BurnerGun extends ToolItem{
         IItemHandler handler = getHandler(stack);
         if (handler.getStackInSlot(0).getItem().equals(Upgrade.AMBIENCE.getCard().getItem())){
             int light = worldIn.getBrightness(LightType.BLOCK, entityIn.blockPosition());
-            stack.getTag().putInt("FuelValue", getfuelValue(stack) + (light >= 8 ? light : 0 ));
+            long day = worldIn.getDayTime();
+            boolean dayTime = (day >= 0 || day == 24000) && day <= 12040;
+            boolean isDirectSky = worldIn.getBrightness(LightType.SKY, entityIn.blockPosition()) >= 12;
+
+            if (dayTime && isDirectSky && light < 10){
+                stack.getTag().putInt("FuelValue", getfuelValue(stack) + 5);
+            }else{
+                stack.getTag().putInt("FuelValue", getfuelValue(stack) + (light >= 10 ? light*3/4 : 0 ));
+            }
+
         }
 
         if (getCoolDown(stack) > 0){
@@ -615,7 +626,7 @@ public class BurnerGun extends ToolItem{
                 stack.enchant(Enchantments.SILK_TOUCH, getSilkTouch(stack));
                 if (getfuelValue(stack) >= getUseValue(stack) || handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
                     player.playSound(SoundEvents.FIRECHARGE_USE, 0.5f, 1.0f);
-                    if (player.isCrouching()){
+                    if (player.isCrouching() || player.isShiftKeyDown()){
                         breakBlock(stack, state, block, pos, player, world, ray);
                     }else{
                         breakBlock(stack, state, block, pos, player, world, ray);

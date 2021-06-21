@@ -46,8 +46,8 @@
   "item.burnergun.cooldown_multiplier_2_upgrade": "Overclock 2 Upgrade",
   "item.burnergun.cooldown_multiplier_3_upgrade": "Overclock 3 Upgrade",
 
-  "tooltip.burnergun.unifuel": "Uses the heat from the universe. It's so clean it's environmentally friendly!",
-  "tooltip.burnergun.ambience": "Slowly absorbs heat from nearby light sources.",
+  "tooltip.burnergun.unifuel": "Uses the heat from the universe. It's so clean it's practically environmentally friendly!",
+  "tooltip.burnergun.ambience": "Absorbs heat from nearby light sources.",
   "tooltip.burnergun.reactor": "By slamming Hydrogen atoms together you get energy! And a lot of heat!",
 
   "tooltip.burnergun.magnet": "Transports block drops to your inventory.",

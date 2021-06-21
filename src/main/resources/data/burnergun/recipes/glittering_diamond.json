@@ -8,9 +8,7 @@
   ],
   "ingredients": [
     {
-      "item": "forge:gems/diamond"
-    },
-    {
+      "item": "forge:gems/diamond",
       "item": "minecraft:blaze_rod"
     }
   ],

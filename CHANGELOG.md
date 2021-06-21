@@ -17,3 +17,5 @@
 - Fixed trash upgrade not working with the magnet
 ### v2.0.2
 - When mining vertically with the expansion upgrades, it wasn't working as indended
+### v2.1.0
+- Added Amientic Fuel and Fusion Reactor as intermediate fuel sources
