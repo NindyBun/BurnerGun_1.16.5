@@ -1,26 +1,22 @@
 package com.nindybun.burnergun.client.renderer;
 
 import com.nindybun.burnergun.common.BurnerGun;
+import com.nindybun.burnergun.common.items.Burner_Gun.BurnerGunHandler;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.network.PacketHandler;
-import net.minecraft.client.ClientGameSession;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.NetworkManager;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.common.ForgeConfig;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityProvider;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,12 +32,12 @@ public class FuelValueRenderer {
     public static void renderOverlay(@Nonnull RenderGameOverlayEvent.Post event){
         if (event.getType() == RenderGameOverlayEvent.ElementType.ALL){
             ItemStack stack = ItemStack.EMPTY;
-            PlayerEntity player = Minecraft.getInstance().player;
+            Minecraft mc = Minecraft.getInstance();
+            ClientPlayerEntity player = mc.player;
             if (player.getMainHandItem().getItem() instanceof com.nindybun.burnergun.common.items.Burner_Gun.BurnerGun)
                 stack = player.getMainHandItem();
             else if (player.getOffhandItem().getItem() instanceof com.nindybun.burnergun.common.items.Burner_Gun.BurnerGun)
                 stack = player.getOffhandItem();
-
             if (stack.getItem() instanceof com.nindybun.burnergun.common.items.Burner_Gun.BurnerGun)
                 renderFuel(event, stack);
 

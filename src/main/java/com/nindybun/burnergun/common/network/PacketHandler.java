@@ -1,10 +1,7 @@
 package com.nindybun.burnergun.common.network;
 
 import com.nindybun.burnergun.common.BurnerGun;
-import com.nindybun.burnergun.common.network.packets.PacketOpenAutoFuelGui;
-import com.nindybun.burnergun.common.network.packets.PacketOpenBurnerGunGui;
-import com.nindybun.burnergun.common.network.packets.PacketOpenTrashGui;
-import com.nindybun.burnergun.common.network.packets.PacketOpenUpgradeBagGui;
+import com.nindybun.burnergun.common.network.packets.*;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.FakePlayer;

@@ -43,8 +43,6 @@ public class BurnerGun {
 
     }
 
-
-
     private void setup(final FMLCommonSetupEvent event)
     {
         PacketHandler.register();
