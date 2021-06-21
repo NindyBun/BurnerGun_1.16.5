@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.NetworkManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -42,7 +43,7 @@ public class FuelValueRenderer {
 
     }
 
-    public static void renderFuel(RenderGameOverlayEvent event, ItemStack stack){
+    public static void renderFuel(RenderGameOverlayEvent.Post event, ItemStack stack){
         FontRenderer fontRenderer = Minecraft.getInstance().font;
         IItemHandler handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
         int level = stack.getTag().getInt("FuelValue");
