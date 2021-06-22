@@ -6,12 +6,16 @@ import com.nindybun.burnergun.client.Keybinds;
 //import com.nindybun.burnergun.client.particles.ModParticles;
 import com.nindybun.burnergun.client.renderer.FuelValueRenderer;
 import com.nindybun.burnergun.common.blocks.ModBlocks;
+import com.nindybun.burnergun.common.capabilities.BurnerGunInfo;
+import com.nindybun.burnergun.common.capabilities.BurnerGunInfoProvider;
+import com.nindybun.burnergun.common.capabilities.BurnerGunInfoStorage;
 import com.nindybun.burnergun.common.containers.ModContainers;
 import com.nindybun.burnergun.common.items.ModItems;
 import com.nindybun.burnergun.common.network.PacketHandler;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -46,6 +50,7 @@ public class BurnerGun {
     private void setup(final FMLCommonSetupEvent event)
     {
         PacketHandler.register();
+        CapabilityManager.INSTANCE.register(BurnerGunInfo.class, new BurnerGunInfoStorage(), BurnerGunInfoProvider::new);
     }
 
     private void setupClient(final FMLClientSetupEvent event)

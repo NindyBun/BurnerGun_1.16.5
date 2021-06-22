@@ -1,6 +1,8 @@
 package com.nindybun.burnergun.client.renderer;
 
 import com.nindybun.burnergun.common.BurnerGun;
+import com.nindybun.burnergun.common.capabilities.BurnerGunInfoProvider;
+import com.nindybun.burnergun.common.capabilities.BurnerGunInfoStorage;
 import com.nindybun.burnergun.common.items.Burner_Gun.BurnerGunHandler;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.network.PacketHandler;
