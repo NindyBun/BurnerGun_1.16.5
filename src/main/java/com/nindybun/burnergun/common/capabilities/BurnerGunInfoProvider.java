@@ -16,7 +16,6 @@ import javax.annotation.Nullable;
 public class BurnerGunInfoProvider implements BurnerGunInfo, ICapabilitySerializable<INBT> {
     @CapabilityInject(BurnerGunInfo.class)
     public static Capability<BurnerGunInfo> burnerGunInfoCapability = null;
-    public ItemStack owner = new ItemStack(BurnerGun::new);
 
     private LazyOptional<BurnerGunInfo> instance = LazyOptional.of(burnerGunInfoCapability::getDefaultInstance);
 
@@ -29,12 +28,6 @@ public class BurnerGunInfoProvider implements BurnerGunInfo, ICapabilitySerializ
     @Override
     public INBT serializeNBT() {
         INBT nbt = burnerGunInfoCapability.getStorage().writeNBT(burnerGunInfoCapability, this.instance.orElseThrow(() -> new IllegalArgumentException("LazyOptional must not be empty!")), null);
-        if(owner.hasTag()) {
-            owner.getTag().merge((CompoundNBT)nbt);
-        } else {
-            owner.setTag((CompoundNBT)nbt);
-        }
-
         return nbt;
     }
 
