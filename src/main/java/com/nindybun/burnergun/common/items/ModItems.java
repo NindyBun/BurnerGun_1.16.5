@@ -11,6 +11,7 @@ import net.minecraft.item.Item;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.lwjgl.system.CallbackI;
 
 public class ModItems {
     public static final Item.Properties ITEM_GROUP = new Item.Properties().tab(BurnerGun.itemGroup);
@@ -21,7 +22,7 @@ public class ModItems {
 
     public static final RegistryObject<Item> BURNER_GUN = ITEMS.register("burner_gun", () ->  new com.nindybun.burnergun.common.items.Burner_Gun.BurnerGun());
     public static final RegistryObject<Item> LIGHT_ITEM = ITEMS.register("light", () -> new BlockItem(ModBlocks.LIGHT.get(), ITEM_GROUP.stacksTo(1)));
-    public static final RegistryObject<Item> GLITTERING_DIAMOND = ITEMS.register("glittering_diamond", () -> new GlitteringDiamond());
+    public static final RegistryObject<Item> GLITTERING_DIAMOND = ITEMS.register("glittering_diamond", () -> new Item(new Item.Properties().stacksTo(64).tab(BurnerGun.itemGroup)));
 
     public static final RegistryObject<Item> BASE_TIER_1 = UPGRADE_ITEMS.register("base_tier_1", Upgrade.TIER_1::getCard);
     public static final RegistryObject<Item> BASE_TIER_2 = UPGRADE_ITEMS.register("base_tier_2", Upgrade.TIER_2::getCard);

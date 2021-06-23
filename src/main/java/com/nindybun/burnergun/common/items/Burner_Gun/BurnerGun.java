@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import com.nindybun.burnergun.client.Keybinds;
 import com.nindybun.burnergun.common.blocks.Light;
 import com.nindybun.burnergun.common.blocks.ModBlocks;
+import com.nindybun.burnergun.common.capabilities.BurnerGunInfo;
 import com.nindybun.burnergun.common.capabilities.BurnerGunInfoProvider;
 import com.nindybun.burnergun.common.containers.BurnerGunContainer;
 import com.nindybun.burnergun.common.items.upgrades.Auto_Fuel.AutoFuel;
@@ -11,14 +12,10 @@ import com.nindybun.burnergun.common.items.upgrades.Trash.Trash;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.items.upgrades.UpgradeCard;
 import com.nindybun.burnergun.common.network.PacketHandler;
-import com.nindybun.burnergun.common.network.packets.PacketFuelValue;
 import com.nindybun.burnergun.util.WorldUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -27,7 +24,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.*;
@@ -37,22 +33,17 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.loot.LootContext;
 import net.minecraft.loot.LootParameters;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.DimensionType;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -61,12 +52,10 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
 public class BurnerGun extends ToolItem{
@@ -173,33 +162,9 @@ public class BurnerGun extends ToolItem{
         return false;
     }
 
-    public void setNBT(ItemStack stack){
-        CompoundNBT nbt;
-        if (stack.hasTag())
-        {
-            nbt = stack.getTag();
-        }
-        else
-        {
-            nbt = new CompoundNBT();
-        }
-
-        if (!nbt.contains("FuelValue")){
-            nbt.putInt("FuelValue", 0);
-        }
-        if (!nbt.contains("HeatValue")){
-            nbt.putInt("HeatValue", 0);
-        }
-        if (!nbt.contains("HarvestLevel")){
-            nbt.putInt("HarvestLevel", 2);
-        }
-        if (!nbt.contains("CoolDown")){
-            nbt.putInt("CoolDown", 0);
-        }
-        stack.setTag(nbt);
-    }
 ////////////////////////////////////////////////////////////////////////
     public void refuel(ItemStack stack, PlayerEntity player){
+        BurnerGunInfo info = stack.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
         IItemHandler item = getHandler(stack);
         if (item.getStackInSlot(0).getItem().equals(Upgrade.AMBIENCE.getCard().getItem()))
             return;
@@ -214,9 +179,8 @@ public class BurnerGun extends ToolItem{
                     int fuelValue = net.minecraftforge.common.ForgeHooks.getBurnTime(invStack);
 
                     while (player.inventory.contains(invStack) &&
-                            !(getfuelValue(stack) + fuelValue > base_use_buffer)){
-                        PacketHandler.sendToServer(new PacketFuelValue(999));
-                        stack.getTag().putInt("FuelValue", getfuelValue(stack) + fuelValue);
+                            !(info.getFuelValue() + fuelValue > base_use_buffer)){
+                        info.setFuelValue(info.getFuelValue() + fuelValue);
                         ItemStack containerItem = invStack.getContainerItem();
                         player.inventory.removeItem(player.inventory.findSlotMatchingItem(fuelStack), 1);
                         if (player.inventory.add(containerItem))
@@ -228,11 +192,9 @@ public class BurnerGun extends ToolItem{
         }
 
         while (item.getStackInSlot(0).getCount() > 0){
-            if (getfuelValue(stack) + net.minecraftforge.common.ForgeHooks.getBurnTime(item.getStackInSlot(0)) > base_use_buffer)
+            if (info.getFuelValue() + net.minecraftforge.common.ForgeHooks.getBurnTime(item.getStackInSlot(0)) > base_use_buffer)
                 break;
-            //PacketFuelValue packetFuelValue = new PacketFuelValue(999);
-            //PacketHandler.sendTo(packetFuelValue, (ServerPlayerEntity) player);
-            stack.getTag().putInt("FuelValue", getfuelValue(stack) + net.minecraftforge.common.ForgeHooks.getBurnTime(item.getStackInSlot(0)));
+            info.setFuelValue(info.getFuelValue() + net.minecraftforge.common.ForgeHooks.getBurnTime(item.getStackInSlot(0)));
             ItemStack containerItem = item.getStackInSlot(0).getContainerItem();
             item.getStackInSlot(0).shrink(1);
             if (player.inventory.add(containerItem))
@@ -241,29 +203,24 @@ public class BurnerGun extends ToolItem{
 
     }
     public void setFuelValue(ItemStack stack, int use, PlayerEntity player){
+        BurnerGunInfo info = stack.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
         IItemHandler handler = getHandler(stack);
         if (!handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())
                 && !handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
             refuel(stack, player);
-            stack.getTag().putInt("FuelValue", getfuelValue(stack)-(int)getUseValue(stack)*use);
+            info.setFuelValue(info.getFuelValue()-(int)getUseValue(stack)*use);
         }else if (use == 1 && handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())){
-            stack.getTag().putInt("HeatValue", getheatValue(stack)+(int)(getUseValue(stack)*3/2));
-            if (getheatValue(stack) >= base_heat_buffer){
+            info.setHeatValue(info.getHeatValue()+(int)(getUseValue(stack)*3/2));
+            if (info.getHeatValue() >= base_heat_buffer){
                 player.getCooldowns().addCooldown(this, 100);
-                stack.getTag().putInt("CoolDown", 0);
+                info.setCooldown(0);
             }else{
-                stack.getTag().putInt("CoolDown", 20); //about 2 seconds
+                info.setCooldown(20); //about 2 seconds
             }
         }else if (handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
             //Legit do nothing to any of the fuel values
         }
 
-    }
-    public int getfuelValue(ItemStack stack) {
-        return stack.getTag().getInt("FuelValue");
-    }
-    public int getheatValue(ItemStack stack) {
-        return stack.getTag().getInt("HeatValue");
     }
 /////////////////////////////////////////////////////////////////////////////
     public double getFuelEfficiency(ItemStack stack){
@@ -305,10 +262,6 @@ public class BurnerGun extends ToolItem{
         return getUpgradeByUpgrade(stack, Upgrade.FOCAL_POINT_1) != null ? getUpgradeByUpgrade(stack, Upgrade.FOCAL_POINT_1).getExtraValue() : 5;
     }
 ////////////////////////////////////////////////////////////////////////
-    public int getHarvestLevel(ItemStack stack){
-        return stack.getTag().getInt("HarvestLevel");
-    }
-    public int getCoolDown(ItemStack stack) { return stack.getTag().getInt("CoolDown"); }
     ////////////////////////////////////////////////////////////////////////
     //Returns Upgrade cards
     public List<UpgradeCard> getUpgrades(ItemStack stack){
@@ -445,15 +398,16 @@ public class BurnerGun extends ToolItem{
     }
 
     public Boolean breakBlock(ItemStack stack, BlockState state, Block block, BlockPos pos, PlayerEntity player, World world, BlockRayTraceResult ray){
+        BurnerGunInfo info = stack.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
         IItemHandler handler = getHandler(stack);
         List<ItemStack> list = state.getDrops(new LootContext.Builder((ServerWorld) world)
                 .withParameter(LootParameters.TOOL, stack)
                 .withParameter(LootParameters.ORIGIN, new Vector3d(pos.getX(), pos.getY(), pos.getZ()))
                 .withParameter(LootParameters.BLOCK_STATE, state)
         );
-        if ((getfuelValue(stack) >= getUseValue(stack) || handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())) && !(block instanceof Light)){
+        if ((info.getFuelValue() >= getUseValue(stack) || handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())) && !(block instanceof Light)){
             setFuelValue(stack, 1, player);
-            if (state.getDestroySpeed(world, pos) == -1.0 || state.getHarvestLevel() > getHarvestLevel(stack))
+            if (state.getDestroySpeed(world, pos) == -1.0 || state.getHarvestLevel() > info.getHarvestLevel())
                 return false;
             world.destroyBlock(pos, false);
             if (getMagnet(stack)){
@@ -531,22 +485,10 @@ public class BurnerGun extends ToolItem{
         }
     }
 
-    public void findHeatSources(ItemStack stack, World world, PlayerEntity player){
-        BlockPos playerPos = player.blockPosition();
-        int max= 0;
-        for (int y = playerPos.getY()+3; y >= playerPos.getY()-2; y--){
-            for (int x = playerPos.getX()+2; y >= playerPos.getX()-2; x--){
-                for (int z = playerPos.getZ()+2; y >= playerPos.getZ()-2; z--){
-                    int curr = world.getBrightness(LightType.BLOCK, new BlockPos(x, y, z));
-                    max = curr >= max ? curr : max;
-                }
-            }
-        }
-    }
-
     @Override
     public void inventoryTick(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
         super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
+        BurnerGunInfo info = stack.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
         /*
             Harvest Level : 0 -> wood/gold
                             1 -> stone
@@ -562,25 +504,27 @@ public class BurnerGun extends ToolItem{
             boolean isDirectSky = worldIn.getBrightness(LightType.SKY, entityIn.blockPosition()) >= 12;
 
             if (dayTime && isDirectSky && light < 10){
-                stack.getTag().putInt("FuelValue", getfuelValue(stack) + 5);
+                info.setFuelValue(info.getFuelValue()+5);
             }else{
-                stack.getTag().putInt("FuelValue", getfuelValue(stack) + (light >= 10 ? light*3/4 : 0 ));
+                info.setFuelValue(info.getFuelValue() + (light >= 10 ? light*3/4 : 0 ));
             }
 
         }
 
-        if (getCoolDown(stack) > 0){
-            stack.getTag().putInt("CoolDown", (getCoolDown(stack) - 1) < 0 ? 0 : (getCoolDown(stack) - 1));
+        if (info.getCooldown() > 0){
+            info.setCooldown((info.getCooldown() - 1) < 0 ? 0 : (info.getCooldown() - 1));
         }
 
-        if (getCoolDown(stack) == 0 && !((PlayerEntity)entityIn).getCooldowns().isOnCooldown(this)){
-            stack.getTag().putInt("HeatValue", (getheatValue(stack) - (int)(25*getCooldownMultiplier(stack))) < 0 ? 0 : (getheatValue(stack) - (int)(25*getCooldownMultiplier(stack))));
+        if (info.getCooldown() == 0 && !((PlayerEntity)entityIn).getCooldowns().isOnCooldown(this)){
+            info.setHeatValue((info.getHeatValue() - (int)(25*getCooldownMultiplier(stack))) < 0 ? 0 : (info.getHeatValue() - (int)(25*getCooldownMultiplier(stack))));
         }
 
-        if (getfuelValue(stack) >= base_use_buffer *3/4 || getHandler(stack).getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
-            stack.getTag().putInt("HarvestLevel", 4);
-        }else if (getfuelValue(stack) < base_use_buffer *3/4){
-            stack.getTag().putInt("HarvestLevel", 2);
+        if (info.getFuelValue() >= base_use_buffer *3/4
+                || getHandler(stack).getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())
+                || getHandler(stack).getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())){
+            info.setHarvestLevel(4);
+        }else if (info.getFuelValue() < base_use_buffer *3/4){
+            info.setHarvestLevel(2);
         }
 
         int fortune = EnchantmentHelper.getEnchantments(stack).get(Enchantments.BLOCK_FORTUNE) != null ? EnchantmentHelper.getEnchantments(stack).get(Enchantments.BLOCK_FORTUNE) : 0;
@@ -588,13 +532,13 @@ public class BurnerGun extends ToolItem{
         stack.getEnchantmentTags().clear();
 
         if (EnchantmentHelper.getEnchantments(stack).get(Enchantments.FIRE_ASPECT) == null){
-            if (getfuelValue(stack) >= base_use_buffer /2 && getfuelValue(stack) < base_use_buffer *3/4){
+            if (info.getFuelValue() >= base_use_buffer /2 && info.getFuelValue() < base_use_buffer *3/4){
                 stack.enchant(Enchantments.FIRE_ASPECT, 1);
-            }else if (getfuelValue(stack) >= base_use_buffer *3/4 || getHandler(stack).getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
+            }else if (info.getFuelValue() >= base_use_buffer *3/4 || getHandler(stack).getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
                 stack.enchant(Enchantments.FIRE_ASPECT, 2);
             }
         }else if (EnchantmentHelper.getEnchantments(stack).get(Enchantments.FIRE_ASPECT) == 2){
-            if (getfuelValue(stack) >= base_use_buffer /2 && getfuelValue(stack) < base_use_buffer *3/4)
+            if (info.getFuelValue() >= base_use_buffer /2 && info.getFuelValue() < base_use_buffer *3/4)
                 stack.enchant(Enchantments.FIRE_ASPECT, 1);
         }
 
@@ -606,12 +550,14 @@ public class BurnerGun extends ToolItem{
 
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        BurnerGunInfo info = stack.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
+
         int fireAspect = EnchantmentHelper.getEnchantments(stack).get(Enchantments.FIRE_ASPECT) != null ? EnchantmentHelper.getEnchantments(stack).get(Enchantments.FIRE_ASPECT) : 0;
         if (!getHandler(stack).getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())
                 && !getHandler(stack).getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())) {
-            stack.getTag().putInt("FuelValue", getfuelValue(stack)-base_use*(fireAspect*2 == 0 ? 1 : fireAspect*2));
+            info.setFuelValue(info.getFuelValue()-base_use*(fireAspect*2 == 0 ? 1 : fireAspect*2));
         }else if (getHandler(stack).getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())) {
-            stack.getTag().putInt("HeatValue", getheatValue(stack)-base_use*(fireAspect*2 == 0 ? 1 : fireAspect*2));
+            info.setHeatValue(info.getHeatValue()-base_use*(fireAspect*2 == 0 ? 1 : fireAspect*2));
         }
         return super.hurtEnemy(stack, target, attacker);
     }
@@ -622,9 +568,11 @@ public class BurnerGun extends ToolItem{
     @Override
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand handIn) {
         ItemStack stack = player.getItemInHand(handIn).getStack();
+        BurnerGunInfo info = stack.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
+
         IItemHandler handler = getHandler(stack);
         if (!world.isClientSide){
-            if (getheatValue(stack) >= base_heat_buffer) {
+            if (info.getHarvestLevel() >= base_heat_buffer) {
                 return ActionResult.consume(stack);
             }
             BlockRayTraceResult ray = WorldUtil.getLookingAt(world, player, RayTraceContext.FluidMode.NONE, getRange(stack));
@@ -633,10 +581,9 @@ public class BurnerGun extends ToolItem{
             Block block = state.getBlock();
             setFuelValue(stack, 0, player);
             if (state.getMaterial() != Material.AIR){
-                setNBT(stack);
                 stack.enchant(Enchantments.BLOCK_FORTUNE, getFortune(stack));
                 stack.enchant(Enchantments.SILK_TOUCH, getSilkTouch(stack));
-                if (getfuelValue(stack) >= getUseValue(stack) || handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
+                if (info.getFuelValue() >= getUseValue(stack) || handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
                     player.playSound(SoundEvents.FIRECHARGE_USE, 0.5f, 1.0f);
                     if (player.isCrouching() || player.isShiftKeyDown()){
                         breakBlock(stack, state, block, pos, player, world, ray);
@@ -668,7 +615,6 @@ public class BurnerGun extends ToolItem{
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, CompoundNBT oldCapNbt) {
         if (this.getClass() == BurnerGun.class){
-            setNBT(stack);
             return new BurnerGunProvider();
         }else{
            return super.initCapabilities(stack, oldCapNbt);
@@ -702,7 +648,6 @@ public class BurnerGun extends ToolItem{
             combinedTag.put(CAPABILITY_NBT_TAG, capabilityTag);
         }
         stack.setTag(baseTag);
-        setNBT(stack);
         return combinedTag;
     }
 

@@ -49,7 +49,6 @@ public class BurnerGun {
     private void setup(final FMLCommonSetupEvent event)
     {
         PacketHandler.register();
-        CapabilityManager.INSTANCE.register(IGD.class, new GDStorage(), GDProvider::new);
         CapabilityManager.INSTANCE.register(BurnerGunInfo.class, new BurnerGunInfoStorage(), BurnerGunInfoProvider::new);
     }
 

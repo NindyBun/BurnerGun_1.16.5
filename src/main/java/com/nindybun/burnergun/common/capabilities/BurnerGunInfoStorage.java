@@ -12,10 +12,11 @@ public class BurnerGunInfoStorage implements Capability.IStorage<BurnerGunInfo> 
     @Override
     public INBT writeNBT(Capability<BurnerGunInfo> capability, BurnerGunInfo instance, Direction side) {
         CompoundNBT tag = new CompoundNBT();
-        tag.putInt("FuelValue", instance.getFuelValue());
-        tag.putInt("HeatValue", instance.getHeatValue());
-        tag.putInt("HarvestLevel", instance.getHarvestLevel());
-        tag.putInt("CoolDown", instance.getCooldown());
+            tag.putInt("FuelValue", instance.getFuelValue());
+            tag.putInt("HeatValue", instance.getHeatValue());
+            tag.putInt("HarvestLevel", instance.getHarvestLevel());
+            tag.putInt("CoolDown", instance.getCooldown());
+
         return tag;
     }
 

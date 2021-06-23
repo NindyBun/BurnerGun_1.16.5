@@ -13,6 +13,10 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.INBT;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.capabilities.Capability;
@@ -53,10 +57,11 @@ public class FuelValueRenderer {
     }
 
     public static void renderFuel(RenderGameOverlayEvent.Post event, ItemStack stack){
+        BurnerGunInfo info = stack.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
         FontRenderer fontRenderer = Minecraft.getInstance().font;
         IItemHandler handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
-        int level = stack.getTag().getInt("FuelValue");
-        int hLevel = stack.getTag().getInt("HeatValue");
+        int level = info.getFuelValue();
+        int hLevel = info.getHeatValue();
         Color color;
         if (level > base_buffer*3/4)
             color = Color.GREEN;
@@ -83,7 +88,10 @@ public class FuelValueRenderer {
             heatString = heatString.substring(0, deci+2);
             fontRenderer.draw(event.getMatrixStack(), "Heat level: ", 6, event.getWindow().getGuiScaledHeight()-12, Color.WHITE.getRGB());
             fontRenderer.draw(event.getMatrixStack(), heatString+"%", 61, event.getWindow().getGuiScaledHeight()-12, color.getRGB());
-        }
+        }else if (handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
+            fontRenderer.draw(event.getMatrixStack(), "Source: ", 6, event.getWindow().getGuiScaledHeight()-12, Color.WHITE.getRGB());
+            fontRenderer.draw(event.getMatrixStack(), new StringTextComponent("Universe").withStyle(TextFormatting.OBFUSCATED), 61, event.getWindow().getGuiScaledHeight()-12, color.getRGB());
+         }
 
     }
 }

@@ -27,8 +27,7 @@ public class BurnerGunInfoProvider implements BurnerGunInfo, ICapabilitySerializ
 
     @Override
     public INBT serializeNBT() {
-        INBT nbt = burnerGunInfoCapability.getStorage().writeNBT(burnerGunInfoCapability, this.instance.orElseThrow(() -> new IllegalArgumentException("LazyOptional must not be empty!")), null);
-        return nbt;
+        return burnerGunInfoCapability.getStorage().writeNBT(burnerGunInfoCapability, this.instance.orElseThrow(() -> new IllegalArgumentException("LazyOptional must not be empty!")), null);
     }
 
     @Override
