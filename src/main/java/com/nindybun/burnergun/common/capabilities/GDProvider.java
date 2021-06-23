@@ -15,8 +15,7 @@ public class GDProvider implements IGD, ICapabilitySerializable<INBT> {
     public static final Capability<IGD> IGD_CAPABILITY = null;
 
     private LazyOptional<IGD> IGDLAZY = LazyOptional.of(IGD_CAPABILITY::getDefaultInstance);
-    public int count;
-
+    public int count = 0;
 
     @Override
     public void setCount(int count) {
