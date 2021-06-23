@@ -1,6 +1,7 @@
 package com.nindybun.burnergun.client.renderer;
 
 import com.nindybun.burnergun.common.BurnerGun;
+import com.nindybun.burnergun.common.capabilities.BurnerGunInfo;
 import com.nindybun.burnergun.common.capabilities.BurnerGunInfoProvider;
 import com.nindybun.burnergun.common.capabilities.BurnerGunInfoStorage;
 import com.nindybun.burnergun.common.items.Burner_Gun.BurnerGunHandler;
@@ -11,10 +12,13 @@ import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.INBT;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityProvider;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -30,6 +34,7 @@ public class FuelValueRenderer {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final int base_buffer = com.nindybun.burnergun.common.items.Burner_Gun.BurnerGun.base_use_buffer;
     private static final int base_heat_buffer = com.nindybun.burnergun.common.items.Burner_Gun.BurnerGun.base_heat_buffer;
+
     @SubscribeEvent
     public static void renderOverlay(@Nonnull RenderGameOverlayEvent.Post event){
         if (event.getType() == RenderGameOverlayEvent.ElementType.ALL){

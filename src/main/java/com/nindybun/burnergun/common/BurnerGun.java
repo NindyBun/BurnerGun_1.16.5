@@ -9,6 +9,7 @@ import com.nindybun.burnergun.common.blocks.ModBlocks;
 import com.nindybun.burnergun.common.capabilities.BurnerGunInfo;
 import com.nindybun.burnergun.common.capabilities.BurnerGunInfoProvider;
 import com.nindybun.burnergun.common.capabilities.BurnerGunInfoStorage;
+import com.nindybun.burnergun.common.capabilities.FMLEvents;
 import com.nindybun.burnergun.common.containers.ModContainers;
 import com.nindybun.burnergun.common.items.ModItems;
 import com.nindybun.burnergun.common.network.PacketHandler;
@@ -42,6 +43,7 @@ public class BurnerGun {
 
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::setupClient);
+        MinecraftForge.EVENT_BUS.register(new FMLEvents());
 
         MinecraftForge.EVENT_BUS.register(this);
 

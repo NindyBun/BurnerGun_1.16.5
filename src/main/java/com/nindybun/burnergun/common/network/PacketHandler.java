@@ -25,12 +25,13 @@ public class PacketHandler {
         INSTANCE.registerMessage(id++, PacketOpenAutoFuelGui.class, PacketOpenAutoFuelGui::encode, PacketOpenAutoFuelGui::decode, PacketOpenAutoFuelGui.Handler::handle);
         INSTANCE.registerMessage(id++, PacketOpenTrashGui.class, PacketOpenTrashGui::encode, PacketOpenTrashGui::decode, PacketOpenTrashGui.Handler::handle);
         INSTANCE.registerMessage(id++, PacketOpenUpgradeBagGui.class, PacketOpenUpgradeBagGui::encode, PacketOpenUpgradeBagGui::decode, PacketOpenUpgradeBagGui.Handler::handle);
+        INSTANCE.registerMessage(id++, PacketFuelValue.class, PacketFuelValue::encode, PacketFuelValue::decode, PacketFuelValue.Handler::handle);
 
     }
 
     public static void sendTo(Object msg, ServerPlayerEntity player) {
         if (!(player instanceof FakePlayer))
-            INSTANCE.sendTo(msg, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+            INSTANCE.sendTo(msg, player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
     }
 
     public static void sendToServer(Object msg){

@@ -10,6 +10,8 @@ import com.nindybun.burnergun.common.items.upgrades.Auto_Fuel.AutoFuel;
 import com.nindybun.burnergun.common.items.upgrades.Trash.Trash;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.items.upgrades.UpgradeCard;
+import com.nindybun.burnergun.common.network.PacketHandler;
+import com.nindybun.burnergun.common.network.packets.PacketFuelValue;
 import com.nindybun.burnergun.util.WorldUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -25,6 +27,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.*;
@@ -212,7 +215,7 @@ public class BurnerGun extends ToolItem{
 
                     while (player.inventory.contains(invStack) &&
                             !(getfuelValue(stack) + fuelValue > base_use_buffer)){
-
+                        PacketHandler.sendToServer(new PacketFuelValue(999));
                         stack.getTag().putInt("FuelValue", getfuelValue(stack) + fuelValue);
                         ItemStack containerItem = invStack.getContainerItem();
                         player.inventory.removeItem(player.inventory.findSlotMatchingItem(fuelStack), 1);
@@ -227,7 +230,8 @@ public class BurnerGun extends ToolItem{
         while (item.getStackInSlot(0).getCount() > 0){
             if (getfuelValue(stack) + net.minecraftforge.common.ForgeHooks.getBurnTime(item.getStackInSlot(0)) > base_use_buffer)
                 break;
-            BurnerGunInfoProvider.burnerGunInfoCapability.getDefaultInstance().setFuelValue(999);
+            //PacketFuelValue packetFuelValue = new PacketFuelValue(999);
+            //PacketHandler.sendTo(packetFuelValue, (ServerPlayerEntity) player);
             stack.getTag().putInt("FuelValue", getfuelValue(stack) + net.minecraftforge.common.ForgeHooks.getBurnTime(item.getStackInSlot(0)));
             ItemStack containerItem = item.getStackInSlot(0).getContainerItem();
             item.getStackInSlot(0).shrink(1);

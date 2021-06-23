@@ -1,5 +1,6 @@
 package com.nindybun.burnergun.common.items.Burner_Gun;
 
+import com.nindybun.burnergun.common.capabilities.BurnerGunInfo;
 import com.nindybun.burnergun.common.containers.BurnerGunContainer;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
@@ -54,4 +55,6 @@ public class BurnerGunProvider implements ICapabilitySerializable<INBT> {
 
     //  a supplier: when called, returns the result of getCachedInventory()
     private final LazyOptional<IItemHandler> lazyInitialisionSupplier = LazyOptional.of(this::getCachedInventory);
+
+    
 }
