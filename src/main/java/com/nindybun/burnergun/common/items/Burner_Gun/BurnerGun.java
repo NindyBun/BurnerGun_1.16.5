@@ -232,7 +232,7 @@ public class BurnerGun extends ToolItem{
             //Legit do nothing to any of the fuel values
         }
         if (!world.isClientSide){
-            PacketFuelValue packet = new PacketFuelValue(info.getFuelValue());
+            PacketFuelValue packet = new PacketFuelValue(stack, info.getFuelValue());
             PacketHandler.sendTo(packet, (ServerPlayerEntity) player);
         }
 
@@ -654,9 +654,12 @@ public class BurnerGun extends ToolItem{
     @Override
     public CompoundNBT getShareTag(ItemStack stack) {
         CompoundNBT baseTag = stack.getOrCreateTag();
-        BurnerGunHandler handler = getHandler(stack);CompoundNBT capabilityTag = handler.serializeNBT();
+        BurnerGunHandler handler = getHandler(stack);
+        CompoundNBT capabilityTag = handler.serializeNBT();
         CompoundNBT combinedTag = new CompoundNBT();
         BurnerGunInfo info = stack.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(null);
+
+        baseTag.putInt("FuelValue", info.getFuelValue());
 
         if (baseTag != null) {
             combinedTag.put(BASE_NBT_TAG, baseTag);
@@ -664,7 +667,6 @@ public class BurnerGun extends ToolItem{
         if (capabilityTag != null) {
             combinedTag.put(CAPABILITY_NBT_TAG, capabilityTag);
         }
-        baseTag.putInt("FuelValue", info.getFuelValue());
         stack.setTag(baseTag);
         return combinedTag;
     }

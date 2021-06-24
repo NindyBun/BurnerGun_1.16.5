@@ -11,21 +11,27 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import java.util.function.Supplier;
 
 public class PacketFuelValue {
-    public PacketFuelValue(){
 
-    }
     private int fuelValue;
+    private ItemStack burnergun = null;
 
-    public PacketFuelValue(int value){
-        fuelValue = value;
+    public PacketFuelValue(PacketBuffer buffer){
+        fuelValue = buffer.readInt();
+        burnergun = buffer.readItem();
+    }
+
+    public PacketFuelValue(ItemStack stack, int value){
+        this.fuelValue = value;
+        this.burnergun = stack;
     }
 
     public static void encode(PacketFuelValue msg, PacketBuffer buffer) {
         buffer.writeInt(msg.fuelValue);
+        buffer.writeItem(msg.burnergun);
     }
 
     public static PacketFuelValue decode(PacketBuffer buffer) {
-        return new PacketFuelValue(buffer.readInt());
+        return new PacketFuelValue(buffer.readItem(), buffer.readInt());
     }
 
     public static class Handler {
@@ -44,8 +50,11 @@ public class PacketFuelValue {
                 if( stack.isEmpty() )
                     return;
 
-                BurnerGunInfo info = stack.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(() -> new IllegalArgumentException(("LazyOptional must not be empty!")));
-                info.setFuelValue(msg.fuelValue);
+                if (msg.burnergun != null){
+                    BurnerGunInfo info = msg.burnergun.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(() -> new IllegalArgumentException(("LazyOptional must not be empty!")));
+                    info.setFuelValue(msg.fuelValue);
+                }
+
 
             });
 
