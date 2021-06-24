@@ -232,8 +232,9 @@ public class BurnerGun extends ToolItem{
             //Legit do nothing to any of the fuel values
         }
         if (!world.isClientSide){
-            PacketFuelValue packet = new PacketFuelValue(stack, info.getFuelValue());
-            PacketHandler.sendTo(packet, (ServerPlayerEntity) player);
+            PacketFuelValue packet = new PacketFuelValue(info.getFuelValue());
+            //PacketHandler.sendTo(packet, (ServerPlayerEntity) player);
+            PacketHandler.sendToServer(packet);
         }
 
 
