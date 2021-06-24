@@ -6,16 +6,21 @@ import com.nindybun.burnergun.common.blocks.Light;
 import com.nindybun.burnergun.common.blocks.ModBlocks;
 import com.nindybun.burnergun.common.capabilities.BurnerGunInfo;
 import com.nindybun.burnergun.common.capabilities.BurnerGunInfoProvider;
+import com.nindybun.burnergun.common.capabilities.BurnerGunInfoStorage;
 import com.nindybun.burnergun.common.containers.BurnerGunContainer;
 import com.nindybun.burnergun.common.items.upgrades.Auto_Fuel.AutoFuel;
 import com.nindybun.burnergun.common.items.upgrades.Trash.Trash;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.items.upgrades.UpgradeCard;
 import com.nindybun.burnergun.common.network.PacketHandler;
+import com.nindybun.burnergun.common.network.packets.PacketFuelValue;
 import com.nindybun.burnergun.util.WorldUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -24,6 +29,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.*;
@@ -44,7 +50,10 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import org.apache.logging.log4j.LogManager;
@@ -52,6 +61,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -202,7 +212,8 @@ public class BurnerGun extends ToolItem{
         }
 
     }
-    public void setFuelValue(ItemStack stack, int use, PlayerEntity player){
+
+    public void setFuelValue(ItemStack stack, int use, PlayerEntity player, World world){
         BurnerGunInfo info = stack.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
         IItemHandler handler = getHandler(stack);
         if (!handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())
@@ -220,6 +231,11 @@ public class BurnerGun extends ToolItem{
         }else if (handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
             //Legit do nothing to any of the fuel values
         }
+        if (!world.isClientSide){
+            PacketFuelValue packet = new PacketFuelValue(info.getFuelValue());
+            PacketHandler.sendTo(packet, (ServerPlayerEntity) player);
+        }
+
 
     }
 /////////////////////////////////////////////////////////////////////////////
@@ -406,7 +422,7 @@ public class BurnerGun extends ToolItem{
                 .withParameter(LootParameters.BLOCK_STATE, state)
         );
         if ((info.getFuelValue() >= getUseValue(stack) || handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())) && !(block instanceof Light)){
-            setFuelValue(stack, 1, player);
+            setFuelValue(stack, 1, player, world);
             if (state.getDestroySpeed(world, pos) == -1.0 || state.getHarvestLevel() > info.getHarvestLevel())
                 return false;
             world.destroyBlock(pos, false);
@@ -475,7 +491,7 @@ public class BurnerGun extends ToolItem{
                         BlockPos thePos = new BlockPos(xPos, yPos, zPos);
                         BlockState theState = world.getBlockState(thePos);
                         Block theBlock = theState.getBlock();
-                        setFuelValue(stack, 0, player);
+                        setFuelValue(stack, 0, player, world);
                         if (world.getBlockState(thePos).getMaterial() != Material.AIR){
                             breakBlock(stack, theState, theBlock, thePos, player, world, ray);
                         }
@@ -579,7 +595,7 @@ public class BurnerGun extends ToolItem{
             BlockPos pos = ray.getBlockPos();
             BlockState state = world.getBlockState(pos);
             Block block = state.getBlock();
-            setFuelValue(stack, 0, player);
+            setFuelValue(stack, 0, player, world);
             if (state.getMaterial() != Material.AIR){
                 stack.enchant(Enchantments.BLOCK_FORTUNE, getFortune(stack));
                 stack.enchant(Enchantments.SILK_TOUCH, getSilkTouch(stack));
@@ -637,16 +653,18 @@ public class BurnerGun extends ToolItem{
     @Nullable
     @Override
     public CompoundNBT getShareTag(ItemStack stack) {
-        CompoundNBT baseTag = stack.getTag();
-        BurnerGunHandler handler = getHandler(stack);
-        CompoundNBT capabilityTag = handler.serializeNBT();
+        CompoundNBT baseTag = stack.getOrCreateTag();
+        BurnerGunHandler handler = getHandler(stack);CompoundNBT capabilityTag = handler.serializeNBT();
         CompoundNBT combinedTag = new CompoundNBT();
+        BurnerGunInfo info = stack.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(null);
+
         if (baseTag != null) {
             combinedTag.put(BASE_NBT_TAG, baseTag);
         }
         if (capabilityTag != null) {
             combinedTag.put(CAPABILITY_NBT_TAG, capabilityTag);
         }
+        baseTag.putInt("FuelValue", info.getFuelValue());
         stack.setTag(baseTag);
         return combinedTag;
     }
@@ -659,7 +677,8 @@ public class BurnerGun extends ToolItem{
         }
         CompoundNBT baseTag = nbt.getCompound(BASE_NBT_TAG);
         CompoundNBT capabilityTag = nbt.getCompound(CAPABILITY_NBT_TAG);
-
+        BurnerGunInfo info = stack.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(null);
+        info.setFuelValue(nbt.getInt("FuelValue"));
         BurnerGunHandler handler = getHandler(stack);
         handler.deserializeNBT(capabilityTag);
     }
