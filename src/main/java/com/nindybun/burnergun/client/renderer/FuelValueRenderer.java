@@ -62,20 +62,23 @@ public class FuelValueRenderer {
         IItemHandler handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
         int level = info.getFuelValue();
         int hLevel = info.getHeatValue();
-        Color color;
-        if (level > base_buffer*3/4)
-            color = Color.GREEN;
-        else if (level > base_buffer*1/4 && level <= base_buffer*3/4)
-            color = Color.ORANGE;
-        else
-            color = Color.RED;
+        Color color = Color.GREEN;
+        if (!handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())){
+            if (level > base_buffer*3/4)
+                color = Color.GREEN;
+            else if (level > base_buffer*1/4 && level <= base_buffer*3/4)
+                color = Color.ORANGE;
+            else
+                color = Color.RED;
+        }else if (handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())){
+            if (hLevel > base_heat_buffer*3/4)
+                color = Color.RED;
+            else if (hLevel > base_heat_buffer*1/4 && hLevel <= base_heat_buffer*3/4)
+                color = Color.ORANGE;
+            else
+                color = Color.GREEN;
+        }
 
-        if (hLevel > base_heat_buffer*3/4)
-            color = Color.RED;
-        else if (hLevel > base_heat_buffer*1/4 && hLevel <= base_heat_buffer*3/4)
-            color = Color.ORANGE;
-        else
-            color = Color.GREEN;
         //fontRenderer.drawString(event.getMatrixStack(), "Fuel level: "+level, 6, event.getWindow().getScaledHeight()-12, Color.WHITE.getRGB());
         if (!handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())
             && !handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())){
@@ -90,7 +93,7 @@ public class FuelValueRenderer {
             fontRenderer.draw(event.getMatrixStack(), heatString+"%", 61, event.getWindow().getGuiScaledHeight()-12, color.getRGB());
         }else if (handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
             fontRenderer.draw(event.getMatrixStack(), "Source: ", 6, event.getWindow().getGuiScaledHeight()-12, Color.WHITE.getRGB());
-            fontRenderer.draw(event.getMatrixStack(), new StringTextComponent("Universe").withStyle(TextFormatting.OBFUSCATED), 56, event.getWindow().getGuiScaledHeight()-12, color.getRGB());
+            fontRenderer.draw(event.getMatrixStack(), new StringTextComponent("Universe").withStyle(TextFormatting.OBFUSCATED), 50, event.getWindow().getGuiScaledHeight()-12, color.getRGB());
          }
 
     }

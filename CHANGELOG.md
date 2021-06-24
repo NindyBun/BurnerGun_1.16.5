@@ -19,3 +19,7 @@
 - When mining vertically with the expansion upgrades, it wasn't working as indended
 ### v2.1.0
 - Added Amientic Fuel and Fusion Reactor as intermediate fuel sources
+### v2.1.1
+- Added Server sync support, so it works when playing on server
+- Fixed some issues with the new fuel sources
+- Switched from using nbt data to capabilities
