@@ -90,7 +90,7 @@ public class FuelValueRenderer {
             fontRenderer.draw(event.getMatrixStack(), heatString+"%", 61, event.getWindow().getGuiScaledHeight()-12, color.getRGB());
         }else if (handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
             fontRenderer.draw(event.getMatrixStack(), "Source: ", 6, event.getWindow().getGuiScaledHeight()-12, Color.WHITE.getRGB());
-            fontRenderer.draw(event.getMatrixStack(), new StringTextComponent("Universe").withStyle(TextFormatting.OBFUSCATED), 61, event.getWindow().getGuiScaledHeight()-12, color.getRGB());
+            fontRenderer.draw(event.getMatrixStack(), new StringTextComponent("Universe").withStyle(TextFormatting.OBFUSCATED), 56, event.getWindow().getGuiScaledHeight()-12, color.getRGB());
          }
 
     }

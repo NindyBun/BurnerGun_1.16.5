@@ -6,6 +6,7 @@ import com.nindybun.burnergun.common.items.Burner_Gun.BurnerGun;
 import com.nindybun.burnergun.common.network.PacketHandler;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -13,21 +14,18 @@ import java.util.function.Supplier;
 
 public class PacketFuelValue {
 
-    private int fuelValue;
+    private CompoundNBT data;
 
-    public PacketFuelValue(){
-    }
-
-    public PacketFuelValue(int value){
-        this.fuelValue = value;
+    public PacketFuelValue(CompoundNBT nbt){
+        this.data = nbt;
     }
 
     public static void encode(PacketFuelValue msg, PacketBuffer buffer) {
-        buffer.writeInt(msg.fuelValue);
+        buffer.writeNbt(msg.data);
     }
 
     public static PacketFuelValue decode(PacketBuffer buffer) {
-        return new PacketFuelValue(buffer.readInt());
+        return new PacketFuelValue(buffer.readNbt());
     }
 
     public static class Handler {
@@ -45,9 +43,12 @@ public class PacketFuelValue {
 
                 if( stack.isEmpty() )
                     return;
-                //PacketHandler.sendTo(new PacketFuelValue(msg.fuelValue), player);
-                    BurnerGunInfo info = stack.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(() -> new IllegalArgumentException(("LazyOptional must not be empty!")));
-                    info.setFuelValue(msg.fuelValue);
+
+                BurnerGunInfo info = stack.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(() -> new IllegalArgumentException(("LazyOptional must not be empty!")));
+                info.setFuelValue(msg.data.getInt("FuelValue"));
+                info.setHeatValue(msg.data.getInt("HeatValue"));
+                info.setCooldown(msg.data.getInt("CoolDown"));
+                info.setHarvestLevel(msg.data.getInt("HarvestLevel"));
 
             });
 

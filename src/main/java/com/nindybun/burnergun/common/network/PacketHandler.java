@@ -7,7 +7,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
+
+import java.util.function.Supplier;
 
 public class PacketHandler {
     private static final String PROTOCOL_VERSION = "2";
@@ -26,6 +29,10 @@ public class PacketHandler {
         INSTANCE.registerMessage(id++, PacketOpenTrashGui.class, PacketOpenTrashGui::encode, PacketOpenTrashGui::decode, PacketOpenTrashGui.Handler::handle);
         INSTANCE.registerMessage(id++, PacketOpenUpgradeBagGui.class, PacketOpenUpgradeBagGui::encode, PacketOpenUpgradeBagGui::decode, PacketOpenUpgradeBagGui.Handler::handle);
         INSTANCE.registerMessage(id++, PacketFuelValue.class, PacketFuelValue::encode, PacketFuelValue::decode, PacketFuelValue.Handler::handle);
+    }
+
+    public static void send(Object msg, Supplier playerEntity){
+        INSTANCE.send(PacketDistributor.PLAYER.with(playerEntity), msg);
     }
 
     public static void sendTo(Object msg, ServerPlayerEntity player) {
