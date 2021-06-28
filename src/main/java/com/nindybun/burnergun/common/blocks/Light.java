@@ -1,6 +1,7 @@
 package com.nindybun.burnergun.common.blocks;
 
 //import com.nindybun.burnergun.client.particles.ModParticles;
+import com.nindybun.burnergun.client.particles.ModParticles;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -52,6 +53,6 @@ public class Light extends Block {
         double d1 = (double) pos.getY() + 0.5D;
         double d2 = (double) pos.getZ() + 0.5D;
 
-        worldIn.addParticle(ParticleTypes.FLAME.getType(), d0, d1, d2, 0.0D, 0.0D, 0.0D);
+        worldIn.addParticle(ModParticles.LIGHT_PARTICLE.get(), d0, d1, d2, 0.0D, 0.0D, 0.0D);
     }
 }

@@ -4,6 +4,7 @@ import com.nindybun.burnergun.client.ClientSetup;
 import com.nindybun.burnergun.client.KeyInputHandler;
 import com.nindybun.burnergun.client.Keybinds;
 //import com.nindybun.burnergun.client.particles.ModParticles;
+import com.nindybun.burnergun.client.particles.ModParticles;
 import com.nindybun.burnergun.client.renderer.FuelValueRenderer;
 import com.nindybun.burnergun.common.blocks.ModBlocks;
 import com.nindybun.burnergun.common.capabilities.*;
@@ -36,7 +37,7 @@ public class BurnerGun {
         ModItems.ITEMS.register(modEventBus);
         ModItems.UPGRADE_ITEMS.register(modEventBus);
         ModContainers.CONTAINERS.register(modEventBus);
-        //ModParticles.PARTICLE.register(modEventBus);
+        ModParticles.PARTICLE.register(modEventBus);
 
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::setupClient);
