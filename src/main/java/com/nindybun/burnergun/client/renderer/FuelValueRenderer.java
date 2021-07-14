@@ -63,7 +63,8 @@ public class FuelValueRenderer {
         int level = info.getFuelValue();
         int hLevel = info.getHeatValue();
         Color color = Color.GREEN;
-        if (!handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())){
+        if (!handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())
+                && !handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
             if (level > base_buffer*3/4)
                 color = Color.GREEN;
             else if (level > base_buffer*1/4 && level <= base_buffer*3/4)

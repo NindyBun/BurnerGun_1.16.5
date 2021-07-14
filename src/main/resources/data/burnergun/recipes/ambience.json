@@ -4,7 +4,7 @@
   [
     "iui",
     "gfg",
-    "iui"
+    "ioi"
   ],
   "key": {
     "i": {
@@ -13,11 +13,14 @@
     "u": {
       "item": "minecraft:glass"
     },
+    "o": {
+      "item": "minecraft:daylight_detector"
+    },
     "f": {
       "item": "burnergun:base_tier_1"
     },
     "g": {
-      "item": "minecraft:brick"
+      "item": "minecraft:bricks"
     }
   },
   "result":
