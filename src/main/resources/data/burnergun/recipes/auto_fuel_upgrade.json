@@ -3,15 +3,15 @@
   "pattern":
   [
     "isi",
-    "ufu",
-    "igi"
+    "gfg",
+    "iui"
   ],
   "key": {
     "i": {
       "tag": "forge:ingots/iron"
     },
     "u": {
-      "item": "minecraft:coal"
+      "tag": "forge:dusts/redstone"
     },
     "s": {
       "item": "minecraft:coal_block"
