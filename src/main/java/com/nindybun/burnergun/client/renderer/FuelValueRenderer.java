@@ -6,12 +6,14 @@ import com.nindybun.burnergun.common.capabilities.BurnerGunInfoProvider;
 import com.nindybun.burnergun.common.capabilities.BurnerGunInfoStorage;
 import com.nindybun.burnergun.common.items.Burner_Gun.BurnerGunHandler;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
+import com.nindybun.burnergun.common.items.upgrades.UpgradeCard;
 import com.nindybun.burnergun.common.network.PacketHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -32,12 +34,15 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Mod.EventBusSubscriber(modid = BurnerGun.MOD_ID, value = Dist.CLIENT)
 public class FuelValueRenderer {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final int base_buffer = com.nindybun.burnergun.common.items.Burner_Gun.BurnerGun.base_use_buffer;
     private static final int base_heat_buffer = com.nindybun.burnergun.common.items.Burner_Gun.BurnerGun.base_heat_buffer;
+    private static final int base_use = 100;
 
     @SubscribeEvent
     public static void renderOverlay(@Nonnull RenderGameOverlayEvent.Post event){
@@ -54,6 +59,48 @@ public class FuelValueRenderer {
 
         }
 
+    }
+
+    public static List<UpgradeCard> getUpgrades(ItemStack stack){
+        List<UpgradeCard> upgrades = new ArrayList<>();
+        IItemHandler handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseThrow(() -> new IllegalArgumentException("No Item Handler Found!"));
+        for (int index  = 1; index < handler.getSlots()-1; index++){
+            if (handler.getStackInSlot(index).getItem() != Items.AIR){
+                upgrades.add((UpgradeCard)handler.getStackInSlot(index).getItem());
+            }
+        }
+        return upgrades;
+    }
+
+    //Returns the upgrade card by upgrade
+    public static Upgrade getUpgradeByUpgrade(ItemStack stack, Upgrade upgrade){
+        List<UpgradeCard> upgrades = getUpgrades(stack);
+        for (UpgradeCard upgradeCard : upgrades) {
+            if (upgradeCard.getUpgrade().getBaseName().equals(upgrade.getBaseName())){
+                return upgradeCard.getUpgrade();
+            }
+        }
+        return null;
+    }
+
+    public static double getFuelEfficiency(ItemStack stack){
+        return getUpgradeByUpgrade(stack, Upgrade.FUEL_EFFICIENCY_1) != null ? getUpgradeByUpgrade(stack, Upgrade.FUEL_EFFICIENCY_1).getExtraValue() : 0.00;
+    }
+    public static double getHeatEfficiency(ItemStack stack){
+        return getUpgradeByUpgrade(stack, Upgrade.HEAT_EFFICIENCY_1) != null ? getUpgradeByUpgrade(stack, Upgrade.HEAT_EFFICIENCY_1).getExtraValue() : 0.00;
+    }
+
+    public static double getUseValue(ItemStack stack){
+        IItemHandler handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseThrow(() -> new IllegalArgumentException("No Item Handler Found!"));
+        int extraUse = 0;
+        List<UpgradeCard> upgrades = getUpgrades(stack);
+        if (!upgrades.isEmpty()){
+            extraUse = upgrades.stream().mapToInt(upgradeCard -> upgradeCard.getUpgrade().getCost()).sum();
+        }
+        if (handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())) {
+            return (base_use + extraUse) - ((base_use + extraUse) * getHeatEfficiency(stack));
+        }
+        return (base_use + extraUse) - ((base_use + extraUse) * getFuelEfficiency(stack));
     }
 
     public static void renderFuel(RenderGameOverlayEvent.Post event, ItemStack stack){
@@ -80,7 +127,7 @@ public class FuelValueRenderer {
                 color = Color.GREEN;
         }
 
-        //fontRenderer.drawString(event.getMatrixStack(), "Fuel level: "+level, 6, event.getWindow().getScaledHeight()-12, Color.WHITE.getRGB());
+        //fontRenderer.draw(event.getMatrixStack(), "Fuel usage: " + getUseValue(stack), 6, event.getWindow().getGuiScaledHeight()-22, Color.WHITE.getRGB());
         if (!handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())
             && !handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())){
             fontRenderer.draw(event.getMatrixStack(), "Fuel level: ", 6, event.getWindow().getGuiScaledHeight()-12, Color.WHITE.getRGB());

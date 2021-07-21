@@ -404,7 +404,7 @@ public class BurnerGun extends ToolItem{
                         loot = recipe.isPresent() ? recipe.get().getResultItem().copy() : loot.copy();
                     }
 
-                    for (int num = 0; num < getFortune(stack)+1; num++) {
+                    //for (int num = 0; num < getFortune(stack)+1; num++) {
                         if (getUpgradeByUpgrade(stack, Upgrade.TRASH) == null){
                             if (!player.inventory.add(loot.copy())) {
                                 player.drop(loot.copy(), true);
@@ -421,12 +421,12 @@ public class BurnerGun extends ToolItem{
                                 if (!player.inventory.add(loot.copy())) {
                                     player.drop(loot.copy(), true);
                                 }
-                                break;
+                                //break;
                             }
                         }
-                        if (!smeltingFilter.contains(loot.copy().getItem()))
-                            break;
-                    }
+                        //if (!smeltingFilter.contains(loot.copy().getItem()))
+                        //    break;
+                    //}
                 });
             }
             player.giveExperiencePoints(state.getBlock().getExpDrop(state, world, pos, getFortune(stack), getSilkTouch(stack)));
@@ -457,7 +457,7 @@ public class BurnerGun extends ToolItem{
                             Optional<? extends AbstractCookingRecipe> recipe = world.getRecipeManager().getRecipeFor(recipeType, inv, world);
                             loot = recipe.isPresent() ? recipe.get().getResultItem().copy() : loot.copy();
                         }
-                        for (int num = 0; num < getFortune(stack) + 1; num++) {
+                        //for (int num = 0; num < getFortune(stack) + 1; num++) {
                             if (getUpgradeByUpgrade(stack, Upgrade.TRASH) == null){
                                 world.addFreshEntity(new ItemEntity(world, pos.getX()+0.5, pos.getY()+0.5, pos.getZ()+0.5, loot.copy()));
                             }else{
@@ -470,12 +470,12 @@ public class BurnerGun extends ToolItem{
                                 }
                                 if (!filter.contains(loot.getItem())) {
                                     world.addFreshEntity(new ItemEntity(world, pos.getX()+0.5, pos.getY()+0.5, pos.getZ()+0.5, loot.copy()));
-                                    break;
+                                   // break;
                                 }
                             }
-                            if (!smeltingFilter.contains(loot.copy().getItem()))
-                                break;
-                        }
+                            //if (!smeltingFilter.contains(loot.copy().getItem()))
+                            //    break;
+                        //}
                     });
                 }
             }
@@ -541,7 +541,7 @@ public class BurnerGun extends ToolItem{
                 boolean isDirectSky = worldIn.getBrightness(LightType.SKY, entityIn.blockPosition()) >= 12;
                 boolean canSeeSky = worldIn.canSeeSky(entityIn.blockPosition());
                 if (dayTime && ((isDirectSky && light < 10) || canSeeSky)){
-                    info.setFuelValue(info.getFuelValue()+5);
+                    info.setFuelValue(info.getFuelValue()+2);
                 }else{
                     double multiplyer = 1;
                     ResourceLocation dim = worldIn.dimension().location();
@@ -550,7 +550,7 @@ public class BurnerGun extends ToolItem{
                     else if (dim.equals(Dimension.END.location()))
                         multiplyer = 0.5;
 
-                    info.setFuelValue(info.getFuelValue() + (light >= 10 ? (int)multiplyer*light*3/4 : 0 ));
+                    info.setFuelValue(info.getFuelValue() + (light >= 10 ? (int)multiplyer*light*1/2 : 0 ));
                 }
 
             }
@@ -649,7 +649,8 @@ public class BurnerGun extends ToolItem{
                 //if (info.getFuelValue() >= getUseValue(stack)
                 //        || handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())
                 //        || handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())){
-                    player.playSound(SoundEvents.FIRECHARGE_USE, 0.5f, 1.0f);
+                    player.playNotifySound(SoundEvents.FIRECHARGE_USE, SoundCategory.BLOCKS, 0.3f, 1.0f);
+                    //player.playSound(SoundEvents.FIRECHARGE_USE, 1.0f, 1.0f);
                     if (player.isCrouching() || player.isShiftKeyDown()){
                         breakBlock(stack, state, block, pos, player, world, ray);
                     }else{
