@@ -298,7 +298,6 @@ public class BurnerGun extends ToolItem{
         return getUpgradeByUpgrade(stack, Upgrade.FOCAL_POINT_1) != null ? getUpgradeByUpgrade(stack, Upgrade.FOCAL_POINT_1).getExtraValue() : 5;
     }
 ////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////
     //Returns Upgrade cards
     public List<UpgradeCard> getUpgrades(ItemStack stack){
         List<UpgradeCard> upgrades = new ArrayList<>();
