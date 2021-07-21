@@ -23,3 +23,7 @@
 - Added Server sync support, so it works when playing on server
 - Fixed some issues with the new fuel sources
 - Switched from using nbt data to capabilities
+### v2.1.2
+- Adjusted some bits and pieces regarding fuel gen and usage
+- Removed Burner Gun use sound
+- Added back permanent particles to the light block
