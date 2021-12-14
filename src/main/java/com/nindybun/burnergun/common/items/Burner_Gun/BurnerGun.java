@@ -357,9 +357,9 @@ public class BurnerGun extends ToolItem{
         }
         //Vertical Mining needs to act like the Horizontal but based on yaw
         if (Math.abs(ray.getDirection().getNormal().getY()) == 1){
-            yRange = yRad;
-            xRange = 0;
-            if (yRad >= 0 && xRad > 0){
+            yRange = 0;
+            xRange = yRad;
+            if (yRad >= 0 && xRad >= 0){
                 int yaw = (int)player.getYHeadRot();
                 if (yaw <0)
                     yaw += 360;
@@ -368,12 +368,10 @@ public class BurnerGun extends ToolItem{
                 if (facing == 6 || facing == 5 || facing == 2 || facing == 1) { //X axis
                     xRange = yRad;
                     zRange = xRad;
-                    yRange = 0;
                 }
                 if (facing == 7 || facing == 8 || facing == 0 || facing == 4 || facing == 3) { //Z axis
                     zRange = yRad;
                     xRange = xRad;
-                    yRange = 0;
                 }
             }
         }
@@ -499,13 +497,9 @@ public class BurnerGun extends ToolItem{
         if (ray == null)
             return;
         Vector3d size = getDim(ray, xRad, yRad, player);
-        BlockPos nPos = pos;
-        if (yRad > 0 && xRad == 0 && ray.getDirection().getAxis().isVertical()){
-            nPos = new BlockPos(pos.getX(), pos.getY() - yRad*ray.getDirection().getNormal().getY(), pos.getZ());
-        }
-        for (int xPos = nPos.getX() - (int)size.x(); xPos <= nPos.getX() + (int)size.x(); ++xPos){
-            for (int yPos = nPos.getY() - (int)size.y(); yPos <= nPos.getY() + (int)size.y(); ++yPos){
-                for (int zPos = nPos.getZ() - (int)size.z(); zPos <= nPos.getZ() + (int)size.z(); ++zPos){
+        for (int xPos = pos.getX() - (int)size.x(); xPos <= pos.getX() + (int)size.x(); ++xPos){
+            for (int yPos = pos.getY() - (int)size.y(); yPos <= pos.getY() + (int)size.y(); ++yPos){
+                for (int zPos = pos.getZ() - (int)size.z(); zPos <= pos.getZ() + (int)size.z(); ++zPos){
                     if (!pos.equals(new BlockPos(xPos, yPos, zPos))){
                         BlockPos thePos = new BlockPos(xPos, yPos, zPos);
                         BlockState theState = world.getBlockState(thePos);
