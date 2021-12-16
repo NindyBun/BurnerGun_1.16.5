@@ -49,6 +49,7 @@ public class PacketFuelValue {
                 info.setHeatValue(msg.data.getInt("HeatValue"));
                 info.setCooldown(msg.data.getInt("CoolDown"));
                 info.setHarvestLevel(msg.data.getInt("HarvestLevel"));
+                //info.setVolume(msg.data.getFloat("Volume"));
 
             });
 

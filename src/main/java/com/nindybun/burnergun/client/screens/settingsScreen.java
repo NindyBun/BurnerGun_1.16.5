@@ -3,6 +3,7 @@ package com.nindybun.burnergun.client.screens;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.nindybun.burnergun.common.BurnerGun;
+import com.nindybun.burnergun.common.capabilities.BurnerGunInfoProvider;
 import com.nindybun.burnergun.common.items.gunProperties;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.network.PacketHandler;
@@ -35,6 +36,7 @@ public class settingsScreen extends Screen implements Slider.ISlider {
         this.gun = gun;
         this.raycastRange = gunProperties.getRaycastRange(gun);
         this.volume = gunProperties.getVolume(gun);
+        //this.volume = gunProperties.getVolume(gun.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!")));
     }
 
     @Override
@@ -43,7 +45,7 @@ public class settingsScreen extends Screen implements Slider.ISlider {
         int midX = width/2;
         int midY = height/2;
 
-        settings.add(volumeSlider = new Slider(midX-80, 20, 125, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.volume"), new StringTextComponent("%"), 0, 100, Math.min(100, volume*100), false, true, slider -> {}));
+        settings.add(volumeSlider = new Slider(midX-80, 20, 125, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.volume"), new StringTextComponent("%"), 0, 100, Math.min(100, volume*100), false, true, slider -> {}, this));
 
         for (int i = 0; i < settings.size(); i++) {
             settings.get(i).y = (80)+(i*25);

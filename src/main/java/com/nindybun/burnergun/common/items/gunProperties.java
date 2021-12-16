@@ -1,8 +1,10 @@
 package com.nindybun.burnergun.common.items;
 
+import com.nindybun.burnergun.common.capabilities.BurnerGunInfo;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
+import org.lwjgl.system.CallbackI;
 
 public class gunProperties {
     private gunProperties() {}
@@ -61,13 +63,20 @@ public class gunProperties {
         return !nbt.contains(FILTER) ? setWhitelist(gun, true) : nbt.getBoolean(FILTER);
     }
     //Set or Get Volume
+    /*public static float setVolume(BurnerGunInfo info, float volume){
+        info.setVolume(Math.max(0.0f, Math.min(1.0f, volume)));
+        return volume;
+    }
+    public static float getVolume(BurnerGunInfo info){
+        return info.getVolume();
+    }*/
     public static float setVolume(ItemStack gun, float volume){
         gun.getOrCreateTag().putFloat(VOLUME, Math.max(0.0f, Math.min(1.0f, volume)));
         return volume;
     }
     public static float getVolume(ItemStack gun){
         CompoundNBT nbt = gun.getOrCreateTag();
-        return  !nbt.contains(VOLUME) ? setVolume(gun, 1.0f) : nbt.getFloat(VOLUME);
+        return !nbt.contains(VOLUME) ? setVolume(gun, 1.0f) : nbt.getFloat(VOLUME);
     }
 
 }

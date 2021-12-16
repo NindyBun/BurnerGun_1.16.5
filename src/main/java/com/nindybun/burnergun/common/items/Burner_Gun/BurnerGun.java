@@ -643,7 +643,7 @@ public class BurnerGun extends ToolItem{
                 //if (info.getFuelValue() >= getUseValue(stack)
                 //        || handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())
                 //        || handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())){
-                    player.playNotifySound(SoundEvents.FIRECHARGE_USE, SoundCategory.MASTER, gunProperties.getVolume(stack)*0.5f, 1.0f);
+                    player.playNotifySound(SoundEvents.FIRECHARGE_USE, SoundCategory.MASTER, gunProperties.getVolume(stack), 1.0f);
                     //player.playSound(SoundEvents.FIRECHARGE_USE, gunProperties.getVolume(stack)*0.5f, 1.0f);
                     //player.playSound(SoundEvents.FIRECHARGE_USE, 1.0f, 1.0f);
                     if (player.isCrouching() || player.isShiftKeyDown()){

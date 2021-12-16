@@ -16,6 +16,7 @@ public class BurnerGunInfoStorage implements Capability.IStorage<BurnerGunInfo> 
             tag.putInt("HeatValue", instance.getHeatValue());
             tag.putInt("HarvestLevel", instance.getHarvestLevel());
             tag.putInt("CoolDown", instance.getCooldown());
+            //tag.putFloat("Volume", instance.getVolume());
 
         return tag;
     }
@@ -27,5 +28,6 @@ public class BurnerGunInfoStorage implements Capability.IStorage<BurnerGunInfo> 
         instance.setHeatValue(tag.getInt("HeatValue"));
         instance.setHarvestLevel(tag.getInt("HarvestLevel"));
         instance.setCooldown(tag.getInt("CoolDown"));
+        //instance.setVolume(tag.getFloat("Volume"));
     }
 }
