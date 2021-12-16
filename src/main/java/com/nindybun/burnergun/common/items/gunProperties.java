@@ -53,7 +53,21 @@ public class gunProperties {
     }
     //Set or Get Whitelist toggle for Trash
     public static boolean setWhitelist(ItemStack gun, boolean isWhitelist){
-
+        gun.getOrCreateTag().putBoolean(FILTER, isWhitelist);
+        return isWhitelist;
+    }
+    public static boolean getWhitelist(ItemStack gun){
+        CompoundNBT nbt = gun.getOrCreateTag();
+        return !nbt.contains(FILTER) ? setWhitelist(gun, true) : nbt.getBoolean(FILTER);
+    }
+    //Set or Get Volume
+    public static float setVolume(ItemStack gun, float volume){
+        gun.getOrCreateTag().putFloat(VOLUME, Math.max(0.0f, Math.min(1.0f, volume)));
+        return volume;
+    }
+    public static float getVolume(ItemStack gun){
+        CompoundNBT nbt = gun.getOrCreateTag();
+        return  !nbt.contains(VOLUME) ? setVolume(gun, 1.0f) : nbt.getFloat(VOLUME);
     }
 
 }

@@ -8,6 +8,7 @@ import com.nindybun.burnergun.common.capabilities.BurnerGunInfo;
 import com.nindybun.burnergun.common.capabilities.BurnerGunInfoProvider;
 import com.nindybun.burnergun.common.capabilities.BurnerGunInfoStorage;
 import com.nindybun.burnergun.common.containers.BurnerGunContainer;
+import com.nindybun.burnergun.common.items.gunProperties;
 import com.nindybun.burnergun.common.items.upgrades.Auto_Fuel.AutoFuel;
 import com.nindybun.burnergun.common.items.upgrades.Trash.Trash;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
@@ -642,7 +643,8 @@ public class BurnerGun extends ToolItem{
                 //if (info.getFuelValue() >= getUseValue(stack)
                 //        || handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())
                 //        || handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())){
-                    player.playNotifySound(SoundEvents.FIRECHARGE_USE, SoundCategory.BLOCKS, 0.3f, 1.0f);
+                    player.playNotifySound(SoundEvents.FIRECHARGE_USE, SoundCategory.MASTER, gunProperties.getVolume(stack)*0.5f, 1.0f);
+                    //player.playSound(SoundEvents.FIRECHARGE_USE, gunProperties.getVolume(stack)*0.5f, 1.0f);
                     //player.playSound(SoundEvents.FIRECHARGE_USE, 1.0f, 1.0f);
                     if (player.isCrouching() || player.isShiftKeyDown()){
                         breakBlock(stack, state, block, pos, player, world, ray);
@@ -656,6 +658,17 @@ public class BurnerGun extends ToolItem{
             }
         }
         return ActionResult.consume(stack);
+    }
+
+    public static ItemStack getGun(PlayerEntity player) {
+        ItemStack heldItem = player.getMainHandItem();
+        if (!(heldItem.getItem() instanceof BurnerGun)) {
+            heldItem = player.getOffhandItem();
+            if (!(heldItem.getItem() instanceof BurnerGun)) {
+                return ItemStack.EMPTY;
+            }
+        }
+        return heldItem;
     }
 
     @Override

@@ -29,6 +29,8 @@ public class PacketHandler {
         INSTANCE.registerMessage(id++, PacketOpenTrashGui.class, PacketOpenTrashGui::encode, PacketOpenTrashGui::decode, PacketOpenTrashGui.Handler::handle);
         INSTANCE.registerMessage(id++, PacketOpenUpgradeBagGui.class, PacketOpenUpgradeBagGui::encode, PacketOpenUpgradeBagGui::decode, PacketOpenUpgradeBagGui.Handler::handle);
         INSTANCE.registerMessage(id++, PacketFuelValue.class, PacketFuelValue::encode, PacketFuelValue::decode, PacketFuelValue.Handler::handle);
+        INSTANCE.registerMessage(id++, PacketChangeVolume.class, PacketChangeVolume::encode, PacketChangeVolume::decode, PacketChangeVolume.Handler::handle);
+        INSTANCE.registerMessage(id++, PacketOpenGunSettings.class, PacketOpenGunSettings::encode, PacketOpenGunSettings::decode, PacketOpenGunSettings.Handler::handle);
     }
 
     public static void send(Object msg, Supplier playerEntity){
