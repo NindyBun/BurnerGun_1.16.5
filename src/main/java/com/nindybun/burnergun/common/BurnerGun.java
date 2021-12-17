@@ -5,7 +5,6 @@ import com.nindybun.burnergun.client.KeyInputHandler;
 import com.nindybun.burnergun.client.Keybinds;
 //import com.nindybun.burnergun.client.particles.ModParticles;
 import com.nindybun.burnergun.client.particles.ModParticles;
-import com.nindybun.burnergun.client.renderer.FuelValueRenderer;
 import com.nindybun.burnergun.common.blocks.ModBlocks;
 import com.nindybun.burnergun.common.capabilities.*;
 import com.nindybun.burnergun.common.containers.ModContainers;
@@ -56,9 +55,9 @@ public class BurnerGun {
     private void setupClient(final FMLClientSetupEvent event)
     {
         ClientSetup.setup();
-
         Keybinds.register();
         MinecraftForge.EVENT_BUS.register(new KeyInputHandler());
+       // MinecraftForge.EVENT_BUS.register(ClientEvents.class);
     }
 
 

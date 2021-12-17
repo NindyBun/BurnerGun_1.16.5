@@ -3,8 +3,7 @@ package com.nindybun.burnergun.client.screens;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.nindybun.burnergun.common.BurnerGun;
-import com.nindybun.burnergun.common.capabilities.BurnerGunInfoProvider;
-import com.nindybun.burnergun.common.items.gunProperties;
+import com.nindybun.burnergun.common.items.GunProperties;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.network.PacketHandler;
 import com.nindybun.burnergun.common.network.packets.PacketChangeVolume;
@@ -34,8 +33,8 @@ public class settingsScreen extends Screen implements Slider.ISlider {
     protected settingsScreen(ItemStack gun) {
         super(new StringTextComponent("Title"));
         this.gun = gun;
-        this.raycastRange = gunProperties.getRaycastRange(gun);
-        this.volume = gunProperties.getVolume(gun);
+        this.raycastRange = GunProperties.getRaycastRange(gun);
+        this.volume = GunProperties.getVolume(gun);
         //this.volume = gunProperties.getVolume(gun.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!")));
     }
 
