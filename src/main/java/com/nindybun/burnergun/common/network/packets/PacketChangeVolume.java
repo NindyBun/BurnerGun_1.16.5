@@ -37,6 +37,8 @@ public class PacketChangeVolume {
                 if (player == null)
                     return;
                 ItemStack gun = BurnerGun.getGun(player);
+                if (gun.equals(ItemStack.EMPTY))
+                    return;
                 gunProperties.setVolume(gun, msg.volume);
             });
 
