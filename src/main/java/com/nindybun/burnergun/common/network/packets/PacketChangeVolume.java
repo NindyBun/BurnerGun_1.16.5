@@ -1,10 +1,7 @@
 package com.nindybun.burnergun.common.network.packets;
 
-import com.nindybun.burnergun.common.capabilities.BurnerGunInfo;
-import com.nindybun.burnergun.common.capabilities.BurnerGunInfoProvider;
 import com.nindybun.burnergun.common.items.Burner_Gun.BurnerGun;
-import com.nindybun.burnergun.common.items.gunProperties;
-import net.minecraft.client.Minecraft;
+import com.nindybun.burnergun.common.items.GunProperties;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
@@ -39,7 +36,7 @@ public class PacketChangeVolume {
                 ItemStack gun = BurnerGun.getGun(player);
                 if (gun.equals(ItemStack.EMPTY))
                     return;
-                gunProperties.setVolume(gun, msg.volume);
+                GunProperties.setVolume(gun, msg.volume);
             });
 
             ctx.get().setPacketHandled(true);

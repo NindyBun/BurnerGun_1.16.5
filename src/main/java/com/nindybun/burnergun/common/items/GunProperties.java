@@ -1,13 +1,10 @@
 package com.nindybun.burnergun.common.items;
 
-import com.nindybun.burnergun.common.capabilities.BurnerGunInfo;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
-import org.lwjgl.system.CallbackI;
 
-public class gunProperties {
-    private gunProperties() {}
+public class GunProperties {
+    private GunProperties() {}
 
     private static final String V_EXPAND = "vertical_expansion";
     private static final String H_EXPAND = "horizontal_expansion";
