@@ -24,7 +24,7 @@ public class KeyInputHandler {
         }
         if (Keybinds.burnergun_screen_key.isDown() && Minecraft.getInstance().screen == null && (player.getMainHandItem().getItem() instanceof BurnerGun || player.getOffhandItem().getItem() instanceof BurnerGun)){
             //ModScreens.openGadgetSettingsScreen(BurnerGun.getGun(player));
-            PacketHandler.sendToServer(new PacketOpenGunSettings());
+            //PacketHandler.sendToServer(new PacketOpenGunSettings());
         }
     }
 }

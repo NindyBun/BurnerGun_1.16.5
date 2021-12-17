@@ -60,6 +60,7 @@ public class settingsScreen extends Screen implements Slider.ISlider {
 
     @Override
     public void removed() {
+        LOGGER.info(this.volume);
         PacketHandler.sendToServer(new PacketChangeVolume(this.volume));
         super.removed();
     }
