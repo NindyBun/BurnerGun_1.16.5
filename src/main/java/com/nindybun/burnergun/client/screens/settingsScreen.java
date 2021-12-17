@@ -45,7 +45,7 @@ public class settingsScreen extends Screen implements Slider.ISlider {
         int midX = width/2;
         int midY = height/2;
 
-        settings.add(volumeSlider = new Slider(midX-80, 20, 125, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.volume"), new StringTextComponent("%"), 0, 100, Math.min(100, volume*100), false, true, slider -> {}, this));
+        settings.add(volumeSlider = new Slider(midX-135, 20, 125, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.volume"), new StringTextComponent("%"), 0, 100, Math.min(100, volume*100), false, true, slider -> {}, this));
 
         for (int i = 0; i < settings.size(); i++) {
             settings.get(i).y = (80)+(i*25);
