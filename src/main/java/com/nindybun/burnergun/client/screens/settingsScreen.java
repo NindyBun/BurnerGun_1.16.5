@@ -11,6 +11,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.client.gui.widget.Slider;
@@ -34,7 +35,8 @@ public class settingsScreen extends Screen implements Slider.ISlider {
         super(new StringTextComponent("Title"));
         this.gun = gun;
         this.raycastRange = GunProperties.getRaycastRange(gun);
-        this.volume = GunProperties.getVolume(gun);
+        this.volume = gun.getOrCreateTag().getFloat("volume");
+        //this.volume = GunProperties.getVolume(gun);
         //this.volume = gunProperties.getVolume(gun.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!")));
     }
 
