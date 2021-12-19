@@ -6,6 +6,7 @@ import com.nindybun.burnergun.common.network.PacketHandler;
 import com.nindybun.burnergun.common.network.packets.PacketOpenBurnerGunGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.apache.logging.log4j.LogManager;
@@ -22,7 +23,10 @@ public class KeyInputHandler {
             PacketHandler.sendToServer(new PacketOpenBurnerGunGui());
         }
         if (Keybinds.burnergun_screen_key.isDown() && Minecraft.getInstance().screen == null && (player.getMainHandItem().getItem() instanceof BurnerGun || player.getOffhandItem().getItem() instanceof BurnerGun)){
-            ModScreens.openGadgetSettingsScreen(BurnerGun.getGun(player));
+            ItemStack stack = BurnerGun.getGun(player);
+            if (stack == ItemStack.EMPTY)
+                return;
+            ModScreens.openGadgetSettingsScreen(stack);
             //PacketHandler.sendToServer(new PacketOpenGunSettings());
         }
     }

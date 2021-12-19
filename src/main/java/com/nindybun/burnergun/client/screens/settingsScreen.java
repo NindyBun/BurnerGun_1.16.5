@@ -3,8 +3,6 @@ package com.nindybun.burnergun.client.screens;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.nindybun.burnergun.common.BurnerGun;
-import com.nindybun.burnergun.common.capabilities.BurnerGunInfo;
-import com.nindybun.burnergun.common.capabilities.BurnerGunInfoProvider;
 import com.nindybun.burnergun.common.items.GunProperties;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.network.PacketHandler;
@@ -13,6 +11,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.client.gui.widget.Slider;
@@ -36,8 +35,9 @@ public class settingsScreen extends Screen implements Slider.ISlider {
         super(new StringTextComponent("Title"));
         this.gun = gun;
         this.raycastRange = GunProperties.getRaycastRange(gun);
-        this.volume = GunProperties.getVolume(gun);
-        //this.volume = gun.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!")).getVolume();
+        this.volume = gun.getOrCreateTag().getFloat("volume");
+        //this.volume = GunProperties.getVolume(gun);
+        //this.volume = gunProperties.getVolume(gun.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!")));
     }
 
     @Override
@@ -46,7 +46,7 @@ public class settingsScreen extends Screen implements Slider.ISlider {
         int midX = width/2;
         int midY = height/2;
 
-        settings.add(volumeSlider = new Slider(midX-135, 20, 125, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.volume"), new StringTextComponent("%"), 0, 100, Math.min(100, volume*100), false, true, slider -> {}, this));
+        settings.add(volumeSlider = new Slider(midX-135, 20, 125, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.volume"), new StringTextComponent("%"), 0, 100, Math.min(100, this.volume*100), false, true, slider -> {}, this));
 
         for (int i = 0; i < settings.size(); i++) {
             settings.get(i).y = (80)+(i*25);
@@ -61,8 +61,6 @@ public class settingsScreen extends Screen implements Slider.ISlider {
 
     @Override
     public void removed() {
-        //BurnerGunInfo info = gun.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
-        //info.setVolume(this.volume);
         PacketHandler.sendToServer(new PacketChangeVolume(this.volume));
         super.removed();
     }
