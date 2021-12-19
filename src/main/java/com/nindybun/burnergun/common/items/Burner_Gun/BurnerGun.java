@@ -703,6 +703,7 @@ public class BurnerGun extends ToolItem{
         baseTag.putInt("HeatValue", info.getHeatValue());
         baseTag.putInt("CoolDown", info.getCooldown());
         baseTag.putInt("HarvestLevel", info.getHarvestLevel());
+        //baseTag.putFloat("Volume", info.getVolume());
 
         if (baseTag != null) {
             combinedTag.put(BASE_NBT_TAG, baseTag);
@@ -727,6 +728,7 @@ public class BurnerGun extends ToolItem{
         info.setHeatValue(baseTag.getInt("HeatValue"));
         info.setCooldown(baseTag.getInt("CoolDown"));
         info.setHarvestLevel(baseTag.getInt("HarvestLevel"));
+        //info.setVolume(baseTag.getFloat("Volume"));
         BurnerGunHandler handler = getHandler(stack);
         handler.deserializeNBT(capabilityTag);
     }

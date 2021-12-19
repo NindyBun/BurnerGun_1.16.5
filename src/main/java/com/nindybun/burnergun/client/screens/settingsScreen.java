@@ -3,6 +3,8 @@ package com.nindybun.burnergun.client.screens;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.nindybun.burnergun.common.BurnerGun;
+import com.nindybun.burnergun.common.capabilities.BurnerGunInfo;
+import com.nindybun.burnergun.common.capabilities.BurnerGunInfoProvider;
 import com.nindybun.burnergun.common.items.GunProperties;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.network.PacketHandler;
@@ -35,7 +37,7 @@ public class settingsScreen extends Screen implements Slider.ISlider {
         this.gun = gun;
         this.raycastRange = GunProperties.getRaycastRange(gun);
         this.volume = GunProperties.getVolume(gun);
-        //this.volume = gunProperties.getVolume(gun.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!")));
+        //this.volume = gun.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!")).getVolume();
     }
 
     @Override
@@ -59,6 +61,8 @@ public class settingsScreen extends Screen implements Slider.ISlider {
 
     @Override
     public void removed() {
+        //BurnerGunInfo info = gun.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
+        //info.setVolume(this.volume);
         PacketHandler.sendToServer(new PacketChangeVolume(this.volume));
         super.removed();
     }
