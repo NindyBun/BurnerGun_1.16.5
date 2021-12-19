@@ -629,7 +629,8 @@ public class BurnerGun extends ToolItem{
                 //if (info.getFuelValue() >= getUseValue(stack)
                 //        || handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())
                 //        || handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())){
-                    player.playNotifySound(SoundEvents.FIRECHARGE_USE, SoundCategory.MASTER, GunProperties.getVolume(stack)*0.5f, 1.0f);
+                    //player.playNotifySound(SoundEvents.FIRECHARGE_USE, SoundCategory.MASTER, GunProperties.getVolume(stack)*0.5f, 1.0f);
+                    player.playNotifySound(SoundEvents.FIRECHARGE_USE, SoundCategory.MASTER, info.getVolume()*0.5f, 1.0f);
                     //player.playSound(SoundEvents.FIRECHARGE_USE, gunProperties.getVolume(stack)*0.5f, 1.0f);
                     //player.playSound(SoundEvents.FIRECHARGE_USE, 1.0f, 1.0f);
                     if (player.isCrouching() || player.isShiftKeyDown()){
@@ -703,7 +704,7 @@ public class BurnerGun extends ToolItem{
         baseTag.putInt("HeatValue", info.getHeatValue());
         baseTag.putInt("CoolDown", info.getCooldown());
         baseTag.putInt("HarvestLevel", info.getHarvestLevel());
-        //baseTag.putFloat("Volume", info.getVolume());
+        baseTag.putFloat("Volume", info.getVolume());
 
         if (baseTag != null) {
             combinedTag.put(BASE_NBT_TAG, baseTag);
@@ -728,7 +729,7 @@ public class BurnerGun extends ToolItem{
         info.setHeatValue(baseTag.getInt("HeatValue"));
         info.setCooldown(baseTag.getInt("CoolDown"));
         info.setHarvestLevel(baseTag.getInt("HarvestLevel"));
-        //info.setVolume(baseTag.getFloat("Volume"));
+        info.setVolume(baseTag.getFloat("Volume"));
         BurnerGunHandler handler = getHandler(stack);
         handler.deserializeNBT(capabilityTag);
     }

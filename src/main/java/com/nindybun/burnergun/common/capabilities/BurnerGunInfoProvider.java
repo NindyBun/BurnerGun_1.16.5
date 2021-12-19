@@ -40,7 +40,7 @@ public class BurnerGunInfoProvider implements BurnerGunInfo, ICapabilitySerializ
     public int heatValue;
     public int cooldown;
     public int harvestLevel;
-    //public float volume;
+    public float volume;
 
 
     @Override
@@ -83,7 +83,7 @@ public class BurnerGunInfoProvider implements BurnerGunInfo, ICapabilitySerializ
         return harvestLevel;
     }
 
-    /*@Override
+    @Override
     public void setVolume(float value) {
         volume = value;
     }
@@ -91,7 +91,7 @@ public class BurnerGunInfoProvider implements BurnerGunInfo, ICapabilitySerializ
     @Override
     public float getVolume() {
         return volume;
-    }*/
+    }
 
 
 }

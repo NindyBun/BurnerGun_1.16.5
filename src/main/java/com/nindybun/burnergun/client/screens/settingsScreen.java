@@ -3,6 +3,8 @@ package com.nindybun.burnergun.client.screens;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.nindybun.burnergun.common.BurnerGun;
+import com.nindybun.burnergun.common.capabilities.BurnerGunInfo;
+import com.nindybun.burnergun.common.capabilities.BurnerGunInfoProvider;
 import com.nindybun.burnergun.common.items.GunProperties;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.network.PacketHandler;
@@ -30,13 +32,18 @@ public class settingsScreen extends Screen implements Slider.ISlider {
     private Slider volumeSlider;
     private List<Upgrade> toggleableList = new ArrayList<>();
     private static final Logger LOGGER = LogManager.getLogger();
+    private static  BurnerGunInfo prop;
 
     protected settingsScreen(ItemStack gun) {
         super(new StringTextComponent("Title"));
         this.gun = gun;
-        this.raycastRange = GunProperties.getRaycastRange(gun);
-        this.volume = gun.getOrCreateTag().getFloat("volume");
+        //this.raycastRange = GunProperties.getRaycastRange(gun);
+        //this.volume = gun.getOrCreateTag().getFloat("volume");
         //this.volume = GunProperties.getVolume(gun);
+        //LOGGER.info(gun.getOrCreateTag());
+        this.prop = gun.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
+        LOGGER.info(this.prop.getVolume());
+        this.volume = prop.getVolume();
         //this.volume = gunProperties.getVolume(gun.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!")));
     }
 
@@ -61,6 +68,7 @@ public class settingsScreen extends Screen implements Slider.ISlider {
 
     @Override
     public void removed() {
+        //prop.setVolume(this.volume);
         PacketHandler.sendToServer(new PacketChangeVolume(this.volume));
         super.removed();
     }

@@ -18,6 +18,6 @@ public interface BurnerGunInfo {
 
     int getHarvestLevel();
 
-    /*void setVolume(float value);
-    float getVolume();*/
+    void setVolume(float value);
+    float getVolume();
 }

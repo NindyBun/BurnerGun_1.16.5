@@ -1,5 +1,7 @@
 package com.nindybun.burnergun.common.network.packets;
 
+import com.nindybun.burnergun.common.capabilities.BurnerGunInfo;
+import com.nindybun.burnergun.common.capabilities.BurnerGunInfoProvider;
 import com.nindybun.burnergun.common.items.Burner_Gun.BurnerGun;
 import com.nindybun.burnergun.common.items.GunProperties;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -37,9 +39,11 @@ public class PacketChangeVolume {
                 ItemStack gun = BurnerGun.getGun(player);
                 if (gun.equals(ItemStack.EMPTY))
                     return;
+                BurnerGunInfo info = gun.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
                 CompoundNBT nbt = gun.getOrCreateTag();
-                nbt.putFloat("volume", msg.volume);
-                gun.setTag(nbt);
+                info.setVolume(msg.volume);
+                //nbt.putFloat("volume", msg.volume);
+                //gun.setTag(nbt);
                 //GunProperties.setVolume(gun, msg.volume);
             });
 
