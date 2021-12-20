@@ -48,6 +48,7 @@ import net.minecraft.world.Dimension;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -699,18 +700,25 @@ public class BurnerGun extends ToolItem{
 
     @Override
     public CompoundNBT getShareTag(ItemStack stack) {
-        CompoundNBT baseTag = stack.getOrCreateTag();
+        /*CompoundNBT baseTag = stack.getOrCreateTag();
         BurnerGunHandler handler = getHandler(stack);
-        CompoundNBT capabilityTag = handler.serializeNBT();
-        BurnerGunInfo info = stack.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(null);
-        CompoundNBT combinedTag = new CompoundNBT();
+        CompoundNBT capabilityTag = handler.serializeNBT();*/
 
+        //CompoundNBT combinedTag = new CompoundNBT();
         CompoundNBT infoTag = new CompoundNBT();
-        infoTag.putInt("FuelValue", info.getFuelValue());
+        /*BurnerGunInfo info = stack.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(null);
+        infoTag.put(INFO_NBT_TAG, BurnerGunInfoProvider.burnerGunInfoCapability.writeNBT(info, null));
+        return infoTag;*/
+        stack.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).ifPresent((cap) -> {
+            infoTag.put(INFO_NBT_TAG, BurnerGunInfoProvider.burnerGunInfoCapability.writeNBT(cap, null));
+        });
+        return infoTag;
+        /*infoTag.putInt("FuelValue", info.getFuelValue());
         infoTag.putInt("HeatValue", info.getHeatValue());
         infoTag.putInt("CoolDown", info.getCooldown());
         infoTag.putInt("HarvestLevel", info.getHarvestLevel());
-        infoTag.putFloat("Volume", info.getVolume());
+        infoTag.putFloat("Volume", info.getVolume());*/
+
 
         /*baseTag.putInt("FuelValue", info.getFuelValue());
         baseTag.putInt("HeatValue", info.getHeatValue());
@@ -718,7 +726,7 @@ public class BurnerGun extends ToolItem{
         baseTag.putInt("HarvestLevel", info.getHarvestLevel());
         baseTag.putFloat("Volume", info.getVolume());*/
 
-        if (baseTag != null) {
+        /*if (baseTag != null) {
             combinedTag.put(BASE_NBT_TAG, baseTag);
         }
         if (capabilityTag != null) {
@@ -729,28 +737,35 @@ public class BurnerGun extends ToolItem{
         }
 
         //stack.setTag(baseTag);
-        return combinedTag;
+        return combinedTag;*/
     }
 
     @Override
     public void readShareTag(ItemStack stack, @Nullable CompoundNBT nbt) {
-        if (nbt == null) {
+        /*if (nbt == null) {
             stack.setTag(null);
             return;
         }
         CompoundNBT baseTag = nbt.getCompound(BASE_NBT_TAG);
-        CompoundNBT capabilityTag = nbt.getCompound(CAPABILITY_NBT_TAG);
-        CompoundNBT infoTag = nbt.getCompound(INFO_NBT_TAG);
+        CompoundNBT capabilityTag = nbt.getCompound(CAPABILITY_NBT_TAG);*/
+        /*CompoundNBT infoTag = nbt.getCompound(INFO_NBT_TAG);
 
         BurnerGunInfo info = stack.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(null);
-        info.setFuelValue(infoTag.getInt("FuelValue"));
+        BurnerGunInfoProvider.burnerGunInfoCapability.readNBT(info, null, infoTag);*/
+
+        if (nbt != null)
+            stack.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).ifPresent((cap) -> {
+                BurnerGunInfoProvider.burnerGunInfoCapability.readNBT(cap, null, nbt.get(INFO_NBT_TAG));
+            });
+
+        /*info.setFuelValue(infoTag.getInt("FuelValue"));
         info.setHeatValue(infoTag.getInt("HeatValue"));
         info.setCooldown(infoTag.getInt("CoolDown"));
         info.setHarvestLevel(infoTag.getInt("HarvestLevel"));
-        info.setVolume(infoTag.getFloat("Volume"));
+        info.setVolume(infoTag.getFloat("Volume"));*/
 
-        BurnerGunHandler handler = getHandler(stack);
-        handler.deserializeNBT(capabilityTag);
+        /*BurnerGunHandler handler = getHandler(stack);
+        handler.deserializeNBT(capabilityTag);*/
     }
 
 
