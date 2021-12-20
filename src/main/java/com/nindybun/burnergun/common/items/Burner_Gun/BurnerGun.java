@@ -6,6 +6,7 @@ import com.nindybun.burnergun.common.blocks.Light;
 import com.nindybun.burnergun.common.blocks.ModBlocks;
 import com.nindybun.burnergun.common.capabilities.BurnerGunInfo;
 import com.nindybun.burnergun.common.capabilities.BurnerGunInfoProvider;
+import com.nindybun.burnergun.common.capabilities.BurnerGunInfoStorage;
 import com.nindybun.burnergun.common.containers.BurnerGunContainer;
 import com.nindybun.burnergun.common.items.GunProperties;
 import com.nindybun.burnergun.common.items.upgrades.Auto_Fuel.AutoFuel;
@@ -22,6 +23,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
@@ -33,6 +35,7 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.loot.LootContext;
 import net.minecraft.loot.LootParameters;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -461,6 +464,7 @@ public class BurnerGun extends ToolItem{
                             //    break;
                         //}
                     });
+                    block.popExperience((ServerWorld) world, pos, state.getBlock().getExpDrop(state, world, pos, getFortune(stack), getSilkTouch(stack)));
                 }
             }
             if (getUpgradeByUpgrade(stack, Upgrade.LIGHT) != null)
@@ -614,7 +618,7 @@ public class BurnerGun extends ToolItem{
             BlockState state = world.getBlockState(pos);
             Block block = state.getBlock();
             setFuelValue(stack, 0, player, world);
-            if (state.getMaterial() != Material.AIR){
+            if (state.getMaterial() != Material.AIR && !(block instanceof Light)){
                 stack.enchant(Enchantments.BLOCK_FORTUNE, getFortune(stack));
                 stack.enchant(Enchantments.SILK_TOUCH, getSilkTouch(stack));
 
@@ -691,20 +695,28 @@ public class BurnerGun extends ToolItem{
 
     private final String BASE_NBT_TAG = "base";
     private final String CAPABILITY_NBT_TAG = "cap";
+    private final String INFO_NBT_TAG = "burnergunInfoNBT";
 
     @Override
     public CompoundNBT getShareTag(ItemStack stack) {
         CompoundNBT baseTag = stack.getOrCreateTag();
         BurnerGunHandler handler = getHandler(stack);
         CompoundNBT capabilityTag = handler.serializeNBT();
-        CompoundNBT combinedTag = new CompoundNBT();
         BurnerGunInfo info = stack.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(null);
+        CompoundNBT combinedTag = new CompoundNBT();
 
-        baseTag.putInt("FuelValue", info.getFuelValue());
+        CompoundNBT infoTag = new CompoundNBT();
+        infoTag.putInt("FuelValue", info.getFuelValue());
+        infoTag.putInt("HeatValue", info.getHeatValue());
+        infoTag.putInt("CoolDown", info.getCooldown());
+        infoTag.putInt("HarvestLevel", info.getHarvestLevel());
+        infoTag.putFloat("Volume", info.getVolume());
+
+        /*baseTag.putInt("FuelValue", info.getFuelValue());
         baseTag.putInt("HeatValue", info.getHeatValue());
         baseTag.putInt("CoolDown", info.getCooldown());
         baseTag.putInt("HarvestLevel", info.getHarvestLevel());
-        baseTag.putFloat("Volume", info.getVolume());
+        baseTag.putFloat("Volume", info.getVolume());*/
 
         if (baseTag != null) {
             combinedTag.put(BASE_NBT_TAG, baseTag);
@@ -712,7 +724,11 @@ public class BurnerGun extends ToolItem{
         if (capabilityTag != null) {
             combinedTag.put(CAPABILITY_NBT_TAG, capabilityTag);
         }
-        stack.setTag(baseTag);
+        if (infoTag != null){
+            combinedTag.put(INFO_NBT_TAG, infoTag);
+        }
+
+        //stack.setTag(baseTag);
         return combinedTag;
     }
 
@@ -724,12 +740,15 @@ public class BurnerGun extends ToolItem{
         }
         CompoundNBT baseTag = nbt.getCompound(BASE_NBT_TAG);
         CompoundNBT capabilityTag = nbt.getCompound(CAPABILITY_NBT_TAG);
+        CompoundNBT infoTag = nbt.getCompound(INFO_NBT_TAG);
+
         BurnerGunInfo info = stack.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(null);
-        info.setFuelValue(baseTag.getInt("FuelValue"));
-        info.setHeatValue(baseTag.getInt("HeatValue"));
-        info.setCooldown(baseTag.getInt("CoolDown"));
-        info.setHarvestLevel(baseTag.getInt("HarvestLevel"));
-        info.setVolume(baseTag.getFloat("Volume"));
+        info.setFuelValue(infoTag.getInt("FuelValue"));
+        info.setHeatValue(infoTag.getInt("HeatValue"));
+        info.setCooldown(infoTag.getInt("CoolDown"));
+        info.setHarvestLevel(infoTag.getInt("HarvestLevel"));
+        info.setVolume(infoTag.getFloat("Volume"));
+
         BurnerGunHandler handler = getHandler(stack);
         handler.deserializeNBT(capabilityTag);
     }
