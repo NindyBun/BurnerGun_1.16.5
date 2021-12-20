@@ -40,11 +40,7 @@ public class PacketChangeVolume {
                 if (gun.equals(ItemStack.EMPTY))
                     return;
                 BurnerGunInfo info = gun.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
-                CompoundNBT nbt = gun.getOrCreateTag();
                 info.setVolume(msg.volume);
-                //nbt.putFloat("volume", msg.volume);
-                //gun.setTag(nbt);
-                //GunProperties.setVolume(gun, msg.volume);
             });
 
             ctx.get().setPacketHandled(true);
