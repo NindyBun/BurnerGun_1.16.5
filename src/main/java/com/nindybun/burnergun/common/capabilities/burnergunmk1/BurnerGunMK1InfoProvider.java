@@ -11,24 +11,24 @@ import javax.annotation.Nonnull;
 
 public class BurnerGunMK1InfoProvider implements BurnerGunMK1Info, ICapabilitySerializable<INBT> {
     @CapabilityInject(BurnerGunMK1Info.class)
-    public static Capability<BurnerGunMK1Info> burnerGunInfoCapability = null;
+    public static Capability<BurnerGunMK1Info> burnerGunInfoMK1Capability = null;
 
-    private LazyOptional<BurnerGunMK1Info> instance = LazyOptional.of(burnerGunInfoCapability::getDefaultInstance);
+    private LazyOptional<BurnerGunMK1Info> instance = LazyOptional.of(burnerGunInfoMK1Capability::getDefaultInstance);
 
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
-        return cap == burnerGunInfoCapability ? instance.cast() : LazyOptional.empty();
+        return cap == burnerGunInfoMK1Capability ? instance.cast() : LazyOptional.empty();
     }
 
     @Override
     public INBT serializeNBT() {
-        return burnerGunInfoCapability.getStorage().writeNBT(burnerGunInfoCapability, this.instance.orElseThrow(() -> new IllegalArgumentException("LazyOptional must not be empty!")), null);
+        return burnerGunInfoMK1Capability.getStorage().writeNBT(burnerGunInfoMK1Capability, this.instance.orElseThrow(() -> new IllegalArgumentException("LazyOptional must not be empty!")), null);
     }
 
     @Override
     public void deserializeNBT(INBT nbt) {
-        burnerGunInfoCapability.getStorage().readNBT(burnerGunInfoCapability, this.instance.orElseThrow(() -> new IllegalArgumentException("LazyOptional must not be empty!")), null, nbt);
+        burnerGunInfoMK1Capability.getStorage().readNBT(burnerGunInfoMK1Capability, this.instance.orElseThrow(() -> new IllegalArgumentException("LazyOptional must not be empty!")), null, nbt);
 
     }
 

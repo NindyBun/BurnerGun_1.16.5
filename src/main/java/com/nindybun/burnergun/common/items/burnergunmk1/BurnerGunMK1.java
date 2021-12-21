@@ -6,7 +6,6 @@ import com.nindybun.burnergun.common.blocks.Light;
 import com.nindybun.burnergun.common.blocks.ModBlocks;
 import com.nindybun.burnergun.common.capabilities.burnergunmk1.BurnerGunMK1Info;
 import com.nindybun.burnergun.common.capabilities.burnergunmk1.BurnerGunMK1InfoProvider;
-import com.nindybun.burnergun.common.containers.BurnerGunMK1Container;
 import com.nindybun.burnergun.common.items.upgrades.Auto_Fuel.AutoFuel;
 import com.nindybun.burnergun.common.items.upgrades.Trash.Trash;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
@@ -164,7 +163,7 @@ public class BurnerGunMK1 extends ToolItem{
 
 ////////////////////////////////////////////////////////////////////////
     public void refuel(ItemStack stack, PlayerEntity player){
-        BurnerGunMK1Info info = stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
+        BurnerGunMK1Info info = stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoMK1Capability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
         IItemHandler item = getHandler(stack);
         if (item.getStackInSlot(0).getItem().equals(Upgrade.AMBIENCE.getCard().getItem())
             || item.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())
@@ -206,7 +205,7 @@ public class BurnerGunMK1 extends ToolItem{
     }
 
     public void setFuelValue(ItemStack stack, int use, PlayerEntity player, World world){
-        BurnerGunMK1Info info = stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
+        BurnerGunMK1Info info = stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoMK1Capability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
         IItemHandler handler = getHandler(stack);
         if (!handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())
                 && !handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
@@ -416,8 +415,8 @@ public class BurnerGunMK1 extends ToolItem{
         }
     }
 
-    public Boolean breakBlock(ItemStack stack, BlockState state, Block block, BlockPos pos, PlayerEntity player, World world, BlockRayTraceResult ray){
-        BurnerGunMK1Info info = stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
+    public void breakBlock(ItemStack stack, BlockState state, Block block, BlockPos pos, PlayerEntity player, World world, BlockRayTraceResult ray){
+        BurnerGunMK1Info info = stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoMK1Capability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
         IItemHandler handler = getHandler(stack);
         List<ItemStack> list = state.getDrops(new LootContext.Builder((ServerWorld) world)
                 .withParameter(LootParameters.TOOL, stack)
@@ -427,7 +426,7 @@ public class BurnerGunMK1 extends ToolItem{
         if ((info.getFuelValue() >= getUseValue(stack) || handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem()) || handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())) && !(block instanceof Light)){
             setFuelValue(stack, 1, player, world);
             if (state.getDestroySpeed(world, pos) == -1.0 || state.getHarvestLevel() > info.getHarvestLevel())
-                return false;
+                return;
             world.destroyBlock(pos, false);
             if (getMagnet(stack)){
                 magnetOn(list, state, world, stack, pos, player);
@@ -465,9 +464,9 @@ public class BurnerGunMK1 extends ToolItem{
             }
             if (getUpgradeByUpgrade(stack, Upgrade.LIGHT) != null)
                 spawnLight(world, ray);
-            return true;
+            return;
         }
-        return false;
+        return;
     }
 
     public void areaMine(BlockState state, World world, ItemStack stack, BlockPos pos, PlayerEntity player, BlockRayTraceResult ray){
@@ -504,7 +503,7 @@ public class BurnerGunMK1 extends ToolItem{
     @Override
     public void inventoryTick(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
         super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
-        BurnerGunMK1Info info = stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
+        BurnerGunMK1Info info = stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoMK1Capability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
         /*
             Harvest Level : 0 -> wood/gold
                             1 -> stone
@@ -582,7 +581,7 @@ public class BurnerGunMK1 extends ToolItem{
 
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        BurnerGunMK1Info info = stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
+        BurnerGunMK1Info info = stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoMK1Capability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
 
         int fireAspect = EnchantmentHelper.getEnchantments(stack).get(Enchantments.FIRE_ASPECT) != null ? EnchantmentHelper.getEnchantments(stack).get(Enchantments.FIRE_ASPECT) : 0;
         if (!getHandler(stack).getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())
@@ -605,8 +604,8 @@ public class BurnerGunMK1 extends ToolItem{
     @Nonnull
     @Override
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand handIn) {
-        ItemStack stack = player.getItemInHand(handIn).getStack();
-        BurnerGunMK1Info info = stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
+        ItemStack stack = player.getItemInHand(handIn);
+        BurnerGunMK1Info info = stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoMK1Capability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
         IItemHandler handler = getHandler(stack);
         if (!world.isClientSide){
             BlockRayTraceResult ray = WorldUtil.getLookingAt(world, player, RayTraceContext.FluidMode.NONE, getRange(stack));
@@ -653,100 +652,41 @@ public class BurnerGunMK1 extends ToolItem{
 
     @Override
     public boolean showDurabilityBar(ItemStack stack) {
-        //return stack.getTag().getInt("CoolDown") > 0;
         return false;
     }
 
     @Override
     public double getDurabilityForDisplay(ItemStack stack) {
-        //return 1-(stack.getTag().getInt("CoolDown")/(float)base_coolDown);
         return 1;
     }
 
     @Nonnull
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, CompoundNBT oldCapNbt) {
-        if (this.getClass() == BurnerGunMK1.class){
-            return new BurnerGunMK1Provider();
-        }else{
-           return super.initCapabilities(stack, oldCapNbt);
-        }
+        return new BurnerGunMK1Provider();
     }
 
-    public static BurnerGunMK1Handler getHandler(ItemStack itemStack) {
-        IItemHandler handler = itemStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
-        if (handler == null || !(handler instanceof BurnerGunMK1Handler)) {
-            LOGGER.error("TestGun did not have the expected ITEM_HANDLER_CAPABILITY");
-            return new BurnerGunMK1Handler(BurnerGunMK1Container.MAX_EXPECTED_GUN_SLOT_COUNT);
-        }
-        return (BurnerGunMK1Handler) handler;
+    public static IItemHandler getHandler(ItemStack itemStack) {
+        return itemStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
     }
 
-    /*private final String BASE_NBT_TAG = "base";
-    private final String CAPABILITY_NBT_TAG = "cap";*/
-    private final String INFO_NBT_TAG = "burnergunInfoNBT";
+    private final String INFO_NBT_TAG = "burnergunMK1InfoNBT";
 
     @Override
     public CompoundNBT getShareTag(ItemStack stack) {
         CompoundNBT infoTag = new CompoundNBT();
-        stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoCapability, null).ifPresent((cap) -> {
-            infoTag.put(INFO_NBT_TAG, BurnerGunMK1InfoProvider.burnerGunInfoCapability.writeNBT(cap, null));
+        stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoMK1Capability, null).ifPresent((cap) -> {
+            infoTag.put(INFO_NBT_TAG, BurnerGunMK1InfoProvider.burnerGunInfoMK1Capability.writeNBT(cap, null));
         });
         return infoTag;
-        /*CompoundNBT baseTag = stack.getOrCreateTag();
-        BurnerGunHandler handler = getHandler(stack);
-        CompoundNBT capabilityTag = handler.serializeNBT();
-
-        CompoundNBT combinedTag = new CompoundNBT();
-
-        BurnerGunInfo info = stack.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(null);
-        infoTag.put(INFO_NBT_TAG, BurnerGunInfoProvider.burnerGunInfoCapability.writeNBT(info, null));
-        return infoTag;
-        infoTag.putInt("FuelValue", info.getFuelValue());
-        infoTag.putInt("HeatValue", info.getHeatValue());
-        infoTag.putInt("CoolDown", info.getCooldown());
-        infoTag.putInt("HarvestLevel", info.getHarvestLevel());
-        infoTag.putFloat("Volume", info.getVolume());
-
-        if (baseTag != null) {
-            combinedTag.put(BASE_NBT_TAG, baseTag);
-        }
-        if (capabilityTag != null) {
-            combinedTag.put(CAPABILITY_NBT_TAG, capabilityTag);
-        }
-        if (infoTag != null){
-            combinedTag.put(INFO_NBT_TAG, infoTag);
-        }
-
-        return combinedTag;*/
     }
 
     @Override
     public void readShareTag(ItemStack stack, @Nullable CompoundNBT nbt) {
         if (nbt != null)
-            stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoCapability, null).ifPresent((cap) -> {
-                BurnerGunMK1InfoProvider.burnerGunInfoCapability.readNBT(cap, null, nbt.get(INFO_NBT_TAG));
+            stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoMK1Capability, null).ifPresent((cap) -> {
+                BurnerGunMK1InfoProvider.burnerGunInfoMK1Capability.readNBT(cap, null, nbt.get(INFO_NBT_TAG));
             });
-        /*if (nbt == null) {
-            stack.setTag(null);
-            return;
-        }
-        CompoundNBT baseTag = nbt.getCompound(BASE_NBT_TAG);
-        CompoundNBT capabilityTag = nbt.getCompound(CAPABILITY_NBT_TAG);
-        CompoundNBT infoTag = nbt.getCompound(INFO_NBT_TAG);
-
-        BurnerGunInfo info = stack.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(null);
-        BurnerGunInfoProvider.burnerGunInfoCapability.readNBT(info, null, infoTag);
-
-
-        info.setFuelValue(infoTag.getInt("FuelValue"));
-        info.setHeatValue(infoTag.getInt("HeatValue"));
-        info.setCooldown(infoTag.getInt("CoolDown"));
-        info.setHarvestLevel(infoTag.getInt("HarvestLevel"));
-        info.setVolume(infoTag.getFloat("Volume"));
-
-        BurnerGunHandler handler = getHandler(stack);
-        handler.deserializeNBT(capabilityTag);*/
     }
 
 

@@ -1,7 +1,8 @@
 package com.nindybun.burnergun.common.containers;
 
 import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1;
-import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1Handler;
+import com.nindybun.burnergun.common.items.burnergunmk2.BurnerGunMK2;
+import com.nindybun.burnergun.common.items.burnergunmk2.BurnerGunMK2Handler;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -15,19 +16,19 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 
-public class BurnerGunMK1Container extends Container {
-    BurnerGunMK1Container(int windowId, PlayerInventory playerInv,
+public class BurnerGunMK2Container extends Container {
+    BurnerGunMK2Container(int windowId, PlayerInventory playerInv,
                           PacketBuffer buf){
-        this(windowId, playerInv, new BurnerGunMK1Handler(MAX_EXPECTED_GUN_SLOT_COUNT));
+        this(windowId, playerInv, new BurnerGunMK2Handler(MAX_EXPECTED_GUN_SLOT_COUNT));
     }
 
-    public BurnerGunMK1Container(int windowId, PlayerInventory playerInventory, BurnerGunMK1Handler handler){
-        super(ModContainers.BURNERGUNMK1_CONTAINER.get(), windowId);
+    public BurnerGunMK2Container(int windowId, PlayerInventory playerInventory, BurnerGunMK2Handler handler){
+        super(ModContainers.BURNERGUNMK2_CONTAINER.get(), windowId);
         this.handler = handler;
         this.setup(playerInventory);
     }
 
-    private final BurnerGunMK1Handler handler;
+    private final BurnerGunMK2Handler handler;
 
     private static final int HOTBAR_SLOT_COUNT = 9;
     private static final int PLAYER_INVENTORY_ROW_COUNT = 3;
@@ -41,20 +42,16 @@ public class BurnerGunMK1Container extends Container {
     private final int SLOT_X_SPACING = 18;
     private final int SLOT_Y_SPACING = 18;
 
-    public static int MAX_EXPECTED_GUN_SLOT_COUNT = 7;
+    public static int MAX_EXPECTED_GUN_SLOT_COUNT = 9;
 
     private void setup(PlayerInventory playerInv){
         final int GUN_INVENTORY_YPOS = 8;
-        final int GUN_INVENTORY_XPOS = 44;
+        final int GUN_INVENTORY_XPOS = 8;
         final int PLAYER_INVENTORY_YPOS = 48;
         final int PLAYER_INVENTORY_XPOS = 8;
         final int HOTBAR_XPOS = 8;
         final int HOTBAR_YPOS = 106;
-        final int GUN_SLOTS_PER_ROW = 5;
-        final int GUN_FUELSLOT_YPOS = 8;
-        final int GUN_FUELSLOT_XPOS = 8;
-        final int GUN_BAGSLOT_YPOS = 8;
-        final int GUN_BAGSLOT_XPOS = 152;
+        final int GUN_SLOTS_PER_ROW = 9;
 
         // Add the players hotbar to the gui - the [xpos, ypos] location of each item
         for (int slotNumber = 0; slotNumber < HOTBAR_SLOT_COUNT; slotNumber++) {
@@ -77,25 +74,20 @@ public class BurnerGunMK1Container extends Container {
             gunSlotCount = MathHelper.clamp(gunSlotCount, 1, MAX_EXPECTED_GUN_SLOT_COUNT);
         }
 
-        //Adds the Fuel slot first
-        addSlot(new SlotItemHandler(handler, 0, GUN_FUELSLOT_XPOS, GUN_FUELSLOT_YPOS));
-
         // Add the tile inventory container to the gui
-        for (int gunSlot = 1; gunSlot < gunSlotCount-1; gunSlot++) {
-            int xpos = GUN_INVENTORY_XPOS + SLOT_X_SPACING * (gunSlot-1);
+        for (int gunSlot = 0; gunSlot < gunSlotCount; gunSlot++) {
+            int xpos = GUN_INVENTORY_XPOS + SLOT_X_SPACING * gunSlot;
             addSlot(new SlotItemHandler(handler, gunSlot, xpos, GUN_INVENTORY_YPOS));
         }
 
-        //Adds the upgrade bag slots
-        addSlot(new SlotItemHandler(handler, MAX_EXPECTED_GUN_SLOT_COUNT-1, GUN_BAGSLOT_XPOS, GUN_BAGSLOT_YPOS));
     }
 
     @Override
     public boolean stillValid(PlayerEntity playerIn) {
         ItemStack main = playerIn.getMainHandItem();
         ItemStack off = playerIn.getOffhandItem();
-        return (!main.isEmpty() && main.getItem() instanceof BurnerGunMK1) ||
-                (!off.isEmpty() && off.getItem() instanceof BurnerGunMK1);
+        return (!main.isEmpty() && main.getItem() instanceof BurnerGunMK2) ||
+                (!off.isEmpty() && off.getItem() instanceof BurnerGunMK2);
     }
 
     // This is where you specify what happens when a player shift clicks a slot in the gui

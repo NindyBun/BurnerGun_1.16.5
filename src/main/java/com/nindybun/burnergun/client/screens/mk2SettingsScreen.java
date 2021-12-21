@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class settingsScreen extends Screen implements Slider.ISlider {
+public class mk2SettingsScreen extends Screen implements Slider.ISlider {
     private static BurnerGunMK1Info info;
     private static final Logger LOGGER = LogManager.getLogger();
     private List<Upgrade> toggleableList = new ArrayList<>();
@@ -41,9 +41,9 @@ public class settingsScreen extends Screen implements Slider.ISlider {
                     verticalSlider,
                     horizontalSlider;
 
-    protected settingsScreen(ItemStack gun) {
+    protected mk2SettingsScreen(ItemStack gun) {
         super(new StringTextComponent("Title"));
-        this.info = gun.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
+        this.info = gun.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoMK1Capability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
         this.volume = info.getVolume();
     }
 
@@ -68,7 +68,6 @@ public class settingsScreen extends Screen implements Slider.ISlider {
 
     @Override
     public void removed() {
-        //prop.setVolume(this.volume);
         PacketHandler.sendToServer(new PacketChangeVolume(this.volume));
         super.removed();
     }

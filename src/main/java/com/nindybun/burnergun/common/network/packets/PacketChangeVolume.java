@@ -37,7 +37,7 @@ public class PacketChangeVolume {
                 ItemStack gun = BurnerGunMK1.getGun(player);
                 if (gun.equals(ItemStack.EMPTY))
                     return;
-                BurnerGunMK1Info info = gun.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
+                BurnerGunMK1Info info = gun.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoMK1Capability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
                 info.setVolume(msg.volume);
             });
 

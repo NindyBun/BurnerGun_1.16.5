@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 
 public class ModScreens {
-    public static void openGadgetSettingsScreen(ItemStack gun) {
-        Minecraft.getInstance().setScreen(new settingsScreen(gun));
+    public static void openGunMk1SettingsScreen(ItemStack gun) {
+        Minecraft.getInstance().setScreen(new mk1SettingsScreen(gun));
     }
 }

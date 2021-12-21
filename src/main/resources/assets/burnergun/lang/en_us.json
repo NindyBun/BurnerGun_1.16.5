@@ -68,13 +68,15 @@
   "tooltip.burnergun.base_tier": "Used for upgrades.",
   "tooltip.burnergun.screen.volume": "Volume: ",
 
-  "item.burnergun.burner_gun":  "Burner Gun",
+  "item.burnergun.burnergun_mk1":  "Burner Gun MK1",
+  "item.burnergun.burnergun_mk2": "Burner Gun MK2",
 
   "block.burnergun.light": "Light",
 
   "itemGroup.burnergun": "Burner Gun",
 
   "key.burnergun_gui_key": "Burner Gun Gui",
+  "key.burnergun_screen_key": "Burner Gun Screen",
   "key.categories.burnergun": "Burner Gun"
 
 }

@@ -94,7 +94,7 @@ public class FuelValueRenderer {
     }
 
     public static void renderFuel(RenderGameOverlayEvent.Post event, ItemStack stack){
-        BurnerGunMK1Info info = stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
+        BurnerGunMK1Info info = stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoMK1Capability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
         FontRenderer fontRenderer = Minecraft.getInstance().font;
         IItemHandler handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
         int level = info.getFuelValue();

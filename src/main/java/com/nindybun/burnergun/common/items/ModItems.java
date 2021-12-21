@@ -3,6 +3,7 @@ package com.nindybun.burnergun.common.items;
 import com.nindybun.burnergun.common.BurnerGun;
 import com.nindybun.burnergun.common.blocks.ModBlocks;
 import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1;
+import com.nindybun.burnergun.common.items.burnergunmk2.BurnerGunMK2;
 import com.nindybun.burnergun.common.items.upgrades.Auto_Fuel.AutoFuel;
 import com.nindybun.burnergun.common.items.upgrades.Trash.Trash;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
@@ -20,7 +21,8 @@ public class ModItems {
     // We have a separate register just to contain all of the upgrades for quick reference
     public static final DeferredRegister<Item> UPGRADE_ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, BurnerGun.MOD_ID);
 
-    public static final RegistryObject<Item> BURNER_GUN = ITEMS.register("burner_gun", () ->  new BurnerGunMK1());
+    public static final RegistryObject<Item> BURNER_GUN_MK1 = ITEMS.register("burnergun_mk1", () ->  new BurnerGunMK1());
+    public static final RegistryObject<Item> BURNER_GUN_MK2 = ITEMS.register("burnergun_mk2", () -> new BurnerGunMK2());
     public static final RegistryObject<Item> LIGHT_ITEM = ITEMS.register("light", () -> new BlockItem(ModBlocks.LIGHT.get(), ITEM_GROUP.stacksTo(1)));
     public static final RegistryObject<Item> GLITTERING_DIAMOND = ITEMS.register("glittering_diamond", () -> new Item(new Item.Properties().stacksTo(64).tab(BurnerGun.itemGroup)));
 

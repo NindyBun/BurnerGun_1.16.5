@@ -1,8 +1,11 @@
 package com.nindybun.burnergun.common.network.packets;
 
+import com.nindybun.burnergun.common.containers.BurnerGunMK2Container;
 import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1;
 import com.nindybun.burnergun.common.containers.BurnerGunMK1Container;
 import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1Handler;
+import com.nindybun.burnergun.common.items.burnergunmk2.BurnerGunMK2;
+import com.nindybun.burnergun.common.items.burnergunmk2.BurnerGunMK2Handler;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.SimpleNamedContainerProvider;
 import net.minecraft.item.ItemStack;
@@ -35,19 +38,25 @@ public class PacketOpenBurnerGunGui {
                     return;
 
                 ItemStack stack = ItemStack.EMPTY;
-                if (player.getMainHandItem().getItem() instanceof BurnerGunMK1)
+                if (player.getMainHandItem().getItem() instanceof BurnerGunMK1 || player.getMainHandItem().getItem() instanceof BurnerGunMK2)
                     stack = player.getMainHandItem();
-                else if (player.getOffhandItem().getItem() instanceof BurnerGunMK1)
+                else if (player.getOffhandItem().getItem() instanceof BurnerGunMK1 || player.getOffhandItem().getItem() instanceof BurnerGunMK2)
                     stack = player.getOffhandItem();
 
                 if( stack.isEmpty() )
                     return;
 
                 IItemHandler handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
-                player.openMenu(new SimpleNamedContainerProvider(
+                if (stack.getItem() instanceof BurnerGunMK1)
+                    player.openMenu(new SimpleNamedContainerProvider(
                         (windowId, playerInv, playerEntity) -> new BurnerGunMK1Container(windowId, playerInv, (BurnerGunMK1Handler) handler),
                         new StringTextComponent("")
-                ));
+                    ));
+                else if (stack.getItem() instanceof BurnerGunMK2)
+                    player.openMenu(new SimpleNamedContainerProvider(
+                            (windowId, playerInv, playerEntity) -> new BurnerGunMK2Container(windowId, playerInv, (BurnerGunMK2Handler) handler),
+                            new StringTextComponent("")
+                    ));
 
             });
 

@@ -1,9 +1,10 @@
-package com.nindybun.burnergun.common.items.burnergunmk1;
+package com.nindybun.burnergun.common.items.burnergunmk2;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.nindybun.burnergun.common.BurnerGun;
 import com.nindybun.burnergun.common.containers.BurnerGunMK1Container;
+import com.nindybun.burnergun.common.containers.BurnerGunMK2Container;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
@@ -12,13 +13,11 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.lwjgl.system.CallbackI;
 
 import java.awt.*;
-import java.security.SecureRandom;
 
-public class BurnerGunMK1Screen extends ContainerScreen<BurnerGunMK1Container> {
-    public BurnerGunMK1Screen(BurnerGunMK1Container container, PlayerInventory playerInv, ITextComponent title) {
+public class BurnerGunMK2Screen extends ContainerScreen<BurnerGunMK2Container> {
+    public BurnerGunMK2Screen(BurnerGunMK2Container container, PlayerInventory playerInv, ITextComponent title) {
         super(container, playerInv, title);
     }
 
@@ -46,10 +45,10 @@ public class BurnerGunMK1Screen extends ContainerScreen<BurnerGunMK1Container> {
 
     @Override
     protected void renderLabels(MatrixStack matrixStack, int x, int y) {
-        this.font.draw(matrixStack, "Burner Gun MK1", 3, -8, Color.WHITE.getRGB());
+        this.font.draw(matrixStack, "Burner Gun MK2", 3, -8, Color.WHITE.getRGB());
     }
 
     private static final Logger LOGGER = LogManager.getLogger();
     // This is the resource location for the background image
-    private static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation(BurnerGun.MOD_ID, "textures/gui/burnergunmk1_gui.png");
+    private static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation(BurnerGun.MOD_ID, "textures/gui/burnergunmk2_gui.png");
 }

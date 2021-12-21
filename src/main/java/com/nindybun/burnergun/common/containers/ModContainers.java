@@ -1,5 +1,6 @@
 package com.nindybun.burnergun.common.containers;
 
+import com.mojang.realmsclient.client.Request;
 import com.nindybun.burnergun.common.BurnerGun;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraftforge.common.extensions.IForgeContainerType;
@@ -14,4 +15,5 @@ public class ModContainers {
     public static final RegistryObject<ContainerType<AutoFuelContainer>> AUTOFUEL_CONTAINER = CONTAINERS.register("auto_fuel_container", () -> IForgeContainerType.create(AutoFuelContainer::new));
     public static final RegistryObject<ContainerType<TrashContainer>> TRASH_CONTAINER = CONTAINERS.register("trash_container", () -> IForgeContainerType.create(TrashContainer::new));
     public static final RegistryObject<ContainerType<UpgradeBagContainer>> UPGRADE_BAG_CONTAINER = CONTAINERS.register("upgrade_bag_container", () -> IForgeContainerType.create(UpgradeBagContainer::new));
+    public static final RegistryObject<ContainerType<BurnerGunMK2Container>> BURNERGUNMK2_CONTAINER = CONTAINERS.register("burnergunmk2_container", () -> IForgeContainerType.create(BurnerGunMK2Container::new));
 }

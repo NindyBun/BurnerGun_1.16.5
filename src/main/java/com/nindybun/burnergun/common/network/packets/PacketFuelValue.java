@@ -43,7 +43,7 @@ public class PacketFuelValue {
                 if( stack.isEmpty() )
                     return;
 
-                BurnerGunMK1Info info = stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoCapability, null).orElseThrow(() -> new IllegalArgumentException(("LazyOptional must not be empty!")));
+                BurnerGunMK1Info info = stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoMK1Capability, null).orElseThrow(() -> new IllegalArgumentException(("LazyOptional must not be empty!")));
                 info.setFuelValue(msg.data.getInt("FuelValue"));
                 info.setHeatValue(msg.data.getInt("HeatValue"));
                 info.setCooldown(msg.data.getInt("CoolDown"));
