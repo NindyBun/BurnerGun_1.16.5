@@ -1,8 +1,5 @@
-package com.nindybun.burnergun.common.capabilities;
+package com.nindybun.burnergun.common.capabilities.burnergunmk1;
 
-import com.nindybun.burnergun.common.items.Burner_Gun.BurnerGun;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
@@ -11,13 +8,12 @@ import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
-public class BurnerGunInfoProvider implements BurnerGunInfo, ICapabilitySerializable<INBT> {
-    @CapabilityInject(BurnerGunInfo.class)
-    public static Capability<BurnerGunInfo> burnerGunInfoCapability = null;
+public class BurnerGunMK1InfoProvider implements BurnerGunMK1Info, ICapabilitySerializable<INBT> {
+    @CapabilityInject(BurnerGunMK1Info.class)
+    public static Capability<BurnerGunMK1Info> burnerGunInfoCapability = null;
 
-    private LazyOptional<BurnerGunInfo> instance = LazyOptional.of(burnerGunInfoCapability::getDefaultInstance);
+    private LazyOptional<BurnerGunMK1Info> instance = LazyOptional.of(burnerGunInfoCapability::getDefaultInstance);
 
     @Nonnull
     @Override

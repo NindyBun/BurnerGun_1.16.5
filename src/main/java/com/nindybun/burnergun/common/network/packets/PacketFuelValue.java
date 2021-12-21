@@ -1,9 +1,8 @@
 package com.nindybun.burnergun.common.network.packets;
 
-import com.nindybun.burnergun.common.capabilities.BurnerGunInfo;
-import com.nindybun.burnergun.common.capabilities.BurnerGunInfoProvider;
-import com.nindybun.burnergun.common.items.Burner_Gun.BurnerGun;
-import com.nindybun.burnergun.common.network.PacketHandler;
+import com.nindybun.burnergun.common.capabilities.burnergunmk1.BurnerGunMK1Info;
+import com.nindybun.burnergun.common.capabilities.burnergunmk1.BurnerGunMK1InfoProvider;
+import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -36,15 +35,15 @@ public class PacketFuelValue {
                     return;
 
                 ItemStack stack = ItemStack.EMPTY;
-                if (player.getMainHandItem().getItem() instanceof BurnerGun)
+                if (player.getMainHandItem().getItem() instanceof BurnerGunMK1)
                     stack = player.getMainHandItem();
-                else if (player.getOffhandItem().getItem() instanceof BurnerGun)
+                else if (player.getOffhandItem().getItem() instanceof BurnerGunMK1)
                     stack = player.getOffhandItem();
 
                 if( stack.isEmpty() )
                     return;
 
-                BurnerGunInfo info = stack.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(() -> new IllegalArgumentException(("LazyOptional must not be empty!")));
+                BurnerGunMK1Info info = stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoCapability, null).orElseThrow(() -> new IllegalArgumentException(("LazyOptional must not be empty!")));
                 info.setFuelValue(msg.data.getInt("FuelValue"));
                 info.setHeatValue(msg.data.getInt("HeatValue"));
                 info.setCooldown(msg.data.getInt("CoolDown"));

@@ -1,16 +1,11 @@
 package com.nindybun.burnergun.common.network.packets;
 
-import com.nindybun.burnergun.common.capabilities.BurnerGunInfo;
-import com.nindybun.burnergun.common.capabilities.BurnerGunInfoProvider;
-import com.nindybun.burnergun.common.capabilities.BurnerGunInfoStorage;
-import com.nindybun.burnergun.common.items.Burner_Gun.BurnerGun;
-import com.nindybun.burnergun.common.containers.BurnerGunContainer;
-import com.nindybun.burnergun.common.items.Burner_Gun.BurnerGunHandler;
+import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1;
+import com.nindybun.burnergun.common.containers.BurnerGunMK1Container;
+import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1Handler;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.SimpleNamedContainerProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -40,9 +35,9 @@ public class PacketOpenBurnerGunGui {
                     return;
 
                 ItemStack stack = ItemStack.EMPTY;
-                if (player.getMainHandItem().getItem() instanceof BurnerGun)
+                if (player.getMainHandItem().getItem() instanceof BurnerGunMK1)
                     stack = player.getMainHandItem();
-                else if (player.getOffhandItem().getItem() instanceof BurnerGun)
+                else if (player.getOffhandItem().getItem() instanceof BurnerGunMK1)
                     stack = player.getOffhandItem();
 
                 if( stack.isEmpty() )
@@ -50,7 +45,7 @@ public class PacketOpenBurnerGunGui {
 
                 IItemHandler handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
                 player.openMenu(new SimpleNamedContainerProvider(
-                        (windowId, playerInv, playerEntity) -> new BurnerGunContainer(windowId, playerInv, (BurnerGunHandler) handler),
+                        (windowId, playerInv, playerEntity) -> new BurnerGunMK1Container(windowId, playerInv, (BurnerGunMK1Handler) handler),
                         new StringTextComponent("")
                 ));
 

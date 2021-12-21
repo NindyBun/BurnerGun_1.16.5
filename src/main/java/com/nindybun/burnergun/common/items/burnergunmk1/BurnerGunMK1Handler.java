@@ -1,6 +1,6 @@
-package com.nindybun.burnergun.common.items.Burner_Gun;
+package com.nindybun.burnergun.common.items.burnergunmk1;
 
-import com.nindybun.burnergun.common.containers.BurnerGunContainer;
+import com.nindybun.burnergun.common.containers.BurnerGunMK1Container;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.items.upgrades.UpgradeCard;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade_Bag.UpgradeBag;
@@ -14,10 +14,10 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BurnerGunHandler extends ItemStackHandler {
-    public static final int MAX_SLOTS = BurnerGunContainer.MAX_EXPECTED_GUN_SLOT_COUNT;
+public class BurnerGunMK1Handler extends ItemStackHandler {
+    public static final int MAX_SLOTS = BurnerGunMK1Container.MAX_EXPECTED_GUN_SLOT_COUNT;
 
-    public BurnerGunHandler(int numberOfSlots){
+    public BurnerGunMK1Handler(int numberOfSlots){
         super(numberOfSlots);
     }
 

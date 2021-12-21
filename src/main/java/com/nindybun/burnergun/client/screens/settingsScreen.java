@@ -4,8 +4,8 @@ package com.nindybun.burnergun.client.screens;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.nindybun.burnergun.client.screens.buttons.ToggleButton;
 import com.nindybun.burnergun.common.BurnerGun;
-import com.nindybun.burnergun.common.capabilities.BurnerGunInfo;
-import com.nindybun.burnergun.common.capabilities.BurnerGunInfoProvider;
+import com.nindybun.burnergun.common.capabilities.burnergunmk1.BurnerGunMK1Info;
+import com.nindybun.burnergun.common.capabilities.burnergunmk1.BurnerGunMK1InfoProvider;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.network.PacketHandler;
 import com.nindybun.burnergun.common.network.packets.PacketChangeVolume;
@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class settingsScreen extends Screen implements Slider.ISlider {
-    private static  BurnerGunInfo info;
+    private static BurnerGunMK1Info info;
     private static final Logger LOGGER = LogManager.getLogger();
     private List<Upgrade> toggleableList = new ArrayList<>();
     private HashMap<Upgrade, ToggleButton> upgradeButtons = new HashMap<>();
@@ -43,7 +43,7 @@ public class settingsScreen extends Screen implements Slider.ISlider {
 
     protected settingsScreen(ItemStack gun) {
         super(new StringTextComponent("Title"));
-        this.info = gun.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
+        this.info = gun.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
         this.volume = info.getVolume();
     }
 

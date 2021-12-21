@@ -1,5 +1,7 @@
 package com.nindybun.burnergun.common.containers;
 
+import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1;
+import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1Handler;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -13,19 +15,19 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 
-public class BurnerGunContainer extends Container {
-    BurnerGunContainer(int windowId, PlayerInventory playerInv,
-                       PacketBuffer buf){
-        this(windowId, playerInv, new com.nindybun.burnergun.common.items.Burner_Gun.BurnerGunHandler(MAX_EXPECTED_GUN_SLOT_COUNT));
+public class BurnerGunMK1Container extends Container {
+    BurnerGunMK1Container(int windowId, PlayerInventory playerInv,
+                          PacketBuffer buf){
+        this(windowId, playerInv, new BurnerGunMK1Handler(MAX_EXPECTED_GUN_SLOT_COUNT));
     }
 
-    public BurnerGunContainer(int windowId, PlayerInventory playerInventory, com.nindybun.burnergun.common.items.Burner_Gun.BurnerGunHandler handler){
-        super(ModContainers.BURNERGUN_CONTAINER.get(), windowId);
+    public BurnerGunMK1Container(int windowId, PlayerInventory playerInventory, BurnerGunMK1Handler handler){
+        super(ModContainers.BURNERGUNMK1_CONTAINER.get(), windowId);
         this.handler = handler;
         this.setup(playerInventory);
     }
 
-    private final com.nindybun.burnergun.common.items.Burner_Gun.BurnerGunHandler handler;
+    private final BurnerGunMK1Handler handler;
 
     private static final int HOTBAR_SLOT_COUNT = 9;
     private static final int PLAYER_INVENTORY_ROW_COUNT = 3;
@@ -95,8 +97,8 @@ public class BurnerGunContainer extends Container {
     public boolean stillValid(PlayerEntity playerIn) {
         ItemStack main = playerIn.getMainHandItem();
         ItemStack off = playerIn.getOffhandItem();
-        return (!main.isEmpty() && main.getItem() instanceof com.nindybun.burnergun.common.items.Burner_Gun.BurnerGun) ||
-                (!off.isEmpty() && off.getItem() instanceof com.nindybun.burnergun.common.items.Burner_Gun.BurnerGun);
+        return (!main.isEmpty() && main.getItem() instanceof BurnerGunMK1) ||
+                (!off.isEmpty() && off.getItem() instanceof BurnerGunMK1);
     }
 
     // This is where you specify what happens when a player shift clicks a slot in the gui

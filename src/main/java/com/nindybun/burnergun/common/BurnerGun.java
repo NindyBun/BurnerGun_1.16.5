@@ -7,6 +7,9 @@ import com.nindybun.burnergun.client.Keybinds;
 import com.nindybun.burnergun.client.particles.ModParticles;
 import com.nindybun.burnergun.common.blocks.ModBlocks;
 import com.nindybun.burnergun.common.capabilities.*;
+import com.nindybun.burnergun.common.capabilities.burnergunmk1.BurnerGunMK1Info;
+import com.nindybun.burnergun.common.capabilities.burnergunmk1.BurnerGunMK1InfoProvider;
+import com.nindybun.burnergun.common.capabilities.burnergunmk1.BurnerGunMK1InfoStorage;
 import com.nindybun.burnergun.common.containers.ModContainers;
 import com.nindybun.burnergun.common.items.ModItems;
 import com.nindybun.burnergun.common.network.PacketHandler;
@@ -49,7 +52,7 @@ public class BurnerGun {
     private void setup(final FMLCommonSetupEvent event)
     {
         PacketHandler.register();
-        CapabilityManager.INSTANCE.register(BurnerGunInfo.class, new BurnerGunInfoStorage(), BurnerGunInfoProvider::new);
+        CapabilityManager.INSTANCE.register(BurnerGunMK1Info.class, new BurnerGunMK1InfoStorage(), BurnerGunMK1InfoProvider::new);
     }
 
     private void setupClient(final FMLClientSetupEvent event)

@@ -1,6 +1,6 @@
-package com.nindybun.burnergun.common.items.Burner_Gun;
+package com.nindybun.burnergun.common.items.burnergunmk1;
 
-import com.nindybun.burnergun.common.containers.BurnerGunContainer;
+import com.nindybun.burnergun.common.containers.BurnerGunMK1Container;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
@@ -12,7 +12,7 @@ import net.minecraftforge.items.IItemHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class BurnerGunProvider implements ICapabilitySerializable<INBT> {
+public class BurnerGunMK1Provider implements ICapabilitySerializable<INBT> {
     private final Direction NO_SPECIFIC_SIDE = null;
 
     @Nonnull
@@ -42,14 +42,14 @@ public class BurnerGunProvider implements ICapabilitySerializable<INBT> {
      *   return that without a dedicated method to perform a cache check.
      * @return the ItemStackHandlerFlowerBag which stores the flowers.
      */
-    private com.nindybun.burnergun.common.items.Burner_Gun.BurnerGunHandler getCachedInventory() {
+    private BurnerGunMK1Handler getCachedInventory() {
         if (handler == null) {
-            handler = new com.nindybun.burnergun.common.items.Burner_Gun.BurnerGunHandler(BurnerGunContainer.MAX_EXPECTED_GUN_SLOT_COUNT);
+            handler = new BurnerGunMK1Handler(BurnerGunMK1Container.MAX_EXPECTED_GUN_SLOT_COUNT);
         }
         return handler;
     }
 
-    private com.nindybun.burnergun.common.items.Burner_Gun.BurnerGunHandler handler;  // initially null until our first call to getCachedInventory
+    private BurnerGunMK1Handler handler;  // initially null until our first call to getCachedInventory
 
 
     //  a supplier: when called, returns the result of getCachedInventory()

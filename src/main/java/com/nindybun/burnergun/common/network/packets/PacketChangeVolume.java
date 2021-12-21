@@ -1,12 +1,10 @@
 package com.nindybun.burnergun.common.network.packets;
 
-import com.nindybun.burnergun.common.capabilities.BurnerGunInfo;
-import com.nindybun.burnergun.common.capabilities.BurnerGunInfoProvider;
-import com.nindybun.burnergun.common.items.Burner_Gun.BurnerGun;
-import com.nindybun.burnergun.common.items.GunProperties;
+import com.nindybun.burnergun.common.capabilities.burnergunmk1.BurnerGunMK1Info;
+import com.nindybun.burnergun.common.capabilities.burnergunmk1.BurnerGunMK1InfoProvider;
+import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 import org.apache.logging.log4j.LogManager;
@@ -36,10 +34,10 @@ public class PacketChangeVolume {
                 ServerPlayerEntity player = ctx.get().getSender();
                 if (player == null)
                     return;
-                ItemStack gun = BurnerGun.getGun(player);
+                ItemStack gun = BurnerGunMK1.getGun(player);
                 if (gun.equals(ItemStack.EMPTY))
                     return;
-                BurnerGunInfo info = gun.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
+                BurnerGunMK1Info info = gun.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
                 info.setVolume(msg.volume);
             });
 

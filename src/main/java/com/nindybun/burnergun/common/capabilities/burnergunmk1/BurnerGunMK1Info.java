@@ -1,6 +1,6 @@
-package com.nindybun.burnergun.common.capabilities;
+package com.nindybun.burnergun.common.capabilities.burnergunmk1;
 
-public interface BurnerGunInfo {
+public interface BurnerGunMK1Info {
 
     void setFuelValue(int value);
 

@@ -1,21 +1,20 @@
-package com.nindybun.burnergun.common.items.Burner_Gun;
+package com.nindybun.burnergun.common.items.burnergunmk1;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.nindybun.burnergun.common.BurnerGun;
-import com.nindybun.burnergun.common.containers.BurnerGunContainer;
+import com.nindybun.burnergun.common.containers.BurnerGunMK1Container;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
 
-public class BurnerGunScreen extends ContainerScreen<BurnerGunContainer> {
-    public BurnerGunScreen(BurnerGunContainer container, PlayerInventory playerInv, ITextComponent title) {
+public class BurnerGunMK1Screen extends ContainerScreen<BurnerGunMK1Container> {
+    public BurnerGunMK1Screen(BurnerGunMK1Container container, PlayerInventory playerInv, ITextComponent title) {
         super(container, playerInv, title);
     }
 

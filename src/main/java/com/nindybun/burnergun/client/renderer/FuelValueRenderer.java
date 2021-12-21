@@ -1,30 +1,20 @@
 package com.nindybun.burnergun.client.renderer;
 
 import com.nindybun.burnergun.common.BurnerGun;
-import com.nindybun.burnergun.common.capabilities.BurnerGunInfo;
-import com.nindybun.burnergun.common.capabilities.BurnerGunInfoProvider;
-import com.nindybun.burnergun.common.capabilities.BurnerGunInfoStorage;
-import com.nindybun.burnergun.common.items.Burner_Gun.BurnerGunHandler;
+import com.nindybun.burnergun.common.capabilities.burnergunmk1.BurnerGunMK1Info;
+import com.nindybun.burnergun.common.capabilities.burnergunmk1.BurnerGunMK1InfoProvider;
+import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.items.upgrades.UpgradeCard;
-import com.nindybun.burnergun.common.network.PacketHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.INBT;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -40,8 +30,8 @@ import java.util.List;
 @Mod.EventBusSubscriber(modid = BurnerGun.MOD_ID, value = Dist.CLIENT)
 public class FuelValueRenderer {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final int base_buffer = com.nindybun.burnergun.common.items.Burner_Gun.BurnerGun.base_use_buffer;
-    private static final int base_heat_buffer = com.nindybun.burnergun.common.items.Burner_Gun.BurnerGun.base_heat_buffer;
+    private static final int base_buffer = BurnerGunMK1.base_use_buffer;
+    private static final int base_heat_buffer = BurnerGunMK1.base_heat_buffer;
     private static final int base_use = 100;
 
     @SubscribeEvent
@@ -50,11 +40,11 @@ public class FuelValueRenderer {
             ItemStack stack = ItemStack.EMPTY;
             Minecraft mc = Minecraft.getInstance();
             ClientPlayerEntity player = mc.player;
-            if (player.getMainHandItem().getItem() instanceof com.nindybun.burnergun.common.items.Burner_Gun.BurnerGun)
+            if (player.getMainHandItem().getItem() instanceof BurnerGunMK1)
                 stack = player.getMainHandItem();
-            else if (player.getOffhandItem().getItem() instanceof com.nindybun.burnergun.common.items.Burner_Gun.BurnerGun)
+            else if (player.getOffhandItem().getItem() instanceof BurnerGunMK1)
                 stack = player.getOffhandItem();
-            if (stack.getItem() instanceof com.nindybun.burnergun.common.items.Burner_Gun.BurnerGun)
+            if (stack.getItem() instanceof BurnerGunMK1)
                 renderFuel(event, stack);
 
         }
@@ -104,7 +94,7 @@ public class FuelValueRenderer {
     }
 
     public static void renderFuel(RenderGameOverlayEvent.Post event, ItemStack stack){
-        BurnerGunInfo info = stack.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
+        BurnerGunMK1Info info = stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
         FontRenderer fontRenderer = Minecraft.getInstance().font;
         IItemHandler handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
         int level = info.getFuelValue();

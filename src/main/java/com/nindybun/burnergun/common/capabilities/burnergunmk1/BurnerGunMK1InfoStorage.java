@@ -1,4 +1,4 @@
-package com.nindybun.burnergun.common.capabilities;
+package com.nindybun.burnergun.common.capabilities.burnergunmk1;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
@@ -7,10 +7,10 @@ import net.minecraftforge.common.capabilities.Capability;
 
 import javax.annotation.Nullable;
 
-public class BurnerGunInfoStorage implements Capability.IStorage<BurnerGunInfo> {
+public class BurnerGunMK1InfoStorage implements Capability.IStorage<BurnerGunMK1Info> {
     @Nullable
     @Override
-    public INBT writeNBT(Capability<BurnerGunInfo> capability, BurnerGunInfo instance, Direction side) {
+    public INBT writeNBT(Capability<BurnerGunMK1Info> capability, BurnerGunMK1Info instance, Direction side) {
         CompoundNBT tag = new CompoundNBT();
             tag.putInt("FuelValue", instance.getFuelValue());
             tag.putInt("HeatValue", instance.getHeatValue());
@@ -22,7 +22,7 @@ public class BurnerGunInfoStorage implements Capability.IStorage<BurnerGunInfo> 
     }
 
     @Override
-    public void readNBT(Capability<BurnerGunInfo> capability, BurnerGunInfo instance, Direction side, INBT nbt) {
+    public void readNBT(Capability<BurnerGunMK1Info> capability, BurnerGunMK1Info instance, Direction side, INBT nbt) {
         CompoundNBT tag = (CompoundNBT) nbt;
         instance.setFuelValue(tag.getInt("FuelValue"));
         instance.setHeatValue(tag.getInt("HeatValue"));

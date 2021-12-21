@@ -1,9 +1,6 @@
 package com.nindybun.burnergun.common.network.packets;
 
-import com.nindybun.burnergun.common.containers.BurnerGunContainer;
 import com.nindybun.burnergun.common.containers.TrashContainer;
-import com.nindybun.burnergun.common.items.Burner_Gun.BurnerGun;
-import com.nindybun.burnergun.common.items.Burner_Gun.BurnerGunHandler;
 import com.nindybun.burnergun.common.items.upgrades.Trash.Trash;
 import com.nindybun.burnergun.common.items.upgrades.Trash.TrashHandler;
 import net.minecraft.entity.player.ServerPlayerEntity;

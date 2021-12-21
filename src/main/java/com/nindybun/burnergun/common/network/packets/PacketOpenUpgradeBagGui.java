@@ -1,9 +1,6 @@
 package com.nindybun.burnergun.common.network.packets;
 
-import com.nindybun.burnergun.common.containers.BurnerGunContainer;
 import com.nindybun.burnergun.common.containers.UpgradeBagContainer;
-import com.nindybun.burnergun.common.items.Burner_Gun.BurnerGun;
-import com.nindybun.burnergun.common.items.Burner_Gun.BurnerGunHandler;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade_Bag.UpgradeBag;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade_Bag.UpgradeBagHandler;
 import net.minecraft.entity.player.ServerPlayerEntity;
