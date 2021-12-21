@@ -6,7 +6,6 @@ import com.nindybun.burnergun.common.items.upgrades.UpgradeCard;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade_Bag.UpgradeBag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BurnerGunHandler extends ItemStackHandler {
-    public static final int MAX_SLOTS = BurnerGunContainer.MAX_EXPECTED_TEST_SLOT_COUNT;
+    public static final int MAX_SLOTS = BurnerGunContainer.MAX_EXPECTED_GUN_SLOT_COUNT;
 
     public BurnerGunHandler(int numberOfSlots){
         super(numberOfSlots);
@@ -100,6 +99,7 @@ public class BurnerGunHandler extends ItemStackHandler {
     @Override
     protected void onContentsChanged(int slot) {
         super.onContentsChanged(slot);
+        this.validateSlotIndex(slot);
         isDirty = true;
     }
 

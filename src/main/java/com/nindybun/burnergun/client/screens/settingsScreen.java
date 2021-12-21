@@ -2,10 +2,10 @@ package com.nindybun.burnergun.client.screens;
 
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.nindybun.burnergun.client.screens.buttons.ToggleButton;
 import com.nindybun.burnergun.common.BurnerGun;
 import com.nindybun.burnergun.common.capabilities.BurnerGunInfo;
 import com.nindybun.burnergun.common.capabilities.BurnerGunInfoProvider;
-import com.nindybun.burnergun.common.items.GunProperties;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.network.PacketHandler;
 import com.nindybun.burnergun.common.network.packets.PacketChangeVolume;
@@ -21,30 +21,30 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class settingsScreen extends Screen implements Slider.ISlider {
-    private ItemStack gun;
-    private int raycastRange;
-    private float volume;
-    private boolean filter = true;
-    private Slider raycastSlider;
-    private Slider volumeSlider;
-    private List<Upgrade> toggleableList = new ArrayList<>();
+    private static  BurnerGunInfo info;
     private static final Logger LOGGER = LogManager.getLogger();
-    private static  BurnerGunInfo prop;
+    private List<Upgrade> toggleableList = new ArrayList<>();
+    private HashMap<Upgrade, ToggleButton> upgradeButtons = new HashMap<>();
+    private CompoundNBT compoundInfo = new CompoundNBT();
+    private int raycastRange,
+                vertical,
+                horizontal;
+    private float volume;
+    private boolean trashFilterWhiteList = true;
+    private boolean smeltFilterWhiteList = true;
+    private Slider  raycastSlider,
+                    volumeSlider,
+                    verticalSlider,
+                    horizontalSlider;
 
     protected settingsScreen(ItemStack gun) {
         super(new StringTextComponent("Title"));
-        this.gun = gun;
-        //this.raycastRange = GunProperties.getRaycastRange(gun);
-        //this.volume = gun.getOrCreateTag().getFloat("volume");
-        //this.volume = GunProperties.getVolume(gun);
-        //LOGGER.info(gun.getOrCreateTag());
-        this.prop = gun.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
-        LOGGER.info(this.prop.getVolume());
-        this.volume = prop.getVolume();
-        //this.volume = gunProperties.getVolume(gun.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!")));
+        this.info = gun.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
+        this.volume = info.getVolume();
     }
 
     @Override

@@ -43,11 +43,11 @@ public class BurnerGunScreen extends ContainerScreen<BurnerGunContainer> {
 
     @Override
     protected void renderLabels(MatrixStack matrixStack, int x, int y) {
-        String name = "Burner Gun";
-        this.font.draw(matrixStack, name, 62, -8, Color.WHITE.getRGB());
+        String name = "Burner Gun MK1";
+        this.font.draw(matrixStack, name, 3, -8, Color.WHITE.getRGB());
     }
 
     private static final Logger LOGGER = LogManager.getLogger();
     // This is the resource location for the background image
-    private static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation(BurnerGun.MOD_ID, "textures/gui/burnergun_gui.png");
+    private static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation(BurnerGun.MOD_ID, "textures/gui/burnergunmk1_gui.png");
 }

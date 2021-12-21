@@ -27,6 +27,7 @@ public enum Upgrade {
     FUEL_EFFICIENCY_3("fuel_efficiency_3", 3, 0, 1, 0.50, true),
     FUEL_EFFICIENCY_4("fuel_efficiency_4", 4, 0, 1, 0.75, true),
     FUEL_EFFICIENCY_5("fuel_efficiency_5", 5, 0, 1, 0.90, true),
+
     HEAT_EFFICIENCY_1("heat_efficiency_1", 1, 0, 1, 0.15, true),
     HEAT_EFFICIENCY_2("heat_efficiency_2", 2, 0, 1, 0.35, true),
     HEAT_EFFICIENCY_3("heat_efficiency_3", 3, 0, 1, 0.50, true),
@@ -39,12 +40,13 @@ public enum Upgrade {
     MAGNET("magnet", -1, 75, 1, 0, true),
     SILK_TOUCH("silk_touch", -1, 150, 1, 0, true),
     LIGHT("light", -1, 0, 1, 0, true),
-    AUTO_FUEL("auto_fuel", -1, 0, 1, 0, true),
     AUTO_SMELT("auto_smelt", -1, (int)Math.floor(Math.random()*75), 1, 0, true),
     TRASH("trash", -1, 75, 1, 0, true),
     UPGRADE_BAG("upgrade_bag", -1, 0, 1, 0, false),
-    UNIFUEL("unifuel", -1, 0, 1, 0, false),
     AMBIENCE("ambience", -1, 0, 1, 0, false),
+
+    AUTO_FUEL("auto_fuel", -1, 0, 1, 0, true),
+    UNIFUEL("unifuel", -1, 0, 1, 0, false),
     REACTOR("reactor", -1, 0, 1, 0, false),
     ;
 

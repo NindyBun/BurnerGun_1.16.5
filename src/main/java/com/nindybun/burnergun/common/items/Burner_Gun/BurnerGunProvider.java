@@ -1,6 +1,5 @@
 package com.nindybun.burnergun.common.items.Burner_Gun;
 
-import com.nindybun.burnergun.common.capabilities.BurnerGunInfo;
 import com.nindybun.burnergun.common.containers.BurnerGunContainer;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
@@ -45,7 +44,7 @@ public class BurnerGunProvider implements ICapabilitySerializable<INBT> {
      */
     private com.nindybun.burnergun.common.items.Burner_Gun.BurnerGunHandler getCachedInventory() {
         if (handler == null) {
-            handler = new com.nindybun.burnergun.common.items.Burner_Gun.BurnerGunHandler(BurnerGunContainer.MAX_EXPECTED_TEST_SLOT_COUNT);
+            handler = new com.nindybun.burnergun.common.items.Burner_Gun.BurnerGunHandler(BurnerGunContainer.MAX_EXPECTED_GUN_SLOT_COUNT);
         }
         return handler;
     }

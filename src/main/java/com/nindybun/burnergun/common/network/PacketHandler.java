@@ -29,7 +29,6 @@ public class PacketHandler {
         INSTANCE.registerMessage(id++, PacketOpenTrashGui.class, PacketOpenTrashGui::encode, PacketOpenTrashGui::decode, PacketOpenTrashGui.Handler::handle);
         INSTANCE.registerMessage(id++, PacketOpenUpgradeBagGui.class, PacketOpenUpgradeBagGui::encode, PacketOpenUpgradeBagGui::decode, PacketOpenUpgradeBagGui.Handler::handle);
         INSTANCE.registerMessage(id++, PacketFuelValue.class, PacketFuelValue::encode, PacketFuelValue::decode, PacketFuelValue.Handler::handle);
-        INSTANCE.registerMessage(id++, PacketGlitteringDiamond.class, PacketGlitteringDiamond::encode, PacketGlitteringDiamond::decode, PacketGlitteringDiamond.Handler::handle);
         INSTANCE.registerMessage(id++, PacketChangeVolume.class, PacketChangeVolume::encode, PacketChangeVolume::decode, PacketChangeVolume.Handler::handle);
     }
 
