@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class mk2SettingsScreen extends Screen implements Slider.ISlider {
+    private ItemStack gun;
     private static BurnerGunMK2Info info;
     private static final Logger LOGGER = LogManager.getLogger();
     private List<Upgrade> toggleableList = new ArrayList<>();
@@ -45,6 +46,7 @@ public class mk2SettingsScreen extends Screen implements Slider.ISlider {
 
     protected mk2SettingsScreen(ItemStack gun) {
         super(new StringTextComponent("Title"));
+        this.gun = gun;
         this.info = gun.getCapability(BurnerGunMK2InfoProvider.burnerGunInfoMK2Capability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
         this.volume = info.getVolume();
         this.vertical = info.getVertical();
