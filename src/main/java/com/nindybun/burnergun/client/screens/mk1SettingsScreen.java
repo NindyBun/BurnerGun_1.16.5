@@ -76,7 +76,7 @@ public class mk1SettingsScreen extends Screen implements Slider.ISlider {
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float ticks_) {
         this.renderBackground(matrixStack);
-        drawString(matrixStack, Minecraft.getInstance().font, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.mk1Settings"), width/2, height/2, Color.WHITE.getRGB());
+        drawString(matrixStack, Minecraft.getInstance().font, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.mk1Settings"), (width/2)-75, (height/2)-50, Color.WHITE.getRGB());
         super.render(matrixStack, mouseX, mouseY, ticks_);
     }
 

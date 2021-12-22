@@ -91,19 +91,12 @@ public class BurnerGunMK1Handler extends ItemStackHandler {
         return true;
     }
 
-    public boolean isDirty() {
-        boolean currentState = isDirty;
-        isDirty = false;
-        return currentState;
-    }
     @Override
     protected void onContentsChanged(int slot) {
         super.onContentsChanged(slot);
         this.validateSlotIndex(slot);
-        isDirty = true;
     }
 
-    private boolean isDirty = true;
     private final Logger LOGGER = LogManager.getLogger();
 
 

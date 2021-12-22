@@ -6,6 +6,8 @@ import com.nindybun.burnergun.client.screens.buttons.ToggleButton;
 import com.nindybun.burnergun.common.BurnerGun;
 import com.nindybun.burnergun.common.capabilities.burnergunmk1.BurnerGunMK1Info;
 import com.nindybun.burnergun.common.capabilities.burnergunmk1.BurnerGunMK1InfoProvider;
+import com.nindybun.burnergun.common.capabilities.burnergunmk2.BurnerGunMK2Info;
+import com.nindybun.burnergun.common.capabilities.burnergunmk2.BurnerGunMK2InfoProvider;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.network.PacketHandler;
 import com.nindybun.burnergun.common.network.packets.PacketChangeVolume;
@@ -25,7 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class mk2SettingsScreen extends Screen implements Slider.ISlider {
-    private static BurnerGunMK1Info info;
+    private static BurnerGunMK2Info info;
     private static final Logger LOGGER = LogManager.getLogger();
     private List<Upgrade> toggleableList = new ArrayList<>();
     private HashMap<Upgrade, ToggleButton> upgradeButtons = new HashMap<>();
@@ -34,8 +36,8 @@ public class mk2SettingsScreen extends Screen implements Slider.ISlider {
                 vertical,
                 horizontal;
     private float volume;
-    private boolean trashFilterWhiteList = true;
-    private boolean smeltFilterWhiteList = true;
+    private boolean trashFilterWhitelist = true;
+    private boolean smeltFilterWhitelist = true;
     private Slider  raycastSlider,
                     volumeSlider,
                     verticalSlider,
@@ -43,8 +45,11 @@ public class mk2SettingsScreen extends Screen implements Slider.ISlider {
 
     protected mk2SettingsScreen(ItemStack gun) {
         super(new StringTextComponent("Title"));
-        this.info = gun.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoMK1Capability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
+        this.info = gun.getCapability(BurnerGunMK2InfoProvider.burnerGunInfoMK2Capability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
         this.volume = info.getVolume();
+        this.vertical = info.getVertical();
+        this.horizontal = info.getHorizontal();
+        this.raycastRange = info.getRaycastRange();
     }
 
     @Override

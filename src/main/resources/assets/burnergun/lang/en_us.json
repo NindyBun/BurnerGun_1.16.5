@@ -67,6 +67,7 @@
 
   "tooltip.burnergun.base_tier": "Used for upgrades.",
   "tooltip.burnergun.screen.volume": "Volume: ",
+  "tooltip.burnergun.screen.mk1Settings": "Burner Gun MK1 Settings",
 
   "item.burnergun.burnergun_mk1":  "Burner Gun MK1",
   "item.burnergun.burnergun_mk2": "Burner Gun MK2",

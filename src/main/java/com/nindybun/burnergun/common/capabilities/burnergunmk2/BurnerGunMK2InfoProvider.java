@@ -33,10 +33,15 @@ public class BurnerGunMK2InfoProvider implements BurnerGunMK2Info, ICapabilitySe
     }
 
     public float volume;
+    public int vertical, maxVertical;
+    public int horizontal, maxHorizontal;
+    public int raycast, maxRaycast;
+    public boolean trash;
+    public boolean smelt;
 
     @Override
     public void setVolume(float value) {
-        volume = value;
+        volume = Math.max(0.0f, Math.min(1.0f, value));
     }
 
     @Override
@@ -46,12 +51,82 @@ public class BurnerGunMK2InfoProvider implements BurnerGunMK2Info, ICapabilitySe
 
     @Override
     public void setVertical(int value) {
-
+        vertical = value;
     }
 
     @Override
     public int getVertical() {
-        return 0;
+        return vertical;
+    }
+
+    @Override
+    public void setMaxVertical(int value) {
+        maxVertical = value;
+    }
+
+    @Override
+    public int getMaxVertical() {
+        return maxVertical;
+    }
+
+    @Override
+    public void setHorizontal(int value) {
+        horizontal = value;
+    }
+
+    @Override
+    public int getHorizontal() {
+        return horizontal;
+    }
+
+    @Override
+    public void setMaxHorizontal(int value) {
+        maxVertical = value;
+    }
+
+    @Override
+    public int getMaxHorizontal() {
+        return maxHorizontal;
+    }
+
+    @Override
+    public void setTrashIsWhitelist(boolean value) {
+        trash = value;
+    }
+
+    @Override
+    public boolean getTrashIsWhitelist() {
+        return trash;
+    }
+
+    @Override
+    public void setSmeltIsWhitelist(boolean value) {
+        smelt = value;
+    }
+
+    @Override
+    public boolean getSmeltIsWhitelist() {
+        return smelt;
+    }
+
+    @Override
+    public void setRaycastRange(int value) {
+        raycast = value;
+    }
+
+    @Override
+    public int getRaycastRange() {
+        return raycast != 0 ? raycast : 5;
+    }
+
+    @Override
+    public void setMaxRaycastRange(int value) {
+        maxRaycast = value;
+    }
+
+    @Override
+    public int getMaxRaycastRange() {
+        return maxRaycast != 0 ? maxRaycast : 5;
     }
 
 
