@@ -1,6 +1,5 @@
 package com.nindybun.burnergun.common.containers;
 
-import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1;
 import com.nindybun.burnergun.common.items.burnergunmk2.BurnerGunMK2;
 import com.nindybun.burnergun.common.items.burnergunmk2.BurnerGunMK2Handler;
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,7 +15,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 
-public class BurnerGunMK2Container extends Container {
+public class BurnerGunMK2Container extends Container{
     BurnerGunMK2Container(int windowId, PlayerInventory playerInv,
                           PacketBuffer buf){
         this(windowId, playerInv, new BurnerGunMK2Handler(MAX_EXPECTED_GUN_SLOT_COUNT));

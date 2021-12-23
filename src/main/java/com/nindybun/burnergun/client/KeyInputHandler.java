@@ -25,11 +25,23 @@ public class KeyInputHandler {
                 || player.getMainHandItem().getItem() instanceof BurnerGunMK2 || player.getOffhandItem().getItem() instanceof BurnerGunMK2)){
             PacketHandler.sendToServer(new PacketOpenBurnerGunGui());
         }
-        if (Keybinds.burnergun_screen_key.isDown() && Minecraft.getInstance().screen == null && (player.getMainHandItem().getItem() instanceof BurnerGunMK1 || player.getOffhandItem().getItem() instanceof BurnerGunMK1)){
+        if (Keybinds.burnergun_screen_key.isDown() && Minecraft.getInstance().screen == null
+                && (player.getMainHandItem().getItem() instanceof BurnerGunMK1 || player.getOffhandItem().getItem() instanceof BurnerGunMK1
+                || player.getMainHandItem().getItem() instanceof BurnerGunMK2 || player.getOffhandItem().getItem() instanceof BurnerGunMK2)){
             ItemStack stack = BurnerGunMK1.getGun(player);
-            if (stack == ItemStack.EMPTY)
+            if (stack == ItemStack.EMPTY){
+                stack = BurnerGunMK2.getGun(player);
+            }
+            else{
+                ModScreens.openGunMk1SettingsScreen(stack);
                 return;
-            ModScreens.openGunMk1SettingsScreen(stack);
+            }
+            if (stack == ItemStack.EMPTY){
+                return;
+            }else{
+                ModScreens.openGunMk2SettingsScreen(stack);
+                return;
+            }
         }
     }
 }

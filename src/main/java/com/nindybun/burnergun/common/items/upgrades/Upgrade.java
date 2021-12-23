@@ -60,6 +60,7 @@ public enum Upgrade {
     private final UpgradeCard card;
     private final ItemStack upgradeStack;
     private final boolean isToggleable;
+    private boolean active = true;
 
     Upgrade(String name, int tier, int cost, int stackSize, double extraValue, boolean isToggleable){
         this.name = name;
@@ -99,7 +100,12 @@ public enum Upgrade {
     }
     public double getExtraValue() { return this.extraValue; }
     public boolean isToggleable(){ return this.isToggleable; }
+    public void setActive(boolean value) { this.active = value; }
+    public boolean isActive() { return this.active; }
     public ItemStack getUpgradeStack() {
         return this.upgradeStack;
+    }
+    public boolean lazyIs(Upgrade upgrade) {
+        return this.getBaseName().equals(upgrade.getBaseName());
     }
 }

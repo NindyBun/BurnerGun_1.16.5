@@ -32,16 +32,16 @@ public class BurnerGunMK2InfoProvider implements BurnerGunMK2Info, ICapabilitySe
 
     }
 
-    public float volume;
+    public float volume = 1.0f;
     public int vertical, maxVertical;
     public int horizontal, maxHorizontal;
-    public int raycast, maxRaycast;
-    public boolean trash;
-    public boolean smelt;
+    public int raycast = 5, maxRaycast = 5;
+    public boolean trash = true;
+    public boolean smelt = true;
 
     @Override
     public void setVolume(float value) {
-        volume = Math.max(0.0f, Math.min(1.0f, value));
+        volume = value;
     }
 
     @Override
@@ -116,7 +116,7 @@ public class BurnerGunMK2InfoProvider implements BurnerGunMK2Info, ICapabilitySe
 
     @Override
     public int getRaycastRange() {
-        return raycast != 0 ? raycast : 5;
+        return raycast;
     }
 
     @Override
@@ -126,7 +126,7 @@ public class BurnerGunMK2InfoProvider implements BurnerGunMK2Info, ICapabilitySe
 
     @Override
     public int getMaxRaycastRange() {
-        return maxRaycast != 0 ? maxRaycast : 5;
+        return maxRaycast;
     }
 
 

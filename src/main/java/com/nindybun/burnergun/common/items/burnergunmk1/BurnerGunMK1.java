@@ -624,8 +624,8 @@ public class BurnerGunMK1 extends ToolItem{
                         && !handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
                     return ActionResult.consume(stack);
                 }
-
-                player.playNotifySound(SoundEvents.FIRECHARGE_USE, SoundCategory.MASTER, info.getVolume()*0.5f, 1.0f);
+                if (world.isClientSide)
+                    player.playNotifySound(SoundEvents.FIRECHARGE_USE, SoundCategory.MASTER, info.getVolume()*0.5f, 1.0f);
                 if (player.isCrouching() || player.isShiftKeyDown()){
                     breakBlock(stack, state, block, pos, player, world, ray);
                 }else{

@@ -8,8 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public final class WorldUtil {
-    public WorldUtil() {
-    }
+
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static BlockRayTraceResult getLookingAt(World world, PlayerEntity player, RayTraceContext.FluidMode rayTraceFluid, double range) {

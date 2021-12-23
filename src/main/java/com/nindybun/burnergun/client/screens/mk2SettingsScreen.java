@@ -10,21 +10,31 @@ import com.nindybun.burnergun.common.capabilities.burnergunmk2.BurnerGunMK2Info;
 import com.nindybun.burnergun.common.capabilities.burnergunmk2.BurnerGunMK2InfoProvider;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.network.PacketHandler;
-import com.nindybun.burnergun.common.network.packets.PacketChangeVolume;
+import com.nindybun.burnergun.common.network.packets.*;
+import com.nindybun.burnergun.util.UpgradeUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.client.gui.widget.Slider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.system.CallbackI;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
 
 public class mk2SettingsScreen extends Screen implements Slider.ISlider {
     private ItemStack gun;
@@ -32,13 +42,15 @@ public class mk2SettingsScreen extends Screen implements Slider.ISlider {
     private static final Logger LOGGER = LogManager.getLogger();
     private List<Upgrade> toggleableList = new ArrayList<>();
     private HashMap<Upgrade, ToggleButton> upgradeButtons = new HashMap<>();
-    private CompoundNBT compoundInfo = new CompoundNBT();
     private int raycastRange,
+                maxRaycastRange,
                 vertical,
-                horizontal;
+                maxVertical,
+                horizontal,
+                maxHorizontal;
     private float volume;
-    private boolean trashFilterWhitelist = true;
-    private boolean smeltFilterWhitelist = true;
+    private boolean trashFilterWhitelist, containsTrash;
+    private boolean smeltFilterWhitelist, containsSmelt;
     private Slider  raycastSlider,
                     volumeSlider,
                     verticalSlider,
@@ -48,10 +60,39 @@ public class mk2SettingsScreen extends Screen implements Slider.ISlider {
         super(new StringTextComponent("Title"));
         this.gun = gun;
         this.info = gun.getCapability(BurnerGunMK2InfoProvider.burnerGunInfoMK2Capability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
-        this.volume = info.getVolume();
+        this.volume = info.getVolume()*100;
         this.vertical = info.getVertical();
+        this.maxVertical = info.getMaxVertical();
         this.horizontal = info.getHorizontal();
+        this.maxHorizontal = info.getMaxHorizontal();
         this.raycastRange = info.getRaycastRange();
+        this.maxRaycastRange = info.getMaxRaycastRange();
+        this.trashFilterWhitelist = info.getTrashIsWhitelist();
+        this.smeltFilterWhitelist = info.getSmeltIsWhitelist();
+
+        toggleableList.clear();
+        toggleableList = UpgradeUtil.getToggleableUpgrades(gun);
+        containsTrash = UpgradeUtil.containsUpgradeFromList(toggleableList, Upgrade.TRASH);
+        containsSmelt = UpgradeUtil.containsUpgradeFromList(toggleableList, Upgrade.AUTO_SMELT);
+
+    }
+
+    private void updateButtons(Upgrade upgrade) {
+        for (Map.Entry<Upgrade, ToggleButton> btn : this.upgradeButtons.entrySet()) {
+            Upgrade btnUpgrade = btn.getKey();
+            if( (btnUpgrade.lazyIs(Upgrade.FORTUNE_1) && btn.getValue().isEnabled() && upgrade.lazyIs(Upgrade.SILK_TOUCH) )
+                    || ((btnUpgrade.lazyIs(Upgrade.SILK_TOUCH)) && btn.getValue().isEnabled() && upgrade.lazyIs(Upgrade.FORTUNE_1)) ) {
+                this.upgradeButtons.get(btn.getKey()).setEnabled(false);
+            }
+        }
+    }
+
+    private boolean toggleUpgrade(Upgrade upgrade, boolean update) {
+        if (update){
+            this.updateButtons(upgrade);
+            PacketHandler.sendToServer(new PacketUpdateUpgrade(upgrade.getName()));
+        }
+        return upgrade.isActive();
     }
 
     @Override
@@ -60,11 +101,63 @@ public class mk2SettingsScreen extends Screen implements Slider.ISlider {
         int midX = width/2;
         int midY = height/2;
 
-        settings.add(volumeSlider = new Slider(midX-135, 20, 125, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.volume"), new StringTextComponent("%"), 0, 100, Math.min(100, this.volume*100), false, true, slider -> {}, this));
+        //Right Side
+        int index = 0, x = midX+15, y = midY-((
+                                             (((toggleableList.size() - (containsSmelt?1:0) - (containsTrash?1:0))/4)*30)
+                                            +(((toggleableList.size() - (containsSmelt?1:0) - (containsTrash?1:0) - 1)/4)*5)
+                                                )/2);
 
+        if (containsTrash){
+            ToggleButton btn = new ToggleButton(x, y, new StringTextComponent(Upgrade.TRASH.getName()), new ResourceLocation(BurnerGun.MOD_ID, "textures/items/" + Upgrade.TRASH.getName() + "_upgrade.png"), send -> this.toggleUpgrade(UpgradeUtil.getUpgradeByUpgrade(gun, Upgrade.TRASH), send));
+            addButton(btn);
+            upgradeButtons.put(UpgradeUtil.getUpgradeByUpgrade(gun, Upgrade.TRASH), btn);
+            addButton(new Button(x+35, y+(containsSmelt?65:35), 95, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.edit_filter"), (button) -> {
+                PacketHandler.sendToServer(new PacketOpenTrashGui());
+            }));
+            addButton(new WhitelistButton(x+165, y+(containsSmelt?65:35), 20, 20, trashFilterWhitelist, (button) -> {
+                trashFilterWhitelist = !trashFilterWhitelist;
+                ((WhitelistButton) button).setWhitelist(trashFilterWhitelist);
+                PacketHandler.sendToServer(new PacketToggleTrashFilter());
+            }));
+        }
+
+        if (containsSmelt){
+            ToggleButton btn = new ToggleButton(x, y, new StringTextComponent(Upgrade.AUTO_SMELT.getName()), new ResourceLocation(BurnerGun.MOD_ID, "textures/items/" + Upgrade.AUTO_SMELT.getName() + "_upgrade.png"), send -> this.toggleUpgrade(UpgradeUtil.getUpgradeByUpgrade(gun, Upgrade.AUTO_SMELT), send));
+            addButton(btn);
+            upgradeButtons.put(UpgradeUtil.getUpgradeByUpgrade(gun, Upgrade.AUTO_SMELT), btn);
+            addButton(new Button(x+35, y+(containsTrash?35:65), 95, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.edit_filter"), (button) -> {
+                PacketHandler.sendToServer(new PacketOpenTrashGui());
+            }));
+            addButton(new WhitelistButton(x+165, y+(containsSmelt?35:65), 20, 20, smeltFilterWhitelist, (button) -> {
+                smeltFilterWhitelist = !smeltFilterWhitelist;
+                ((WhitelistButton) button).setWhitelist(smeltFilterWhitelist);
+                PacketHandler.sendToServer(new PacketToggleSmeltFilter());
+            }));
+        }
+
+        for (Upgrade upgrade : toggleableList){
+            if (!upgrade.equals(Upgrade.AUTO_SMELT) || !upgrade.equals(Upgrade.TRASH)){
+                ToggleButton btn = new ToggleButton(x + (index*30), y, new StringTextComponent(upgrade.getName()), new ResourceLocation(BurnerGun.MOD_ID, "textures/items/" + upgrade.getName() + "_upgrade.png"), send -> this.toggleUpgrade(upgrade, send));
+                addButton(btn);
+                upgradeButtons.put(upgrade, btn);
+                index++;
+                if (index % 4 == 0) {
+                    index = 0;
+                    y += 35;
+                }
+            }
+        }
+
+        //Left Side
+        settings.add(volumeSlider = new Slider(midX-140, 0, 125, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.volume"), new StringTextComponent("%"), 0, 100, volume, false, true, slider -> {}, this));
+        settings.add(raycastSlider = new Slider(midX-140, 0, 125, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.raycast"), new StringTextComponent(""), 1, maxRaycastRange, raycastRange, false, true, slider -> {}, this));
+        settings.add(verticalSlider = new Slider(midX-140, 0, 125, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.vertical"), new StringTextComponent(""), 0, maxVertical, vertical, false, true, slider -> {}, this));
+        settings.add(horizontalSlider = new Slider(midX-140, 0, 125, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.horizontal"), new StringTextComponent(""), 0, maxHorizontal, vertical, false, true, slider -> {}, this));
+
+        int top = midY-(((settings.size()*20)+(settings.size()-1)*5)/2);
         for (int i = 0; i < settings.size(); i++) {
-            settings.get(i).y = (80)+(i*25);
-            this.addButton(settings.get(i));
+            settings.get(i).y = (top)+(i*25);
+            addButton(settings.get(i));
         }
     }
 
@@ -75,13 +168,16 @@ public class mk2SettingsScreen extends Screen implements Slider.ISlider {
 
     @Override
     public void removed() {
-        PacketHandler.sendToServer(new PacketChangeVolume(this.volume));
+        CompoundNBT nbt = new CompoundNBT();
         super.removed();
     }
 
     @Override
     public boolean mouseReleased(double p_231048_1_, double p_231048_3_, int p_231048_5_) {
         volumeSlider.dragging = false;
+        raycastSlider.dragging = false;
+        verticalSlider.dragging = false;
+        horizontalSlider.dragging = false;
         return false;
     }
     @Override
@@ -89,6 +185,18 @@ public class mk2SettingsScreen extends Screen implements Slider.ISlider {
         if( volumeSlider.isMouseOver(mouseX, mouseY) ) {
             volumeSlider.sliderValue += (.01f * (delta > 0 ? 1 : -1));
             volumeSlider.updateSlider();
+        }
+        if( raycastSlider.isMouseOver(mouseX, mouseY) ) {
+            raycastSlider.sliderValue += (delta > 0 ? 1 : -1);
+            raycastSlider.updateSlider();
+        }
+        if( verticalSlider.isMouseOver(mouseX, mouseY) ) {
+            verticalSlider.sliderValue += (delta > 0 ? 1 : -1);
+            verticalSlider.updateSlider();
+        }
+        if( horizontalSlider.isMouseOver(mouseX, mouseY) ) {
+            horizontalSlider.sliderValue += (delta > 0 ? 1 : -1);
+            horizontalSlider.updateSlider();
         }
         return false;
     }
@@ -107,6 +215,7 @@ public class mk2SettingsScreen extends Screen implements Slider.ISlider {
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float ticks_) {
         //Gives us the darkened background
         this.renderBackground(matrixStack);
+        drawString(matrixStack, Minecraft.getInstance().font, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.mk2Settings"), (width/2)-75, 20, Color.WHITE.getRGB());
         super.render(matrixStack, mouseX, mouseY, ticks_);
     }
 
@@ -114,6 +223,34 @@ public class mk2SettingsScreen extends Screen implements Slider.ISlider {
     public void onChangeSliderValue(Slider slider) {
         if (slider.equals(volumeSlider)){
             this.volume = slider.getValueInt()/100f;
+        }
+        if (slider.equals(raycastSlider)){
+            this.raycastRange = slider.getValueInt();
+        }
+        if (slider.equals(verticalSlider)){
+            this.vertical = slider.getValueInt();
+        }
+        if (slider.equals(horizontalSlider)){
+            this.horizontal = slider.getValueInt();
+        }
+    }
+
+    public static final class WhitelistButton extends Button {
+        private boolean isWhitelist;
+
+        public WhitelistButton(int widthIn, int heightIn, int width, int height, boolean isWhitelist, IPressable onPress) {
+            super(widthIn, heightIn, width, height, new StringTextComponent(""), onPress);
+            this.isWhitelist = isWhitelist;
+        }
+
+        @Override
+        public void render(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
+            fill(stack, this.x, this.y, this.x + this.width, this.y + this.height, 0xFFa8a8a8);
+            fill(stack, this.x + 2, this.y + 2, this.x + this.width - 2, this.y + this.height - 2, this.isWhitelist ? 0xFFFFFFFF : 0xFF000000);
+        }
+
+        public void setWhitelist(boolean whitelist) {
+            isWhitelist = whitelist;
         }
     }
 }

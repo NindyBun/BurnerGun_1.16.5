@@ -93,7 +93,6 @@ public class BurnerGunMK1Handler extends ItemStackHandler {
 
     @Override
     protected void onContentsChanged(int slot) {
-        super.onContentsChanged(slot);
         this.validateSlotIndex(slot);
     }
 

@@ -22,35 +22,16 @@ public class BurnerGunMK2Handler extends ItemStackHandler {
         super(numberOfSlots);
     }
 
-    public static boolean isFuel(ItemStack stack) {
-        return net.minecraftforge.common.ForgeHooks.getBurnTime(stack) > 0;
-    }
-
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
         if (slot < 0 || slot >= MAX_SLOTS) {
             throw new IllegalArgumentException("Invalid slot number: " + slot);
         }
-        if ((isFuel(stack) || stack.getItem() == Items.BUCKET
-                || stack.getItem().equals(Upgrade.UNIFUEL.getCard().getItem())
-                || stack.getItem().equals(Upgrade.AMBIENCE.getCard().getItem())
-                || stack.getItem().equals(Upgrade.REACTOR.getCard().getItem())
-            ) && slot == 0 ) {
-            return true;
-        }
-        if (slot != 0 && slot != 11 && stack.getItem() instanceof UpgradeCard && !(stack.getItem() instanceof UpgradeBag)
-                && !(stack.getItem().equals(Upgrade.UNIFUEL.getCard().getItem()))
-                && !(stack.getItem().equals(Upgrade.AMBIENCE.getCard().getItem()))
-                && !(stack.getItem().equals(Upgrade.REACTOR.getCard().getItem()))
-            ){
+        if (stack.getItem() instanceof UpgradeCard && !(stack.getItem() instanceof UpgradeBag)){
             if (getUpgradeByUpgrade(((UpgradeCard) stack.getItem()).getUpgrade()) != null){
                 return getUpgradeByUpgrade(((UpgradeCard) stack.getItem()).getUpgrade()).getUpgradeStack().getItem() == this.getStackInSlot(slot).getItem();
             }
             return canInsert(stack);
         }
-        if (slot == 11 && stack.getItem() instanceof UpgradeBag){
-            return true;
-        }
-
         return false;
     }
 
@@ -94,7 +75,6 @@ public class BurnerGunMK2Handler extends ItemStackHandler {
 
     @Override
     protected void onContentsChanged(int slot) {
-        super.onContentsChanged(slot);
         this.validateSlotIndex(slot);
     }
 

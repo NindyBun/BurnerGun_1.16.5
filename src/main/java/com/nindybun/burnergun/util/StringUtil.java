@@ -73,9 +73,6 @@ public class StringUtil {
             {"9", 5},
     };
 
-    public StringUtil() {
-    }
-
     public static int getStringPixelLength(String string){
         int pixel = (StringUtils.deleteWhitespace(string).length()-1);
         for (int i = 0; i < string.length(); i++) {

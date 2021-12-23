@@ -67,7 +67,11 @@
 
   "tooltip.burnergun.base_tier": "Used for upgrades.",
   "tooltip.burnergun.screen.volume": "Volume: ",
+  "tooltip.burnergun.screen.raycast": "Range: ",
+  "tooltip.burnergun.screen.vertical": "Vertical Radius: ",
+  "tooltip.burnergun.screen.horizontal": "Horizontal Radius: ",
   "tooltip.burnergun.screen.mk1Settings": "Burner Gun MK1 Settings",
+  "tooltip.burnergun.screen.mk2Settings": "Burner Gun MK2 Settings",
 
   "item.burnergun.burnergun_mk1":  "Burner Gun MK1",
   "item.burnergun.burnergun_mk2": "Burner Gun MK2",
