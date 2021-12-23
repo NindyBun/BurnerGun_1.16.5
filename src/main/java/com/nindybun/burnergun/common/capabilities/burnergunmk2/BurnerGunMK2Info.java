@@ -1,5 +1,11 @@
 package com.nindybun.burnergun.common.capabilities.burnergunmk2;
 
+import com.nindybun.burnergun.common.items.upgrades.Upgrade;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+
+import java.util.List;
+
 public interface BurnerGunMK2Info {
     void setVolume(float value);
     float getVolume();
@@ -27,4 +33,7 @@ public interface BurnerGunMK2Info {
 
     void setMaxRaycastRange(int value);
     int getMaxRaycastRange();
+
+    void setUpgradeNBTList(ListNBT upgrades);
+    ListNBT getUpgradeNBTList();
 }

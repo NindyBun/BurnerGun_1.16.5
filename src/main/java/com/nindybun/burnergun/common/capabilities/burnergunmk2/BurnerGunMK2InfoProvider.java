@@ -1,6 +1,8 @@
 package com.nindybun.burnergun.common.capabilities.burnergunmk2;
 
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -38,6 +40,7 @@ public class BurnerGunMK2InfoProvider implements BurnerGunMK2Info, ICapabilitySe
     public int raycast = 5, maxRaycast = 5;
     public boolean trash = true;
     public boolean smelt = true;
+    public ListNBT upgrades;
 
     @Override
     public void setVolume(float value) {
@@ -127,6 +130,16 @@ public class BurnerGunMK2InfoProvider implements BurnerGunMK2Info, ICapabilitySe
     @Override
     public int getMaxRaycastRange() {
         return maxRaycast;
+    }
+
+    @Override
+    public void setUpgradeNBTList(ListNBT upgrades) {
+        this.upgrades = upgrades;
+    }
+
+    @Override
+    public ListNBT getUpgradeNBTList() {
+        return upgrades;
     }
 
 

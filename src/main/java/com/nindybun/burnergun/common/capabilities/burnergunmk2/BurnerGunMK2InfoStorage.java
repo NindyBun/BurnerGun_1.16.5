@@ -4,6 +4,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 
@@ -21,6 +22,7 @@ public class BurnerGunMK2InfoStorage implements Capability.IStorage<BurnerGunMK2
             tag.putInt("MaxRaycast", instance.getMaxRaycastRange());
             tag.putBoolean("Trash", instance.getTrashIsWhitelist());
             tag.putBoolean("Smelt", instance.getSmeltIsWhitelist());
+            tag.put("Upgrades", instance.getUpgradeNBTList());
         return tag;
     }
 
@@ -36,5 +38,6 @@ public class BurnerGunMK2InfoStorage implements Capability.IStorage<BurnerGunMK2
         instance.setMaxRaycastRange(tag.getInt("MaxRaycast"));
         instance.setTrashIsWhitelist(tag.getBoolean("Trash"));
         instance.setSmeltIsWhitelist(tag.getBoolean("Smelt"));
+        instance.setUpgradeNBTList(tag.getList("Upgrades", Constants.NBT.TAG_COMPOUND));
     }
 }

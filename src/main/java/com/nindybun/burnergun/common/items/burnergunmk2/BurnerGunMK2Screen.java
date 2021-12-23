@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.nindybun.burnergun.common.BurnerGun;
 import com.nindybun.burnergun.common.containers.BurnerGunMK2Container;
 import com.nindybun.burnergun.common.network.PacketHandler;
+import com.nindybun.burnergun.common.network.packets.PacketUpdateGun;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
@@ -44,6 +45,12 @@ public class BurnerGunMK2Screen extends ContainerScreen<BurnerGunMK2Container> {
     @Override
     protected void renderLabels(MatrixStack matrixStack, int x, int y) {
         this.font.draw(matrixStack, "Burner Gun MK2", 3, -8, Color.WHITE.getRGB());
+    }
+
+    @Override
+    public void removed() {
+        PacketHandler.sendToServer(new PacketUpdateGun());
+        super.removed();
     }
 
     private static final Logger LOGGER = LogManager.getLogger();

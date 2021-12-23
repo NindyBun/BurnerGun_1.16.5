@@ -5,6 +5,8 @@ import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.items.upgrades.UpgradeCard;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
@@ -15,6 +17,31 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class UpgradeUtil {
+    private static final String KEY_UPGRADES = "upgrades";
+    private static final String KEY_UPGRADE = "upgrade";
+    private static final String KEY_ENABLED = "enabled";
+
+    public static CompoundNBT setUpgradesNBT(List<Upgrade> upgrades) {
+        CompoundNBT listCompound = new CompoundNBT();
+        ListNBT list = new ListNBT();
+
+        upgrades.forEach(upgrade -> {
+            CompoundNBT compound = new CompoundNBT();
+            compound.putString(KEY_UPGRADE, upgrade.getName());
+            compound.putBoolean(KEY_ENABLED, upgrade.isActive());
+            list.add(compound);
+        });
+
+        listCompound.put(KEY_UPGRADES, list);
+        return listCompound;
+    }
+
+    public static Optional<Upgrade> getUpgradeFromList(List<Upgrade> upgrades, Upgrade type){
+        if (upgrades.isEmpty())
+            return Optional.empty();
+        return upgrades.stream().filter(e -> e.getBaseName().equals(type.getBaseName())).findFirst();
+    }
+
     public static List<Upgrade> getUpgrades(ItemStack stack){
         List<Upgrade> upgrades = new ArrayList<>();
         IItemHandler handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElse(null);

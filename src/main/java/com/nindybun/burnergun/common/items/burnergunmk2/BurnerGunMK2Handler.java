@@ -28,56 +28,17 @@ public class BurnerGunMK2Handler extends ItemStackHandler {
         if (slot < 0 || slot >= MAX_SLOTS) {
             throw new IllegalArgumentException("Invalid slot number: " + slot);
         }
-        if (stack.getItem() instanceof UpgradeCard && !(stack.getItem() instanceof UpgradeBag)){
-            if (getUpgradeByUpgrade(((UpgradeCard) stack.getItem()).getUpgrade()) != null){
-                return getUpgradeByUpgrade(((UpgradeCard) stack.getItem()).getUpgrade()).getUpgradeStack().getItem() == this.getStackInSlot(slot).getItem();
-            }
-            return canInsert(stack);
-        }
-        return false;
-    }
 
-    public List<UpgradeCard> getUpgrades(){
-        List<UpgradeCard> upgrades = new ArrayList<>();
-        for (int index  = 1; index < MAX_SLOTS; index++){
-            if (this.getStackInSlot(index).getItem() != Items.AIR){
-                upgrades.add((UpgradeCard)this.getStackInSlot(index).getItem());
-            }
-        }
-        return upgrades;
+        return true;
     }
-
-    public Upgrade getUpgradeByUpgrade(Upgrade upgrade){
-        List<UpgradeCard> upgrades = getUpgrades();
-        for (UpgradeCard upgradeCard : upgrades) {
-            if (upgradeCard.getUpgrade().getBaseName().equals(upgrade.getBaseName())){
-                return upgradeCard.getUpgrade();
-            }
-        }
-        return null;
-    }
-
 
     public boolean canInsert(ItemStack item){
-        List<UpgradeCard> upgradeCards = getUpgrades();
-
-        if (!upgradeCards.isEmpty()){
-            for (UpgradeCard upgrade : upgradeCards) {
-                UpgradeCard upgradeItem = (UpgradeCard) item.getItem();
-                //Checks if the holding upgrade is Silk and if there is a fortune upgrade
-                //Checks if the holding upgrade is fortune and if there is a silk upgrade
-                if ((upgradeItem.getUpgrade().equals(Upgrade.SILK_TOUCH) && upgrade.getUpgrade().getBaseName().equals(Upgrade.FORTUNE_1.getBaseName())) ||
-                        (upgradeItem.getUpgrade().getBaseName().equals(Upgrade.FORTUNE_1.getBaseName()) && upgrade.getUpgrade().equals(Upgrade.SILK_TOUCH)) ){
-                    return false;
-                }
-            }
-        }
         return true;
     }
 
     @Override
     protected void onContentsChanged(int slot) {
-        PacketHandler.sendToServer(new PacketUpdateGun(slot));
+        //PacketHandler.sendToServer(new PacketUpdateGun(slot));
         this.validateSlotIndex(slot);
     }
 
