@@ -46,11 +46,6 @@ public class BurnerGunMK2Screen extends ContainerScreen<BurnerGunMK2Container> {
         this.font.draw(matrixStack, "Burner Gun MK2", 3, -8, Color.WHITE.getRGB());
     }
 
-    @Override
-    public void removed() {
-        super.removed();
-    }
-
     private static final Logger LOGGER = LogManager.getLogger();
     // This is the resource location for the background image
     private static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation(BurnerGun.MOD_ID, "textures/gui/burnergunmk2_gui.png");

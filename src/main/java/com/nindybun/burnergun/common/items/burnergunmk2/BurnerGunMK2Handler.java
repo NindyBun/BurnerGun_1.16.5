@@ -5,6 +5,8 @@ import com.nindybun.burnergun.common.containers.BurnerGunMK2Container;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.items.upgrades.UpgradeCard;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade_Bag.UpgradeBag;
+import com.nindybun.burnergun.common.network.PacketHandler;
+import com.nindybun.burnergun.common.network.packets.PacketUpdateGun;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraftforge.items.ItemStackHandler;
@@ -75,6 +77,7 @@ public class BurnerGunMK2Handler extends ItemStackHandler {
 
     @Override
     protected void onContentsChanged(int slot) {
+        PacketHandler.sendToServer(new PacketUpdateGun(slot));
         this.validateSlotIndex(slot);
     }
 
