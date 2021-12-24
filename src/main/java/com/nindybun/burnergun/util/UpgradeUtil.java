@@ -1,12 +1,15 @@
 package com.nindybun.burnergun.util;
 
 import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1;
+import com.nindybun.burnergun.common.items.burnergunmk2.BurnerGunMK2;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.items.upgrades.UpgradeCard;
+import jdk.nashorn.internal.ir.EmptyNode;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
@@ -21,8 +24,7 @@ public class UpgradeUtil {
     private static final String KEY_UPGRADE = "upgrade";
     private static final String KEY_ENABLED = "enabled";
 
-    public static CompoundNBT setUpgradesNBT(List<Upgrade> upgrades) {
-        CompoundNBT listCompound = new CompoundNBT();
+    public static ListNBT setUpgradesNBT(List<Upgrade> upgrades) {
         ListNBT list = new ListNBT();
 
         upgrades.forEach(upgrade -> {
@@ -32,14 +34,42 @@ public class UpgradeUtil {
             list.add(compound);
         });
 
-        listCompound.put(KEY_UPGRADES, list);
-        return listCompound;
+        return list;
+    }
+
+    public static Upgrade getUpgradeByName(String name){
+        try {
+            Upgrade type = Upgrade.valueOf(name.toUpperCase());
+            return type;
+        } catch (IllegalArgumentException ignored) {
+            return null;
+        }
     }
 
     public static Optional<Upgrade> getUpgradeFromList(List<Upgrade> upgrades, Upgrade type){
         if (upgrades.isEmpty())
             return Optional.empty();
         return upgrades.stream().filter(e -> e.getBaseName().equals(type.getBaseName())).findFirst();
+    }
+
+    public static List<Upgrade> getUpgradesFromNBT(ListNBT upgrades){
+        List<Upgrade> upgradeList = new ArrayList<>();
+        if (upgrades.isEmpty())
+            return upgradeList;
+        for (int i = 0; i < upgrades.size(); i++) {
+            CompoundNBT upgradeNBT = upgrades.getCompound(i);
+            Upgrade type = getUpgradeByName(upgradeNBT.getString(KEY_UPGRADE));
+            if (type == null)
+                continue;
+            type.setActive(!upgradeNBT.contains(KEY_ENABLED) || upgradeNBT.getBoolean(KEY_ENABLED));
+            upgradeList.add(type);
+        }
+        return upgradeList;
+    }
+
+    public static List<Upgrade> getUpgradesFromGun(ItemStack stack){
+        ListNBT nbt = BurnerGunMK2.getInfo(stack).getUpgradeNBTList();
+        return getUpgradesFromNBT(nbt);
     }
 
     public static List<Upgrade> getUpgrades(ItemStack stack){
@@ -63,11 +93,11 @@ public class UpgradeUtil {
     }
 
     public static List<Upgrade> getToggleableUpgrades(ItemStack stack){
-        return getUpgrades(stack).stream().filter(Upgrade::isToggleable).collect(Collectors.toList());
+        return getUpgradesFromGun(stack).stream().filter(Upgrade::isToggleable).collect(Collectors.toList());
     }
 
     public static List<Upgrade> getActiveUpgrades(ItemStack stack){
-        return getUpgrades(stack).stream().filter(Upgrade::isActive).collect(Collectors.toList());
+        return getUpgradesFromGun(stack).stream().filter(Upgrade::isActive).collect(Collectors.toList());
     }
 
     //Returns the upgrade card by upgrade
@@ -106,27 +136,18 @@ public class UpgradeUtil {
     }
 
     public static void updateUpgrade(ItemStack stack, Upgrade upgrade){
-        List<Upgrade> upgrades = getToggleableUpgrades(stack);
+        ListNBT upgrades = BurnerGunMK2.getInfo(stack).getUpgradeNBTList();
         upgrades.forEach(e -> {
-            String name = e.getName();
-            boolean isEnabled = e.isActive();
+            CompoundNBT compound = (CompoundNBT)e;
+            String name = compound.getString(KEY_UPGRADE);
+            boolean isEnabled = compound.getBoolean(KEY_ENABLED);
             if( (name.contains(Upgrade.FORTUNE_1.getBaseName()) && isEnabled && upgrade.lazyIs(Upgrade.SILK_TOUCH) )
                     || (name.equals(Upgrade.SILK_TOUCH.getBaseName()) && isEnabled && upgrade.lazyIs(Upgrade.FORTUNE_1) ))
-                e.setActive(false);
+                compound.putBoolean(KEY_ENABLED, false);
 
             if( name.equals(upgrade.getName()) )
-                e.setActive(!e.isActive());
+                compound.putBoolean(KEY_ENABLED, !compound.getBoolean(KEY_ENABLED));
         });
     }
 
-    @Nullable
-    public static Upgrade getUpgradeByName(String name) {
-        // If the name doesn't exist then move on
-        try {
-            Upgrade type = Upgrade.valueOf(name.toUpperCase());
-            return type;
-        } catch (IllegalArgumentException ignored) {
-            return null;
-        }
-    }
 }

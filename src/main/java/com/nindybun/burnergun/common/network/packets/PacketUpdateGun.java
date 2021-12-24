@@ -74,7 +74,7 @@ public class PacketUpdateGun {
                         upgrades.add(((UpgradeCard)handler.getStackInSlot(i).getItem()).getUpgrade());
                     }
                 }
-                info.setUpgradeNBTList(UpgradeUtil.setUpgradesNBT(upgrades).getList("upgrades", Constants.NBT.TAG_COMPOUND));
+                info.setUpgradeNBTList(UpgradeUtil.setUpgradesNBT(upgrades));
             });
 
             ctx.get().setPacketHandled(true);

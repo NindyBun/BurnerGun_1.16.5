@@ -40,7 +40,7 @@ public class BurnerGunMK2InfoProvider implements BurnerGunMK2Info, ICapabilitySe
     public int raycast = 5, maxRaycast = 5;
     public boolean trash = true;
     public boolean smelt = true;
-    public ListNBT upgrades;
+    public ListNBT upgrades = new ListNBT();
 
     @Override
     public void setVolume(float value) {
