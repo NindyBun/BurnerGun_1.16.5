@@ -61,7 +61,7 @@ public class mk2SettingsScreen extends Screen implements Slider.ISlider {
         super(new StringTextComponent("Title"));
         this.gun = gun;
         this.info = gun.getCapability(BurnerGunMK2InfoProvider.burnerGunInfoMK2Capability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
-        this.volume = info.getVolume()*100;
+        this.volume = info.getVolume();
         this.vertical = info.getVertical();
         this.maxVertical = info.getMaxVertical();
         this.horizontal = info.getHorizontal();
@@ -150,7 +150,7 @@ public class mk2SettingsScreen extends Screen implements Slider.ISlider {
         }
 
         //Left Side
-        settings.add(volumeSlider = new Slider(midX-140, 0, 125, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.volume"), new StringTextComponent("%"), 0, 100, volume, false, true, slider -> {}, this));
+        settings.add(volumeSlider = new Slider(midX-140, 0, 125, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.volume"), new StringTextComponent("%"), 0, 100,  Math.min(100, volume * 100), false, true, slider -> {}, this));
         settings.add(raycastSlider = new Slider(midX-140, 0, 125, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.raycast"), new StringTextComponent(""), 1, maxRaycastRange, raycastRange, false, true, slider -> {}, this));
         settings.add(verticalSlider = new Slider(midX-140, 0, 125, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.vertical"), new StringTextComponent(""), 0, maxVertical, vertical, false, true, slider -> {}, this));
         settings.add(horizontalSlider = new Slider(midX-140, 0, 125, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.horizontal"), new StringTextComponent(""), 0, maxHorizontal, vertical, false, true, slider -> {}, this));
@@ -169,6 +169,12 @@ public class mk2SettingsScreen extends Screen implements Slider.ISlider {
 
     @Override
     public void removed() {
+        CompoundNBT nbt = new CompoundNBT();
+        nbt.putFloat("Volume", volume);
+        nbt.putInt("Raycast", raycastRange);
+        nbt.putInt("Vertical", vertical);
+        nbt.putInt("Horizontal", horizontal);
+        PacketHandler.sendToServer(new PacketChangeSettings(nbt));
         super.removed();
     }
 

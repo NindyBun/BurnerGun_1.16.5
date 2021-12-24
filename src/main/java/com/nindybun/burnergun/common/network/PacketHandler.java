@@ -33,6 +33,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(id++, PacketToggleSmeltFilter.class, PacketToggleSmeltFilter::encode, PacketToggleSmeltFilter::decode, PacketToggleSmeltFilter.Handler::handle);
         INSTANCE.registerMessage(id++, PacketUpdateUpgrade.class, PacketUpdateUpgrade::encode, PacketUpdateUpgrade::decode, PacketUpdateUpgrade.Handler::handle);
         INSTANCE.registerMessage(id++, PacketUpdateGun.class, PacketUpdateGun::encode, PacketUpdateGun::decode, PacketUpdateGun.Handler::handle);
+        INSTANCE.registerMessage(id++, PacketChangeSettings.class, PacketChangeSettings::encode, PacketChangeSettings::decode, PacketChangeSettings.Handler::handle);
     }
 
     public static void send(Object msg, Supplier playerEntity){
