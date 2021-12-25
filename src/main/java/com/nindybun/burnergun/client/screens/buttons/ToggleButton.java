@@ -24,7 +24,7 @@ public class ToggleButton extends Widget {
     private ResourceLocation texture;
 
     public ToggleButton(int xIn, int yIn, ITextComponent msg, ResourceLocation texture, Predicate<Boolean> onPress) {
-        super(xIn, yIn, 21, 26, msg);
+        super(xIn, yIn, 20, 20, msg);
 
         this.onPress = onPress;
         this.texture = texture;
@@ -47,7 +47,7 @@ public class ToggleButton extends Widget {
 
         RenderSystem.color4f(1f, 1f, 1f, 1f);
         Minecraft.getInstance().getTextureManager().bind(texture);
-        blit(stack, this.x +2, this.y + 5, 0, 0, 16, 16, 16, 16);
+        blit(stack, this.x+2, this.y+2, 0, 0, 16, 16, 16, 16);
     }
 
     public List<IReorderingProcessor> getTooltip() {

@@ -26,9 +26,8 @@ public class AutoFuelHandler extends ItemStackHandler {
 
     @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-        if (this.getStackInSlot(slot).getItem() == Items.AIR && net.minecraftforge.common.ForgeHooks.getBurnTime(stack) > 0){
+        if (this.getStackInSlot(slot).getItem() == Items.AIR){
             this.setStackInSlot(slot, stack.getItem().getDefaultInstance());
-
         }else{
             this.setStackInSlot(slot, Items.AIR.getDefaultInstance());
         }

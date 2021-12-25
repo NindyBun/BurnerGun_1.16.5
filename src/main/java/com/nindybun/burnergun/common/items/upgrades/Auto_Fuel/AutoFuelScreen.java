@@ -42,7 +42,7 @@ public class AutoFuelScreen extends ContainerScreen<AutoFuelContainer> {
 
     @Override
     protected void renderLabels(MatrixStack matrixStack, int x, int y) {
-        this.font.draw(matrixStack, "Auto Fuel", 2, -8, Color.WHITE.getRGB());
+        this.font.draw(matrixStack, "Auto Smelt", 2, -8, Color.WHITE.getRGB());
     }
 
     private static final Logger LOGGER = LogManager.getLogger();
