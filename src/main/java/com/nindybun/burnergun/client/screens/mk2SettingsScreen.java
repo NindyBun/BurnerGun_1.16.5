@@ -77,8 +77,6 @@ public class mk2SettingsScreen extends Screen implements Slider.ISlider {
         containsTrash = UpgradeUtil.containsUpgradeFromList(toggleableList, Upgrade.TRASH);
         containsSmelt = UpgradeUtil.containsUpgradeFromList(toggleableList, Upgrade.AUTO_SMELT);
 
-        LOGGER.info(info.getVertical() + " " + info.getMaxVertical());
-
     }
 
     private void updateButtons(Upgrade upgrade) {
