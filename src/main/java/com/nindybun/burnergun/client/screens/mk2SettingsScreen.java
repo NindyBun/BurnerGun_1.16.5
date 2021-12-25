@@ -8,6 +8,7 @@ import com.nindybun.burnergun.common.capabilities.burnergunmk1.BurnerGunMK1Info;
 import com.nindybun.burnergun.common.capabilities.burnergunmk1.BurnerGunMK1InfoProvider;
 import com.nindybun.burnergun.common.capabilities.burnergunmk2.BurnerGunMK2Info;
 import com.nindybun.burnergun.common.capabilities.burnergunmk2.BurnerGunMK2InfoProvider;
+import com.nindybun.burnergun.common.items.burnergunmk2.BurnerGunMK2;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.network.PacketHandler;
 import com.nindybun.burnergun.common.network.packets.*;
@@ -60,7 +61,7 @@ public class mk2SettingsScreen extends Screen implements Slider.ISlider {
     protected mk2SettingsScreen(ItemStack gun) {
         super(new StringTextComponent("Title"));
         this.gun = gun;
-        this.info = gun.getCapability(BurnerGunMK2InfoProvider.burnerGunInfoMK2Capability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
+        this.info = BurnerGunMK2.getInfo(gun);
         this.volume = info.getVolume();
         this.vertical = info.getVertical();
         this.maxVertical = info.getMaxVertical();
@@ -75,6 +76,8 @@ public class mk2SettingsScreen extends Screen implements Slider.ISlider {
         toggleableList = UpgradeUtil.getToggleableUpgrades(gun);
         containsTrash = UpgradeUtil.containsUpgradeFromList(toggleableList, Upgrade.TRASH);
         containsSmelt = UpgradeUtil.containsUpgradeFromList(toggleableList, Upgrade.AUTO_SMELT);
+
+        LOGGER.info(info.getVertical() + " " + info.getMaxVertical());
 
     }
 

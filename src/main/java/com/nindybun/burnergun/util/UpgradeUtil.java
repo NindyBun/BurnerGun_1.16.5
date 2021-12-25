@@ -1,5 +1,6 @@
 package com.nindybun.burnergun.util;
 
+import com.nindybun.burnergun.common.capabilities.burnergunmk2.BurnerGunMK2Info;
 import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1;
 import com.nindybun.burnergun.common.items.burnergunmk2.BurnerGunMK2;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
@@ -49,7 +50,15 @@ public class UpgradeUtil {
     public static Optional<Upgrade> getUpgradeFromList(List<Upgrade> upgrades, Upgrade type){
         if (upgrades.isEmpty())
             return Optional.empty();
-        return upgrades.stream().filter(e -> e.getBaseName().equals(type.getBaseName())).findFirst();
+        return upgrades.stream().filter(e -> e.lazyIs(type)).findFirst();
+    }
+
+    public static Upgrade getUpgradeFromListByUpgrade(List<Upgrade> upgrades, Upgrade type){
+        for (Upgrade upgrade: upgrades) {
+            if (upgrade.lazyIs(type))
+                return upgrade;
+        }
+        return null;
     }
 
     public static List<Upgrade> getUpgradesFromNBT(ListNBT upgrades){
@@ -71,25 +80,46 @@ public class UpgradeUtil {
         ListNBT nbt = BurnerGunMK2.getInfo(stack).getUpgradeNBTList();
         return getUpgradesFromNBT(nbt);
     }
-
-    public static List<Upgrade> getUpgrades(ItemStack stack){
-        List<Upgrade> upgrades = new ArrayList<>();
-        IItemHandler handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElse(null);
-        int start = stack.getItem() instanceof BurnerGunMK1 ? 1 : 0;
-        for (int index  = start; index < handler.getSlots()-start; index++){
-            if (handler.getStackInSlot(index).getItem() != Items.AIR){
-                upgrades.add(((UpgradeCard)handler.getStackInSlot(index).getItem()).getUpgrade());
-            }
-        }
-        return upgrades;
-    }
-
     public static boolean containsUpgradeFromList(List<Upgrade> upgradeList, Upgrade upgrade){
         for (Upgrade index : upgradeList) {
-            if (index.equals(upgrade))
+            if (index.getBaseName().equals(upgrade.getBaseName()))
                 return true;
         }
         return false;
+    }
+
+    public static void setValues(List<Upgrade> currentUpgrades, BurnerGunMK2Info info){
+        if (UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.FOCAL_POINT_1)){
+            Upgrade upgrade = UpgradeUtil.getUpgradeFromListByUpgrade(currentUpgrades, Upgrade.FOCAL_POINT_1);
+            if (info.getRaycastRange() > upgrade.getExtraValue())
+                info.setRaycastRange((int)upgrade.getExtraValue());
+            info.setMaxRaycastRange((int)upgrade.getExtraValue());
+        }else if (!UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.FOCAL_POINT_1)){
+            if (info.getRaycastRange() > 5)
+                info.setRaycastRange(5);
+            if (info.getMaxRaycastRange() > 5)
+                info.setMaxRaycastRange(5);
+        }
+
+        if (UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.VERTICAL_EXPANSION_1)){
+            Upgrade upgrade = UpgradeUtil.getUpgradeFromListByUpgrade(currentUpgrades, Upgrade.VERTICAL_EXPANSION_1);
+            if (info.getVertical() > upgrade.getTier())
+                info.setVertical(upgrade.getTier());
+            info.setMaxVertical(upgrade.getTier());
+        }else if (!UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.VERTICAL_EXPANSION_1)){
+            info.setVertical(0);
+            info.setMaxVertical(0);
+        }
+
+        if (UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.HORIZONTAL_EXPANSION_1)){
+            Upgrade upgrade = UpgradeUtil.getUpgradeFromListByUpgrade(currentUpgrades, Upgrade.HORIZONTAL_EXPANSION_1);
+            if (info.getHorizontal() > upgrade.getTier())
+                info.setHorizontal(upgrade.getTier());
+            info.setMaxHorizontal(upgrade.getTier());
+        }else if (!UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.HORIZONTAL_EXPANSION_1)){
+            info.setHorizontal(0);
+            info.setMaxHorizontal(0);
+        }
     }
 
     public static List<Upgrade> getToggleableUpgrades(ItemStack stack){
@@ -110,6 +140,20 @@ public class UpgradeUtil {
         }
         return null;
     }
+
+    public static List<Upgrade> getUpgrades(ItemStack stack){
+        List<Upgrade> upgrades = new ArrayList<>();
+        IItemHandler handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElse(null);
+        int start = stack.getItem() instanceof BurnerGunMK1 ? 1 : 0;
+        for (int index  = start; index < handler.getSlots()-start; index++){
+            if (handler.getStackInSlot(index).getItem() != Items.AIR){
+                upgrades.add(((UpgradeCard)handler.getStackInSlot(index).getItem()).getUpgrade());
+            }
+        }
+        return upgrades;
+    }
+
+
 
     //Returns upgrade stacks
     public static List<ItemStack> getUpgradeStacks(ItemStack stack){

@@ -84,7 +84,7 @@ public class BurnerGunMK2InfoProvider implements BurnerGunMK2Info, ICapabilitySe
 
     @Override
     public void setMaxHorizontal(int value) {
-        maxVertical = value;
+        maxHorizontal = value;
     }
 
     @Override

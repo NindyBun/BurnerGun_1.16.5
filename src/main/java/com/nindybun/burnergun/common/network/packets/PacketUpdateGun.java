@@ -50,52 +50,119 @@ public class PacketUpdateGun {
                     return;
                 IItemHandler handler = BurnerGunMK2.getHandler(stack);
                 BurnerGunMK2Info info = BurnerGunMK2.getInfo(stack);
-                List<Upgrade> oldUpgrades = UpgradeUtil.getUpgradesFromGun(stack);
                 List<Upgrade> currentUpgrades = new ArrayList<>();
-                List<Upgrade> newUpgrades = new ArrayList<>();
 
                 for (int i = 0; i < handler.getSlots(); i++) {
                     if (!handler.getStackInSlot(i).getItem().equals(Items.AIR))
                         currentUpgrades.add(((UpgradeCard)handler.getStackInSlot(i).getItem()).getUpgrade());
                 }
-                if (!oldUpgrades.isEmpty()){
-                    oldUpgrades.forEach(upgrade -> {
-                        if (!currentUpgrades.contains(upgrade)){
-                            if (upgrade.lazyIs(Upgrade.FOCAL_POINT_1)){
-                                info.setRaycastRange(5);
-                                info.setMaxRaycastRange(5);
-                            }
-                            if (upgrade.lazyIs(Upgrade.VERTICAL_EXPANSION_1)){
-                                info.setVertical(0);
-                                info.setMaxVertical(0);
-                            }
-                            if (upgrade.lazyIs(Upgrade.HORIZONTAL_EXPANSION_1)){
-                                info.setHorizontal(0);
-                                info.setMaxHorizontal(0);
-                            }
-                        }
-                    });
-                }else if (oldUpgrades.isEmpty()){
-                    currentUpgrades.forEach(upgrade -> {
-                        if (upgrade.lazyIs(Upgrade.FOCAL_POINT_1)){
-                            info.setRaycastRange((int)upgrade.getExtraValue());
-                            info.setMaxRaycastRange((int)upgrade.getExtraValue());
-                        }
-                        if (upgrade.lazyIs(Upgrade.VERTICAL_EXPANSION_1)){
-                            info.setVertical(0);
-                            info.setMaxVertical(upgrade.getTier());
-                        }
-                        if (upgrade.lazyIs(Upgrade.HORIZONTAL_EXPANSION_1)){
-                            info.setHorizontal(0);
-                            info.setMaxHorizontal(upgrade.getTier());
-                        }
+
+                if (UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.FOCAL_POINT_1)){
+                    Upgrade upgrade = UpgradeUtil.getUpgradeFromListByUpgrade(currentUpgrades, Upgrade.FOCAL_POINT_1);
+                    if (info.getRaycastRange() > upgrade.getExtraValue())
+                        info.setRaycastRange((int)upgrade.getExtraValue());
+                    info.setMaxRaycastRange((int)upgrade.getExtraValue());
+                }else if (!UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.FOCAL_POINT_1)){
+                    if (info.getRaycastRange() > 5)
+                        info.setRaycastRange(5);
+                    if (info.getMaxRaycastRange() > 5)
+                        info.setMaxRaycastRange(5);
+                }
+
+                if (UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.VERTICAL_EXPANSION_1)){
+                    Upgrade upgrade = UpgradeUtil.getUpgradeFromListByUpgrade(currentUpgrades, Upgrade.VERTICAL_EXPANSION_1);
+                    if (info.getVertical() > upgrade.getTier())
+                        info.setVertical(upgrade.getTier());
+                    info.setMaxVertical(upgrade.getTier());
+                }else if (!UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.VERTICAL_EXPANSION_1)){
+                    info.setVertical(0);
+                    info.setMaxVertical(0);
+                }
+                LOGGER.info(info.getMaxVertical());//4
+                if (UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.HORIZONTAL_EXPANSION_1)){
+                    Upgrade upgrade = UpgradeUtil.getUpgradeFromListByUpgrade(currentUpgrades, Upgrade.HORIZONTAL_EXPANSION_1);
+                    if (info.getHorizontal() > upgrade.getTier())
+                        info.setHorizontal(upgrade.getTier());
+                    info.setMaxHorizontal(upgrade.getTier());
+                }else if (!UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.HORIZONTAL_EXPANSION_1)){
+                    info.setHorizontal(0);
+                    info.setMaxHorizontal(0);
+                }
+                LOGGER.info(info.getMaxVertical());//0
+                currentUpgrades.forEach(upgrade -> {
                         if ((upgrade.lazyIs(Upgrade.FORTUNE_1) && upgrade.isActive() && currentUpgrades.contains(Upgrade.SILK_TOUCH))
-                            || (upgrade.lazyIs(Upgrade.SILK_TOUCH) && upgrade.isActive() && UpgradeUtil.getUpgradeFromList(currentUpgrades, Upgrade.FORTUNE_1).isPresent())){
+                                || (upgrade.lazyIs(Upgrade.SILK_TOUCH) && upgrade.isActive() && UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.FORTUNE_1))){
                             upgrade.setActive(!upgrade.isActive());
                         }
                     });
-                }
+
+                LOGGER.info(info.getMaxVertical());//0
                 info.setUpgradeNBTList(UpgradeUtil.setUpgradesNBT(currentUpgrades));
+
+                /*if (!oldUpgrades.isEmpty()){
+                    if (!currentUpgrades.isEmpty()){
+                        oldUpgrades.forEach(upgrade -> {
+                            if (!UpgradeUtil.containsUpgradeFromList(currentUpgrades, upgrade)){
+                                if (upgrade.lazyIs(Upgrade.FOCAL_POINT_1)){
+                                    info.setRaycastRange(5);
+                                    info.setMaxRaycastRange(5);
+                                }
+                                if (upgrade.lazyIs(Upgrade.VERTICAL_EXPANSION_1)){
+                                    info.setVertical(0);
+                                    info.setMaxVertical(0);
+                                }
+                                if (upgrade.lazyIs(Upgrade.HORIZONTAL_EXPANSION_1)){
+                                    info.setHorizontal(0);
+                                    info.setMaxHorizontal(0);
+                                }
+                            }else if (UpgradeUtil.containsUpgradeFromList(currentUpgrades, upgrade)){
+                                if (upgrade.lazyIs(Upgrade.FOCAL_POINT_1)){
+                                    if (info.getRaycastRange() > upgrade.getExtraValue())
+                                        info.setRaycastRange((int)upgrade.getExtraValue());
+                                    info.setMaxRaycastRange((int)upgrade.getExtraValue());
+                                }
+                                if (upgrade.lazyIs(Upgrade.VERTICAL_EXPANSION_1)){
+                                    if (info.getVertical() > upgrade.getTier())
+                                        info.setVertical(0);
+                                    info.setMaxVertical(upgrade.getTier());
+                                }
+                                if (upgrade.lazyIs(Upgrade.HORIZONTAL_EXPANSION_1)){
+                                    if (info.getHorizontal() > upgrade.getTier())
+                                        info.setHorizontal(0);
+                                    info.setMaxHorizontal(upgrade.getTier());
+                                }
+                            }
+                        });
+                    }else if (currentUpgrades.isEmpty()){
+                        info.setRaycastRange(5);
+                        info.setMaxRaycastRange(5);
+                        info.setVertical(0);
+                        info.setMaxVertical(0);
+                        info.setHorizontal(0);
+                        info.setMaxHorizontal(0);
+                    }
+                }else if (oldUpgrades.isEmpty()){
+                    if (!currentUpgrades.isEmpty())
+                        currentUpgrades.forEach(upgrade -> {
+                            if (upgrade.lazyIs(Upgrade.FOCAL_POINT_1)){
+                                info.setRaycastRange((int)upgrade.getExtraValue());
+                                info.setMaxRaycastRange((int)upgrade.getExtraValue());
+                            }
+                            if (upgrade.lazyIs(Upgrade.VERTICAL_EXPANSION_1)){
+                                info.setVertical(0);
+                                info.setMaxVertical(upgrade.getTier());
+                            }
+                            if (upgrade.lazyIs(Upgrade.HORIZONTAL_EXPANSION_1)){
+                                info.setHorizontal(0);
+                                info.setMaxHorizontal(upgrade.getTier());
+                            }
+                            if ((upgrade.lazyIs(Upgrade.FORTUNE_1) && upgrade.isActive() && currentUpgrades.contains(Upgrade.SILK_TOUCH))
+                                || (upgrade.lazyIs(Upgrade.SILK_TOUCH) && upgrade.isActive() && UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.FORTUNE_1))){
+                                upgrade.setActive(!upgrade.isActive());
+                            }
+                        });
+                }
+                info.setUpgradeNBTList(UpgradeUtil.setUpgradesNBT(currentUpgrades));*/
 
                 /*for (int i = 0; i < handler.getSlots(); i++) {
                     Item hItem = handler.getStackInSlot(i).getItem();
