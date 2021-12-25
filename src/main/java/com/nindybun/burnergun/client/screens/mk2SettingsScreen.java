@@ -103,11 +103,11 @@ public class mk2SettingsScreen extends Screen implements Slider.ISlider {
         int midX = width/2;
         int midY = height/2;
 
+        int listSize = toggleableList.size() + (containsSmelt?3:0) + (containsTrash?3:0);
+        int yy = (int)Math.ceil((double)listSize/4);
+
         //Right Side
-        int index = 0, x = midX+15, y = midY-(
-                                             ((((toggleableList.size() - ((containsTrash?1:0)+(containsSmelt?1:0)))*20)/4)
-                                            +(((toggleableList.size()-1- ((containsTrash?1:0)+(containsSmelt?1:0)))*5)/4)
-                                                )/2);
+        int index = 0, x = midX+15, y = midY-((yy*20)+((yy-1)*5))/2;
 
         if (containsTrash){
             ToggleButton btn = new ToggleButton(x, y, new StringTextComponent(Upgrade.TRASH.getName()), new ResourceLocation(BurnerGun.MOD_ID, "textures/items/" + Upgrade.TRASH.getName() + "_upgrade.png"), send -> this.toggleUpgrade(UpgradeUtil.getUpgradeByUpgrade(gun, Upgrade.TRASH), send));
@@ -124,13 +124,13 @@ public class mk2SettingsScreen extends Screen implements Slider.ISlider {
         }
 
         if (containsSmelt){
-            ToggleButton btn = new ToggleButton(x, y+25, new StringTextComponent(Upgrade.AUTO_SMELT.getName()), new ResourceLocation(BurnerGun.MOD_ID, "textures/items/" + Upgrade.AUTO_SMELT.getName() + "_upgrade.png"), send -> this.toggleUpgrade(UpgradeUtil.getUpgradeByUpgrade(gun, Upgrade.AUTO_SMELT), send));
+            ToggleButton btn = new ToggleButton(x, y+(containsTrash?25:0), new StringTextComponent(Upgrade.AUTO_SMELT.getName()), new ResourceLocation(BurnerGun.MOD_ID, "textures/items/" + Upgrade.AUTO_SMELT.getName() + "_upgrade.png"), send -> this.toggleUpgrade(UpgradeUtil.getUpgradeByUpgrade(gun, Upgrade.AUTO_SMELT), send));
             addButton(btn);
             upgradeButtons.put(UpgradeUtil.getUpgradeByUpgrade(gun, Upgrade.AUTO_SMELT), btn);
-            addButton(new Button(x+25, y+25, 95, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.edit_filter"), (button) -> {
+            addButton(new Button(x+25, y+(containsTrash?25:0), 95, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.edit_filter"), (button) -> {
                 PacketHandler.sendToServer(new PacketOpenAutoFuelGui());
             }));
-            addButton(new WhitelistButton(x+125, y+25, 20, 20, smeltFilterWhitelist, (button) -> {
+            addButton(new WhitelistButton(x+125, y+(containsTrash?25:0), 20, 20, smeltFilterWhitelist, (button) -> {
                 smeltFilterWhitelist = !smeltFilterWhitelist;
                 ((WhitelistButton) button).setWhitelist(smeltFilterWhitelist);
                 PacketHandler.sendToServer(new PacketToggleSmeltFilter());
@@ -139,7 +139,7 @@ public class mk2SettingsScreen extends Screen implements Slider.ISlider {
 
         for (Upgrade upgrade : toggleableList){
             if (!upgrade.equals(Upgrade.AUTO_SMELT) && !upgrade.equals(Upgrade.TRASH)){
-                ToggleButton btn = new ToggleButton(x + (index*25), y+(containsTrash?25:0)+(containsSmelt?25:0), new StringTextComponent(upgrade.getName()), new ResourceLocation(BurnerGun.MOD_ID, "textures/items/" + upgrade.getName() + "_upgrade.png"), send -> this.toggleUpgrade(upgrade, send));
+                ToggleButton btn = new ToggleButton(x + (index*25), y, new StringTextComponent(upgrade.getName()), new ResourceLocation(BurnerGun.MOD_ID, "textures/items/" + upgrade.getName() + "_upgrade.png"), send -> this.toggleUpgrade(upgrade, send));
                 addButton(btn);
                 upgradeButtons.put(upgrade, btn);
                 index++;
