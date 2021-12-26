@@ -1,6 +1,7 @@
 package com.nindybun.burnergun.common.capabilities.burnergunmk2;
 
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
+import net.minecraft.item.Item;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 
@@ -36,4 +37,10 @@ public interface BurnerGunMK2Info {
 
     void setUpgradeNBTList(ListNBT upgrades);
     ListNBT getUpgradeNBTList();
+
+    void setTrashNBTFilter(ListNBT items);
+    ListNBT getTrashNBTFilter();
+
+    void setSmeltNBTFilter(ListNBT items);
+    ListNBT getSmeltNBTFilter();
 }

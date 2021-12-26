@@ -73,7 +73,7 @@ public class BurnerGunMK1Container extends Container {
 
         int gunSlotCount = handler.getSlots();
         if (gunSlotCount < 1 || gunSlotCount > MAX_EXPECTED_GUN_SLOT_COUNT) {
-            LOGGER.warn("Unexpected invalid slot count in TestGun(" + gunSlotCount + ")");
+            LOGGER.warn("Unexpected invalid slot count in BurnerGunMK1(" + gunSlotCount + ")");
             gunSlotCount = MathHelper.clamp(gunSlotCount, 1, MAX_EXPECTED_GUN_SLOT_COUNT);
         }
 

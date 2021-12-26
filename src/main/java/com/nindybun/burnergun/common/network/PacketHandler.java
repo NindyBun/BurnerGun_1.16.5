@@ -27,6 +27,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(id++, PacketOpenBurnerGunGui.class, PacketOpenBurnerGunGui::encode, PacketOpenBurnerGunGui::decode, PacketOpenBurnerGunGui.Handler::handle);
         INSTANCE.registerMessage(id++, PacketOpenAutoFuelGui.class, PacketOpenAutoFuelGui::encode, PacketOpenAutoFuelGui::decode, PacketOpenAutoFuelGui.Handler::handle);
         INSTANCE.registerMessage(id++, PacketOpenTrashGui.class, PacketOpenTrashGui::encode, PacketOpenTrashGui::decode, PacketOpenTrashGui.Handler::handle);
+        INSTANCE.registerMessage(id++, PacketOpenAutoSmeltGui.class, PacketOpenAutoSmeltGui::encode, PacketOpenAutoSmeltGui::decode, PacketOpenAutoSmeltGui.Handler::handle);
         INSTANCE.registerMessage(id++, PacketOpenUpgradeBagGui.class, PacketOpenUpgradeBagGui::encode, PacketOpenUpgradeBagGui::decode, PacketOpenUpgradeBagGui.Handler::handle);
         INSTANCE.registerMessage(id++, PacketChangeVolume.class, PacketChangeVolume::encode, PacketChangeVolume::decode, PacketChangeVolume.Handler::handle);
         INSTANCE.registerMessage(id++, PacketToggleTrashFilter.class, PacketToggleTrashFilter::encode, PacketToggleTrashFilter::decode, PacketToggleTrashFilter.Handler::handle);
@@ -34,6 +35,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(id++, PacketUpdateUpgrade.class, PacketUpdateUpgrade::encode, PacketUpdateUpgrade::decode, PacketUpdateUpgrade.Handler::handle);
         INSTANCE.registerMessage(id++, PacketUpdateGun.class, PacketUpdateGun::encode, PacketUpdateGun::decode, PacketUpdateGun.Handler::handle);
         INSTANCE.registerMessage(id++, PacketChangeSettings.class, PacketChangeSettings::encode, PacketChangeSettings::decode, PacketChangeSettings.Handler::handle);
+
     }
 
     public static void send(Object msg, Supplier playerEntity){

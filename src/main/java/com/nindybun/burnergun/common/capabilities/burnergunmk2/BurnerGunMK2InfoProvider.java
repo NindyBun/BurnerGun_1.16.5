@@ -1,5 +1,6 @@
 package com.nindybun.burnergun.common.capabilities.burnergunmk2;
 
+import net.minecraft.item.Item;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
@@ -10,6 +11,8 @@ import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BurnerGunMK2InfoProvider implements BurnerGunMK2Info, ICapabilitySerializable<INBT> {
     @CapabilityInject(BurnerGunMK2Info.class)
@@ -41,6 +44,8 @@ public class BurnerGunMK2InfoProvider implements BurnerGunMK2Info, ICapabilitySe
     public boolean trash = true;
     public boolean smelt = true;
     public ListNBT upgrades = new ListNBT();
+    public ListNBT trashFilter = new ListNBT();
+    public ListNBT smeltFilter = new ListNBT();
 
     @Override
     public void setVolume(float value) {
@@ -140,6 +145,26 @@ public class BurnerGunMK2InfoProvider implements BurnerGunMK2Info, ICapabilitySe
     @Override
     public ListNBT getUpgradeNBTList() {
         return upgrades;
+    }
+
+    @Override
+    public void setTrashNBTFilter(ListNBT items) {
+        trashFilter = items;
+    }
+
+    @Override
+    public ListNBT getTrashNBTFilter() {
+        return trashFilter;
+    }
+
+    @Override
+    public void setSmeltNBTFilter(ListNBT items) {
+        smeltFilter = items;
+    }
+
+    @Override
+    public ListNBT getSmeltNBTFilter() {
+        return smeltFilter;
     }
 
 

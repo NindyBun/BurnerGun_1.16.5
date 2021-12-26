@@ -1,17 +1,17 @@
-package com.nindybun.burnergun.common.items.upgrades.Trash;
+package com.nindybun.burnergun.common.items.upgrades.Auto_Smelt;
 
+import com.nindybun.burnergun.common.containers.AutoSmeltContainer;
 import com.nindybun.burnergun.common.containers.TrashContainer;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.items.upgrades.UpgradeCard;
 import com.nindybun.burnergun.common.network.PacketHandler;
+import com.nindybun.burnergun.common.network.packets.PacketOpenAutoSmeltGui;
 import com.nindybun.burnergun.common.network.packets.PacketOpenTrashGui;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.SimpleNamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -22,11 +22,11 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class Trash extends UpgradeCard {
+public class AutoSmelt extends UpgradeCard {
     Upgrade upgrade;
     public static final Logger LOGGER = LogManager.getLogger();
 
-    public Trash(Upgrade upgrade) {
+    public AutoSmelt(Upgrade upgrade) {
         super(upgrade);
         this.upgrade = upgrade;
     }
@@ -35,7 +35,7 @@ public class Trash extends UpgradeCard {
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!world.isClientSide) {
-            PacketHandler.sendToServer(new PacketOpenTrashGui());
+            PacketHandler.sendToServer(new PacketOpenAutoSmeltGui());
         }
         return ActionResult.success(stack);
     }
@@ -47,21 +47,21 @@ public class Trash extends UpgradeCard {
     @Nonnull
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, CompoundNBT oldCapNbt) {
-        if (this.getClass() == Trash.class){
-            return new com.nindybun.burnergun.common.items.upgrades.Trash.TrashProvider();
+        if (this.getClass() == AutoSmelt.class){
+            return new AutoSmeltProvider();
         }else{
             return super.initCapabilities(stack, oldCapNbt);
         }
 
     }
 
-    public static TrashHandler getHandler(ItemStack itemStack) {
+    public static AutoSmeltHandler getHandler(ItemStack itemStack) {
         IItemHandler handler = itemStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
-        if (handler == null || !(handler instanceof TrashHandler)) {
-            LOGGER.error("Trash did not have the expected ITEM_HANDLER_CAPABILITY");
-            return new TrashHandler(TrashContainer.MAX_EXPECTED_HANDLER_SLOT_COUNT);
+        if (handler == null || !(handler instanceof AutoSmeltHandler)) {
+            LOGGER.error("AutoSmelt did not have the expected ITEM_HANDLER_CAPABILITY");
+            return new AutoSmeltHandler(AutoSmeltContainer.MAX_EXPECTED_HANDLER_SLOT_COUNT);
         }
-        return (TrashHandler) handler;
+        return (AutoSmeltHandler) handler;
     }
 
     private final String BASE_NBT_TAG = "base";
@@ -72,7 +72,7 @@ public class Trash extends UpgradeCard {
     @Override
     public CompoundNBT getShareTag(ItemStack stack) {
         CompoundNBT baseTag = stack.getTag();
-        TrashHandler handler = getHandler(stack);
+        AutoSmeltHandler handler = getHandler(stack);
         CompoundNBT capabilityTag = handler.serializeNBT();
         CompoundNBT combinedTag = new CompoundNBT();
         if (baseTag != null) {
@@ -93,7 +93,7 @@ public class Trash extends UpgradeCard {
         CompoundNBT baseTag = nbt.getCompound(BASE_NBT_TAG);
         CompoundNBT capabilityTag = nbt.getCompound(CAPABILITY_NBT_TAG);
         stack.setTag(baseTag);
-        TrashHandler handler = getHandler(stack);
+        AutoSmeltHandler handler = getHandler(stack);
         handler.deserializeNBT(capabilityTag);
     }
 }

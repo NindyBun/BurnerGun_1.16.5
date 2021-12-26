@@ -23,15 +23,8 @@ public class UpgradeBagHandler extends ItemStackHandler {
         return false;
     }
 
-    public boolean isDirty() {
-        boolean currentState = isDirty;
-        isDirty = false;
-        return currentState;
-    }
-
     protected void onContentsChanged(int slot) {
-        super.onContentsChanged(slot);
-        isDirty = true;
+        this.validateSlotIndex(slot);
     }
 
 

@@ -1,7 +1,10 @@
 package com.nindybun.burnergun.common.containers;
 
-import com.nindybun.burnergun.common.items.upgrades.Auto_Fuel.AutoFuel;
-import com.nindybun.burnergun.common.items.upgrades.Auto_Fuel.AutoFuelHandler;
+import com.nindybun.burnergun.common.items.burnergunmk2.BurnerGunMK2;
+import com.nindybun.burnergun.common.items.upgrades.Auto_Smelt.AutoSmelt;
+import com.nindybun.burnergun.common.items.upgrades.Auto_Smelt.AutoSmeltHandler;
+import com.nindybun.burnergun.common.items.upgrades.Trash.Trash;
+import com.nindybun.burnergun.common.items.upgrades.Trash.TrashHandler;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -13,20 +16,20 @@ import net.minecraftforge.items.SlotItemHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class AutoFuelContainer extends Container {
+public class AutoSmeltContainer extends Container {
 
-    AutoFuelContainer(int windowId, PlayerInventory playerInv,
-                      PacketBuffer buf){
-        this(windowId, playerInv, new AutoFuelHandler(MAX_EXPECTED_HANDLER_SLOT_COUNT));
+    AutoSmeltContainer(int windowId, PlayerInventory playerInv,
+                       PacketBuffer buf){
+        this(windowId, playerInv, new AutoSmeltHandler(MAX_EXPECTED_HANDLER_SLOT_COUNT));
     }
 
-    public AutoFuelContainer(int windowId, PlayerInventory playerInventory, AutoFuelHandler handler){
-        super(ModContainers.AUTOFUEL_CONTAINER.get(), windowId);
+    public AutoSmeltContainer(int windowId, PlayerInventory playerInventory, AutoSmeltHandler handler){
+        super(ModContainers.AUTO_SMELT_CONTAINER.get(), windowId);
         this.handler = handler;
         this.setup(playerInventory);
     }
 
-    private final AutoFuelHandler handler;
+    private final AutoSmeltHandler handler;
 
     private static final int HOTBAR_SLOT_COUNT = 9;
     private static final int PLAYER_INVENTORY_ROW_COUNT = 3;
@@ -36,7 +39,7 @@ public class AutoFuelContainer extends Container {
 
     private static final int VANILLA_FIRST_SLOT_INDEX = 0;
     private static final int HANDLER_FIRST_SLOT_INDEX = VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT;
-    public static final int MAX_EXPECTED_HANDLER_SLOT_COUNT = 18;
+    public static final int MAX_EXPECTED_HANDLER_SLOT_COUNT = 27;
 
     private final int HANDLER_SLOTS_PER_ROW = 9;
 
@@ -44,12 +47,12 @@ public class AutoFuelContainer extends Container {
     private static final int HANDLER_INVENTORY_YPOS = 8;
 
     private final int PLAYER_INVENTORY_XPOS = 8;
-    private static final int PLAYER_INVENTORY_YPOS = 66;
+    private static final int PLAYER_INVENTORY_YPOS = 84;
 
     private final int SLOT_X_SPACING = 18;
     private final int SLOT_Y_SPACING = 18;
     private final int HOTBAR_XPOS = 8;
-    private final int HOTBAR_YPOS = 124;
+    private final int HOTBAR_YPOS = 142;
 
     private void setup(PlayerInventory playerInv){
         // Add the players hotbar to the gui - the [xpos, ypos] location of each item
@@ -70,7 +73,7 @@ public class AutoFuelContainer extends Container {
 
         int bagSlotCount = handler.getSlots();
         if (bagSlotCount < 1 || bagSlotCount > MAX_EXPECTED_HANDLER_SLOT_COUNT) {
-            LOGGER.warn("Unexpected invalid slot count in AutoFuelHandler(" + bagSlotCount + ")");
+            LOGGER.warn("Unexpected invalid slot count in AutoSmeltHandler(" + bagSlotCount + ")");
             bagSlotCount = MathHelper.clamp(bagSlotCount, 1, MAX_EXPECTED_HANDLER_SLOT_COUNT);
         }
 
@@ -89,16 +92,18 @@ public class AutoFuelContainer extends Container {
     public boolean stillValid(PlayerEntity playerIn) {
         ItemStack main = playerIn.getMainHandItem();
         ItemStack off = playerIn.getOffhandItem();
-        return (!main.isEmpty() && main.getItem() instanceof AutoFuel) ||
-                (!off.isEmpty() && off.getItem() instanceof AutoFuel);
+        return (!main.isEmpty() && main.getItem() instanceof AutoSmelt) ||
+                (!off.isEmpty() && off.getItem() instanceof AutoSmelt) ||
+                (!main.isEmpty() && main.getItem() instanceof BurnerGunMK2) ||
+                (!off.isEmpty() && off.getItem() instanceof BurnerGunMK2);
     }
 
+
     @Override
-    public ItemStack quickMoveStack(PlayerEntity p_82846_1_, int p_82846_2_) {
-        super.quickMoveStack(p_82846_1_, p_82846_2_);
+    public ItemStack quickMoveStack(PlayerEntity playerIn, int index) {
+        super.quickMoveStack(playerIn, index);
         return ItemStack.EMPTY;
     }
 
     private static final Logger LOGGER = LogManager.getLogger();
-
 }

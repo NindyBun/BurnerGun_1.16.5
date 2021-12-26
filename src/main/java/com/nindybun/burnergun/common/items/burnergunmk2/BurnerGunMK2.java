@@ -8,6 +8,7 @@ import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1;
 import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1Provider;
 import com.nindybun.burnergun.util.WorldUtil;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -18,6 +19,9 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -29,6 +33,7 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.text.StringContent;
+import java.util.List;
 
 public class BurnerGunMK2 extends Item {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -36,6 +41,12 @@ public class BurnerGunMK2 extends Item {
 
     public BurnerGunMK2() {
         super(new Item.Properties().stacksTo(1).setNoRepair().fireResistant().tab(BurnerGun.itemGroup));
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        tooltip.add(new StringTextComponent("Was is Worth it? What did it cost?").withStyle(TextFormatting.GOLD));
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
     }
 
     @Nonnull

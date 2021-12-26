@@ -1,8 +1,7 @@
-package com.nindybun.burnergun.common.items.upgrades.Trash;
+package com.nindybun.burnergun.common.items.upgrades.Auto_Smelt;
 
 import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1;
 import com.nindybun.burnergun.common.items.burnergunmk2.BurnerGunMK2;
-import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.items.upgrades.UpgradeCard;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -12,11 +11,10 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 
-public class TrashHandler extends ItemStackHandler {
-    private boolean isDirty = true;
+public class AutoSmeltHandler extends ItemStackHandler {
     public static final Logger LOGGER = LogManager.getLogger();
 
-    public TrashHandler(int numberOfSlots){
+    public AutoSmeltHandler(int numberOfSlots){
         super(numberOfSlots);
     }
 

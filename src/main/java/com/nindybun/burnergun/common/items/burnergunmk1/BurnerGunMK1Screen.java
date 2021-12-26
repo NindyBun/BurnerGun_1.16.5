@@ -46,7 +46,7 @@ public class BurnerGunMK1Screen extends ContainerScreen<BurnerGunMK1Container> {
 
     @Override
     protected void renderLabels(MatrixStack matrixStack, int x, int y) {
-        this.font.draw(matrixStack, "Burner Gun MK1", 3, -8, Color.WHITE.getRGB());
+        this.font.draw(matrixStack, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.burnergunmk1"), 3, -8, Color.WHITE.getRGB());
     }
 
     private static final Logger LOGGER = LogManager.getLogger();

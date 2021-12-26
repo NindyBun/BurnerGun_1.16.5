@@ -72,7 +72,7 @@ public class UpgradeBagContainer extends Container {
 
         int bagSlotCount = handler.getSlots();
         if (bagSlotCount < 1 || bagSlotCount > MAX_EXPECTED_HANDLER_SLOT_COUNT) {
-            LOGGER.warn("Unexpected invalid slot count in VoidHandler(" + bagSlotCount + ")");
+            LOGGER.warn("Unexpected invalid slot count in UpgradeBagHandler(" + bagSlotCount + ")");
             bagSlotCount = MathHelper.clamp(bagSlotCount, 1, MAX_EXPECTED_HANDLER_SLOT_COUNT);
         }
 

@@ -8,6 +8,7 @@ import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -42,7 +43,7 @@ public class UpgradeBagScreen extends ContainerScreen<UpgradeBagContainer> {
 
     @Override
     protected void renderLabels(MatrixStack matrixStack, int x, int y) {
-        this.font.draw(matrixStack, "Upgrade Bag", 2, -8, Color.WHITE.getRGB());
+        this.font.draw(matrixStack, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.upgradebag"), 2, -8, Color.WHITE.getRGB());
     }
 
     private static final Logger LOGGER = LogManager.getLogger();

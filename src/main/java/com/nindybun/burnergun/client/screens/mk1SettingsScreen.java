@@ -35,7 +35,7 @@ public class mk1SettingsScreen extends Screen implements Slider.ISlider {
     protected void init() {
         int midX = width/2;
         int midY = height/2;
-        this.addButton(volumeSlider = new Slider(midX-75, midY-10, 125, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.volume"), new StringTextComponent("%"), 0, 100, Math.min(100, this.volume*100), false, true, slider -> {}, this));
+        this.addButton(volumeSlider = new Slider(midX-75, midY-10, 125, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.volume"), new StringTextComponent("%"), 0, 100, Math.min(100, volume*100), false, true, slider -> {}, this));
     }
 
     @Override

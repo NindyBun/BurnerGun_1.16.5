@@ -36,7 +36,7 @@ public class BurnerGunMK1InfoProvider implements BurnerGunMK1Info, ICapabilitySe
     public int heatValue;
     public int cooldown;
     public int harvestLevel;
-    public float volume;
+    public float volume = 1.0f;
 
 
     @Override

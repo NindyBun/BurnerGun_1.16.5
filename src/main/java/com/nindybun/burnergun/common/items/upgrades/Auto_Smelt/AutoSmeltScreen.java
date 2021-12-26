@@ -1,11 +1,10 @@
-package com.nindybun.burnergun.common.items.burnergunmk2;
+package com.nindybun.burnergun.common.items.upgrades.Auto_Smelt;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.nindybun.burnergun.common.BurnerGun;
-import com.nindybun.burnergun.common.containers.BurnerGunMK2Container;
-import com.nindybun.burnergun.common.network.PacketHandler;
-import com.nindybun.burnergun.common.network.packets.PacketUpdateGun;
+import com.nindybun.burnergun.common.containers.AutoSmeltContainer;
+import com.nindybun.burnergun.common.containers.TrashContainer;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
@@ -16,8 +15,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
 
-public class BurnerGunMK2Screen extends ContainerScreen<BurnerGunMK2Container> {
-    public BurnerGunMK2Screen(BurnerGunMK2Container container, PlayerInventory playerInv, ITextComponent title) {
+public class AutoSmeltScreen extends ContainerScreen<AutoSmeltContainer> {
+    public AutoSmeltScreen(AutoSmeltContainer container, PlayerInventory playerInv, ITextComponent title) {
         super(container, playerInv, title);
     }
 
@@ -45,16 +44,10 @@ public class BurnerGunMK2Screen extends ContainerScreen<BurnerGunMK2Container> {
 
     @Override
     protected void renderLabels(MatrixStack matrixStack, int x, int y) {
-        this.font.draw(matrixStack, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.burnergunmk2"), 3, -8, Color.WHITE.getRGB());
-    }
-
-    @Override
-    public void removed() {
-        PacketHandler.sendToServer(new PacketUpdateGun());
-        super.removed();
+        this.font.draw(matrixStack, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.autosmelt_filter"), 2, -8, Color.WHITE.getRGB());
     }
 
     private static final Logger LOGGER = LogManager.getLogger();
     // This is the resource location for the background image
-    private static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation(BurnerGun.MOD_ID, "textures/gui/burnergunmk2_gui.png");
+    private static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation(BurnerGun.MOD_ID, "textures/gui/upgrade_bag_gui.png");
 }

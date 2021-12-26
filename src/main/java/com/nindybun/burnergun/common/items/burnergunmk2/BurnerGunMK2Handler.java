@@ -38,7 +38,6 @@ public class BurnerGunMK2Handler extends ItemStackHandler {
 
     @Override
     protected void onContentsChanged(int slot) {
-        //PacketHandler.sendToServer(new PacketUpdateGun(slot));
         this.validateSlotIndex(slot);
     }
 

@@ -1,5 +1,6 @@
 package com.nindybun.burnergun.common.containers;
 
+import com.nindybun.burnergun.common.items.burnergunmk2.BurnerGunMK2;
 import com.nindybun.burnergun.common.items.upgrades.Trash.Trash;
 import com.nindybun.burnergun.common.items.upgrades.Trash.TrashHandler;
 import net.minecraft.entity.player.PlayerEntity;
@@ -36,7 +37,7 @@ public class TrashContainer extends Container {
 
     private static final int VANILLA_FIRST_SLOT_INDEX = 0;
     private static final int HANDLER_FIRST_SLOT_INDEX = VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT;
-    public static final int MAX_EXPECTED_HANDLER_SLOT_COUNT = 18;
+    public static final int MAX_EXPECTED_HANDLER_SLOT_COUNT = 27;
 
     private final int HANDLER_SLOTS_PER_ROW = 9;
 
@@ -44,12 +45,12 @@ public class TrashContainer extends Container {
     private static final int HANDLER_INVENTORY_YPOS = 8;
 
     private final int PLAYER_INVENTORY_XPOS = 8;
-    private static final int PLAYER_INVENTORY_YPOS = 66;
+    private static final int PLAYER_INVENTORY_YPOS = 84;
 
     private final int SLOT_X_SPACING = 18;
     private final int SLOT_Y_SPACING = 18;
     private final int HOTBAR_XPOS = 8;
-    private final int HOTBAR_YPOS = 124;
+    private final int HOTBAR_YPOS = 142;
 
     private void setup(PlayerInventory playerInv){
         // Add the players hotbar to the gui - the [xpos, ypos] location of each item
@@ -70,7 +71,7 @@ public class TrashContainer extends Container {
 
         int bagSlotCount = handler.getSlots();
         if (bagSlotCount < 1 || bagSlotCount > MAX_EXPECTED_HANDLER_SLOT_COUNT) {
-            LOGGER.warn("Unexpected invalid slot count in VoidHandler(" + bagSlotCount + ")");
+            LOGGER.warn("Unexpected invalid slot count in TrashHandler(" + bagSlotCount + ")");
             bagSlotCount = MathHelper.clamp(bagSlotCount, 1, MAX_EXPECTED_HANDLER_SLOT_COUNT);
         }
 
@@ -90,7 +91,9 @@ public class TrashContainer extends Container {
         ItemStack main = playerIn.getMainHandItem();
         ItemStack off = playerIn.getOffhandItem();
         return (!main.isEmpty() && main.getItem() instanceof Trash) ||
-                (!off.isEmpty() && off.getItem() instanceof Trash);
+                (!off.isEmpty() && off.getItem() instanceof Trash) ||
+                (!main.isEmpty() && main.getItem() instanceof BurnerGunMK2) ||
+                (!off.isEmpty() && off.getItem() instanceof BurnerGunMK2);
     }
 
 

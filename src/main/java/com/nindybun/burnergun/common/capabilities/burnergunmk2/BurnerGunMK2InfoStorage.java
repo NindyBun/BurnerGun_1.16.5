@@ -23,6 +23,8 @@ public class BurnerGunMK2InfoStorage implements Capability.IStorage<BurnerGunMK2
             tag.putBoolean("Trash", instance.getTrashIsWhitelist());
             tag.putBoolean("Smelt", instance.getSmeltIsWhitelist());
             tag.put("Upgrades", instance.getUpgradeNBTList());
+            tag.put("TrashFilter", instance.getTrashNBTFilter());
+        tag.put("SmeltFilter", instance.getSmeltNBTFilter());
         return tag;
     }
 
@@ -39,5 +41,7 @@ public class BurnerGunMK2InfoStorage implements Capability.IStorage<BurnerGunMK2
         instance.setTrashIsWhitelist(tag.getBoolean("Trash"));
         instance.setSmeltIsWhitelist(tag.getBoolean("Smelt"));
         instance.setUpgradeNBTList(tag.getList("Upgrades", Constants.NBT.TAG_COMPOUND));
+        instance.setTrashNBTFilter(tag.getList("TrashFilter", Constants.NBT.TAG_COMPOUND));
+        instance.setSmeltNBTFilter(tag.getList("SmeltFilter", Constants.NBT.TAG_COMPOUND));
     }
 }

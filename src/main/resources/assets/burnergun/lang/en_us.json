@@ -73,6 +73,12 @@
   "tooltip.burnergun.screen.edit_filter": "Edit Filter",
   "tooltip.burnergun.screen.mk1Settings": "Burner Gun MK1 Settings",
   "tooltip.burnergun.screen.mk2Settings": "Burner Gun MK2 Settings",
+  "tooltip.burnergun.screen.trash_filter": "Trash Filter",
+  "tooltip.burnergun.screen.autosmelt_filter": "AutoSmelt Filter",
+  "tooltip.burnergun.screen.burnergunmk1": "Burner Gun MK1",
+  "tooltip.burnergun.screen.burnergunmk2": "Burner Gun MK2",
+  "tooltip.burnergun.screen.autofuel_filter": "AutoFuel Filter",
+  "tooltip.burnergun.screen.upgradebag": "Upgrade Bag",
 
   "item.burnergun.burnergun_mk1":  "Burner Gun MK1",
   "item.burnergun.burnergun_mk2": "Burner Gun MK2",

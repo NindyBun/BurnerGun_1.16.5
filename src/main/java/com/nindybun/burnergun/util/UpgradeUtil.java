@@ -6,6 +6,7 @@ import com.nindybun.burnergun.common.items.burnergunmk2.BurnerGunMK2;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.items.upgrades.UpgradeCard;
 import jdk.nashorn.internal.ir.EmptyNode;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
@@ -21,7 +22,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class UpgradeUtil {
-    private static final String KEY_UPGRADES = "upgrades";
+    private static final String KEY_FILTER = "filter";
     private static final String KEY_UPGRADE = "upgrade";
     private static final String KEY_ENABLED = "enabled";
 
@@ -32,6 +33,18 @@ public class UpgradeUtil {
             CompoundNBT compound = new CompoundNBT();
             compound.putString(KEY_UPGRADE, upgrade.getName());
             compound.putBoolean(KEY_ENABLED, upgrade.isActive());
+            list.add(compound);
+        });
+
+        return list;
+    }
+
+    public static ListNBT setFiltersNBT(List<Item> items) {
+        ListNBT list = new ListNBT();
+
+        items.forEach(item -> {
+            CompoundNBT compound = new CompoundNBT();
+            compound.putString(KEY_FILTER, item.toString());
             list.add(compound);
         });
 

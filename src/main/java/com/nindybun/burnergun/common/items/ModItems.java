@@ -5,6 +5,7 @@ import com.nindybun.burnergun.common.blocks.ModBlocks;
 import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1;
 import com.nindybun.burnergun.common.items.burnergunmk2.BurnerGunMK2;
 import com.nindybun.burnergun.common.items.upgrades.Auto_Fuel.AutoFuel;
+import com.nindybun.burnergun.common.items.upgrades.Auto_Smelt.AutoSmelt;
 import com.nindybun.burnergun.common.items.upgrades.Trash.Trash;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade_Bag.UpgradeBag;
@@ -36,7 +37,7 @@ public class ModItems {
     public static final RegistryObject<Item> MAGNET = UPGRADE_ITEMS.register("magnet_upgrade", Upgrade.MAGNET::getCard);
     public static final RegistryObject<Item> SILK_TOUCH = UPGRADE_ITEMS.register("silk_touch_upgrade", Upgrade.SILK_TOUCH::getCard);
     public static final RegistryObject<Item> LIGHT = UPGRADE_ITEMS.register("light_upgrade", Upgrade.LIGHT::getCard);
-    public static final RegistryObject<Item> AUTO_SMELT = UPGRADE_ITEMS.register("auto_smelt_upgrade", Upgrade.AUTO_SMELT::getCard);
+    public static final RegistryObject<Item> AUTO_SMELT = UPGRADE_ITEMS.register("auto_smelt_upgrade", () -> new AutoSmelt(Upgrade.AUTO_SMELT));
     public static final RegistryObject<Item> TRASH = UPGRADE_ITEMS.register("trash_upgrade", () -> new Trash(Upgrade.TRASH));
     public static final RegistryObject<Item> UPGRADE_BAG = UPGRADE_ITEMS.register("upgrade_bag", () -> new UpgradeBag(Upgrade.UPGRADE_BAG));
     public static final RegistryObject<Item> UNIFUEL = UPGRADE_ITEMS.register("unifuel", Upgrade.UNIFUEL::getCard);
