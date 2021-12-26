@@ -60,6 +60,7 @@ public class BurnerGunMK2 extends Item {
     }
 
     private final String INFO_NBT_TAG = "burnergunMK2InfoNBT";
+    private final String HANDLER_NBT_TAG = "burnergunMK2HandlerNBT";
 
     @Override
     public CompoundNBT getShareTag(ItemStack stack) {
@@ -67,15 +68,22 @@ public class BurnerGunMK2 extends Item {
         stack.getCapability(BurnerGunMK2InfoProvider.burnerGunInfoMK2Capability, null).ifPresent((cap) -> {
             infoTag.put(INFO_NBT_TAG, BurnerGunMK2InfoProvider.burnerGunInfoMK2Capability.writeNBT(cap, null));
         });
+        stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).ifPresent((cap)->{
+            infoTag.put(HANDLER_NBT_TAG, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.writeNBT(cap, null));
+        });
         return infoTag;
     }
 
     @Override
     public void readShareTag(ItemStack stack, @Nullable CompoundNBT nbt) {
-        if (nbt != null)
+        if (nbt != null){
             stack.getCapability(BurnerGunMK2InfoProvider.burnerGunInfoMK2Capability, null).ifPresent((cap) -> {
                 BurnerGunMK2InfoProvider.burnerGunInfoMK2Capability.readNBT(cap, null, nbt.get(INFO_NBT_TAG));
             });
+            stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).ifPresent((cap)->{
+                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.readNBT(cap, null, nbt.get(HANDLER_NBT_TAG));
+            });
+        }
     }
 
     @Override

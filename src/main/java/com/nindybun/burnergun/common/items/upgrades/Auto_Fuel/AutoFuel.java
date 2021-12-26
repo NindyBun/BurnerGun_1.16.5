@@ -1,5 +1,6 @@
 package com.nindybun.burnergun.common.items.upgrades.Auto_Fuel;
 
+import com.nindybun.burnergun.common.capabilities.burnergunmk1.BurnerGunMK1InfoProvider;
 import com.nindybun.burnergun.common.containers.AutoFuelContainer;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.items.upgrades.UpgradeCard;
@@ -48,53 +49,31 @@ public class AutoFuel extends UpgradeCard {
     @Nonnull
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, CompoundNBT oldCapNbt) {
-        if (this.getClass() == AutoFuel.class){
-            return new AutoFuelProvider();
-        }else{
-            return super.initCapabilities(stack, oldCapNbt);
-        }
+        return new AutoFuelProvider();
 
     }
 
-    public static AutoFuelHandler getHandler(ItemStack itemStack) {
-        IItemHandler handler = itemStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
-        if (handler == null || !(handler instanceof AutoFuelHandler)) {
-            LOGGER.error("AutoFuelStack did not have the expected ITEM_HANDLER_CAPABILITY");
-            return new AutoFuelHandler(AutoFuelContainer.MAX_EXPECTED_HANDLER_SLOT_COUNT);
-        }
-        return (AutoFuelHandler) handler;
+    public static IItemHandler getHandler(ItemStack itemStack) {
+        return itemStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElse(null);
     }
 
-    private final String BASE_NBT_TAG = "base";
-    private final String CAPABILITY_NBT_TAG = "cap";
+    private final String HANDLER_NBT_TAG = "autofuelHandlerNBT";
 
-
-    @Nullable
     @Override
     public CompoundNBT getShareTag(ItemStack stack) {
-        CompoundNBT baseTag = stack.getTag();
-        AutoFuelHandler handler = getHandler(stack);
-        CompoundNBT capabilityTag = handler.serializeNBT();
-        CompoundNBT combinedTag = new CompoundNBT();
-        if (baseTag != null) {
-            combinedTag.put(BASE_NBT_TAG, baseTag);
-        }
-        if (capabilityTag != null) {
-            combinedTag.put(CAPABILITY_NBT_TAG, capabilityTag);
-        }
-        return combinedTag;
+        CompoundNBT infoTag = new CompoundNBT();
+        stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).ifPresent((cap)->{
+            infoTag.put(HANDLER_NBT_TAG, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.writeNBT(cap, null));
+        });
+        return infoTag;
     }
 
     @Override
     public void readShareTag(ItemStack stack, @Nullable CompoundNBT nbt) {
-        if (nbt == null) {
-            stack.setTag(null);
-            return;
+        if (nbt != null){
+            stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).ifPresent((cap)->{
+                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.readNBT(cap, null, nbt.get(HANDLER_NBT_TAG));
+            });
         }
-        CompoundNBT baseTag = nbt.getCompound(BASE_NBT_TAG);
-        CompoundNBT capabilityTag = nbt.getCompound(CAPABILITY_NBT_TAG);
-        stack.setTag(baseTag);
-        AutoFuelHandler handler = getHandler(stack);
-        handler.deserializeNBT(capabilityTag);
     }
 }

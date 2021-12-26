@@ -47,53 +47,30 @@ public class UpgradeBag extends UpgradeCard {
     @Nonnull
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, CompoundNBT oldCapNbt) {
-        if (this.getClass() == UpgradeBag.class){
-            return new com.nindybun.burnergun.common.items.upgrades.Upgrade_Bag.UpgradeBagProvider();
-        }else{
-            return super.initCapabilities(stack, oldCapNbt);
-        }
-
+        return new UpgradeBagProvider();
     }
 
-    public static com.nindybun.burnergun.common.items.upgrades.Upgrade_Bag.UpgradeBagHandler getHandler(ItemStack itemStack) {
-        IItemHandler handler = itemStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
-        if (handler == null || !(handler instanceof com.nindybun.burnergun.common.items.upgrades.Upgrade_Bag.UpgradeBagHandler)) {
-            LOGGER.error("UpgraadeBagStack did not have the expected ITEM_HANDLER_CAPABILITY");
-            return new com.nindybun.burnergun.common.items.upgrades.Upgrade_Bag.UpgradeBagHandler(UpgradeBagContainer.MAX_EXPECTED_HANDLER_SLOT_COUNT);
-        }
-        return (com.nindybun.burnergun.common.items.upgrades.Upgrade_Bag.UpgradeBagHandler) handler;
+    public static IItemHandler getHandler(ItemStack itemStack) {
+        return itemStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
     }
 
-    private final String BASE_NBT_TAG = "base";
-    private final String CAPABILITY_NBT_TAG = "cap";
+    private final String HANDLER_NBT_TAG = "upgradebagHandlerNBT";
 
-
-    @Nullable
     @Override
     public CompoundNBT getShareTag(ItemStack stack) {
-        CompoundNBT baseTag = stack.getTag();
-        com.nindybun.burnergun.common.items.upgrades.Upgrade_Bag.UpgradeBagHandler handler = getHandler(stack);
-        CompoundNBT capabilityTag = handler.serializeNBT();
-        CompoundNBT combinedTag = new CompoundNBT();
-        if (baseTag != null) {
-            combinedTag.put(BASE_NBT_TAG, baseTag);
-        }
-        if (capabilityTag != null) {
-            combinedTag.put(CAPABILITY_NBT_TAG, capabilityTag);
-        }
-        return combinedTag;
+        CompoundNBT infoTag = new CompoundNBT();
+        stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).ifPresent((cap)->{
+            infoTag.put(HANDLER_NBT_TAG, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.writeNBT(cap, null));
+        });
+        return infoTag;
     }
 
     @Override
     public void readShareTag(ItemStack stack, @Nullable CompoundNBT nbt) {
-        if (nbt == null) {
-            stack.setTag(null);
-            return;
+        if (nbt != null){
+            stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).ifPresent((cap)->{
+                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.readNBT(cap, null, nbt.get(HANDLER_NBT_TAG));
+            });
         }
-        CompoundNBT baseTag = nbt.getCompound(BASE_NBT_TAG);
-        CompoundNBT capabilityTag = nbt.getCompound(CAPABILITY_NBT_TAG);
-        stack.setTag(baseTag);
-        com.nindybun.burnergun.common.items.upgrades.Upgrade_Bag.UpgradeBagHandler handler = getHandler(stack);
-        handler.deserializeNBT(capabilityTag);
     }
 }
