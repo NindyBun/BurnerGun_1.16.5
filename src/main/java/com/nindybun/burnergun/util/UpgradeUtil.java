@@ -6,6 +6,7 @@ import com.nindybun.burnergun.common.items.burnergunmk2.BurnerGunMK2;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.items.upgrades.UpgradeCard;
 import jdk.nashorn.internal.ir.EmptyNode;
+import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -166,7 +167,19 @@ public class UpgradeUtil {
         return upgrades;
     }
 
-
+    public static List<ItemStack> getItemStacksFromList(ListNBT list){
+        List<ItemStack> items = new ArrayList<>();
+        if (list.isEmpty())
+            return items;
+        for (int i = 0; i < list.size(); i++) {
+            CompoundNBT listNBT = list.getCompound(i);
+            ItemStack type = ItemStack.of(listNBT.getCompound(KEY_FILTER));
+            if (type == null)
+                continue;
+            items.add(type);
+        }
+        return items;
+    }
 
     //Returns upgrade stacks
     public static List<ItemStack> getUpgradeStacks(ItemStack stack){
