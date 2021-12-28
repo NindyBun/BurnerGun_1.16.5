@@ -7,7 +7,9 @@ import com.nindybun.burnergun.common.capabilities.burnergunmk2.BurnerGunMK2InfoP
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.util.UpgradeUtil;
 import com.nindybun.burnergun.util.WorldUtil;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentType;
@@ -157,6 +159,8 @@ public class BurnerGunMK2 extends Item {
         return drop;
     }
 
+
+
     public void mineBlock(World world, ItemStack gun, BurnerGunMK2Info info, List<Upgrade> activeUpgrades, List<Item> smeltFilter, List<Item> trashFilter, BlockPos blockPos, BlockState blockState, PlayerEntity player){
         if (canMine(world, blockPos, blockState, player)){
             List<ItemStack> blockDrops = blockState.getDrops(new LootContext.Builder((ServerWorld) world)
@@ -187,8 +191,19 @@ public class BurnerGunMK2 extends Item {
         }
     }
 
-    public void mineArea(){
-
+    public void mineArea(World world, BlockRayTraceResult ray, ItemStack gun, BurnerGunMK2Info info, List<Upgrade> activeUpgrades, List<Item> smeltFilter, List<Item> trashFilter, BlockPos blockPos, BlockState blockState, PlayerEntity player){
+        int xRad = info.getHorizontal();
+        int yRad = info.getVertical();
+        Vector3d size = WorldUtil.getDim(ray, xRad, yRad, player);
+        for (int xPos = blockPos.getX() - (int)size.x(); xPos <= blockPos.getX() + (int)size.x(); ++xPos){
+            for (int yPos = blockPos.getY() - (int)size.y(); yPos <= blockPos.getY() + (int)size.y(); ++yPos){
+                for (int zPos = blockPos.getZ() - (int)size.z(); zPos <= blockPos.getZ() + (int)size.z(); ++zPos){
+                    BlockPos thePos = new BlockPos(xPos, yPos, zPos);
+                    BlockState theState = world.getBlockState(thePos);
+                    mineBlock(world, gun, info, activeUpgrades, smeltFilter, trashFilter, thePos, theState, player);
+                }
+            }
+        }
     }
 
 
@@ -211,7 +226,7 @@ public class BurnerGunMK2 extends Item {
                 if (player.isCrouching())
                     mineBlock(world, gun, info, activeUpgrades, smeltFilter, trashFilter, blockPos, blockState, player);
                 else
-                    mineArea();
+                    mineArea(world, blockRayTraceResult, gun, info, activeUpgrades, smeltFilter, trashFilter, blockPos, blockState, player);
             }
         }
         UpgradeUtil.removeEnchantment(gun, Enchantments.BLOCK_FORTUNE);

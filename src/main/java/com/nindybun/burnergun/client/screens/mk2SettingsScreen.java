@@ -155,7 +155,7 @@ public class mk2SettingsScreen extends Screen implements Slider.ISlider {
         settings.add(volumeSlider = new Slider(midX-140, 0, 125, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.volume"), new StringTextComponent("%"), 0, 100,  Math.min(100, volume * 100), false, true, slider -> {}, this));
         settings.add(raycastSlider = new Slider(midX-140, 0, 125, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.raycast"), new StringTextComponent(""), 1, maxRaycastRange, raycastRange, false, true, slider -> {}, this));
         settings.add(verticalSlider = new Slider(midX-140, 0, 125, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.vertical"), new StringTextComponent(""), 0, maxVertical, vertical, false, true, slider -> {}, this));
-        settings.add(horizontalSlider = new Slider(midX-140, 0, 125, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.horizontal"), new StringTextComponent(""), 0, maxHorizontal, vertical, false, true, slider -> {}, this));
+        settings.add(horizontalSlider = new Slider(midX-140, 0, 125, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.horizontal"), new StringTextComponent(""), 0, maxHorizontal, horizontal, false, true, slider -> {}, this));
 
         int top = midY-(((settings.size()*20)+(settings.size()-1)*5)/2);
         for (int i = 0; i < settings.size(); i++) {
