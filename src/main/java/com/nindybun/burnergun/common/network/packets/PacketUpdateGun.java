@@ -70,10 +70,10 @@ public class PacketUpdateGun {
                 }
 
                 if (UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.TRASH)){
-                    List<Item> trashFilter = new ArrayList<>();
+                    List<ItemStack> trashFilter = new ArrayList<>();
                     for (int i = 0; i < trashHandler.getSlots(); i++){
                         if (!trashHandler.getStackInSlot(i).getItem().equals(Items.AIR))
-                            trashFilter.add(trashHandler.getStackInSlot(i).getItem());
+                            trashFilter.add(trashHandler.getStackInSlot(i));
                     }
                     info.setTrashNBTFilter(UpgradeUtil.setFiltersNBT(trashFilter));
                 }else if (!UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.TRASH)){
@@ -81,10 +81,10 @@ public class PacketUpdateGun {
                 }
 
                 if (UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.AUTO_SMELT)){
-                    List<Item> smeltFilter = new ArrayList<>();
+                    List<ItemStack> smeltFilter = new ArrayList<>();
                     for (int i = 0; i < smeltHandler.getSlots(); i++){
                         if (!smeltHandler.getStackInSlot(i).getItem().equals(Items.AIR))
-                            smeltFilter.add(smeltHandler.getStackInSlot(i).getItem());
+                            smeltFilter.add(smeltHandler.getStackInSlot(i));
                     }
                     info.setSmeltNBTFilter(UpgradeUtil.setFiltersNBT(smeltFilter));
                 }else if (!UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.AUTO_SMELT)){

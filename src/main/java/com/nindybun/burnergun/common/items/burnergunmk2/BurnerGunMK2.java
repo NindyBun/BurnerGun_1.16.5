@@ -10,11 +10,15 @@ import com.nindybun.burnergun.util.WorldUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentType;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.MapItem;
 import net.minecraft.item.UseAction;
 import net.minecraft.item.crafting.AbstractCookingRecipe;
 import net.minecraft.item.crafting.IRecipeType;
@@ -23,6 +27,8 @@ import net.minecraft.loot.LootParameters;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
@@ -44,6 +50,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -128,12 +135,29 @@ public class BurnerGunMK2 extends Item {
         return true;
     }
 
-    public List<ItemStack> trashItem(List<ItemStack> list, ItemStack item){
-
-        return list;
+    public ItemStack trashItem(List<Item> trashList, ItemStack drop, Boolean trashWhitelist){
+        if (trashList.contains(drop.getItem()) && !trashWhitelist)
+            return drop;
+        else if (!trashList.contains(drop.getItem()) && trashWhitelist)
+            return drop;
+        return ItemStack.EMPTY;
     }
 
-    public void mineBlock(World world, ItemStack gun, BurnerGunMK2Info info, List<Upgrade> upgrades, List<ItemStack> smeltFilter, List<ItemStack> trashFilter, BlockPos blockPos, BlockState blockState, PlayerEntity player){
+    public ItemStack smeltItem(World world, List<Item> smeltList, ItemStack drop, Boolean smeltWhitelist){
+        IInventory inv = new Inventory(1);
+        inv.setItem(0, drop);
+        Optional<? extends AbstractCookingRecipe> recipe = world.getRecipeManager().getRecipeFor(RECIPE_TYPE, inv, world);
+        if (recipe.isPresent()){
+            ItemStack smelted = recipe.get().getResultItem().copy();
+            if (smeltList.contains(smelted.getItem()) && smeltWhitelist)
+                return smelted;
+            else if (!smeltList.contains(smelted.getItem()) && !smeltWhitelist)
+                return smelted;
+        }
+        return drop;
+    }
+
+    public void mineBlock(World world, ItemStack gun, BurnerGunMK2Info info, List<Upgrade> activeUpgrades, List<Item> smeltFilter, List<Item> trashFilter, BlockPos blockPos, BlockState blockState, PlayerEntity player){
         if (canMine(world, blockPos, blockState, player)){
             List<ItemStack> blockDrops = blockState.getDrops(new LootContext.Builder((ServerWorld) world)
                 .withParameter(LootParameters.TOOL, gun)
@@ -141,16 +165,25 @@ public class BurnerGunMK2 extends Item {
                 .withParameter(LootParameters.BLOCK_STATE, blockState)
             );
             world.destroyBlock(blockPos, false);
+            int blockXP = blockState.getExpDrop(world, blockPos, UpgradeUtil.containsUpgradeFromList(activeUpgrades, Upgrade.FORTUNE_1) ? UpgradeUtil.getUpgradeFromListByUpgrade(activeUpgrades, Upgrade.FORTUNE_1).getTier() : 0, UpgradeUtil.containsUpgradeFromList(activeUpgrades, Upgrade.SILK_TOUCH) ? 1 : 0);
             if (!blockDrops.isEmpty()){
-                blockDrops.forEach(drops -> {
-                    if (UpgradeUtil.containsUpgradeFromList(upgrades, Upgrade.AUTO_SMELT)) {
-                        IInventory inv = new Inventory(1);
-                        inv.setItem(0, drops.copy());
-                        Optional<? extends AbstractCookingRecipe> recipe = world.getRecipeManager().getRecipeFor(RECIPE_TYPE, inv, world);
-                        drops = recipe.isPresent() ? recipe.get().getResultItem().copy() : drops.copy();
+                blockDrops.forEach(drop -> {
+                    if (UpgradeUtil.containsUpgradeFromList(activeUpgrades, Upgrade.AUTO_SMELT))
+                        drop = smeltItem(world, smeltFilter, drop.copy(), info.getSmeltIsWhitelist());
+                    if (UpgradeUtil.containsUpgradeFromList(activeUpgrades, Upgrade.TRASH))
+                        drop = trashItem(trashFilter, drop.copy(), info.getTrashIsWhitelist());
+                    if (UpgradeUtil.containsUpgradeFromList(activeUpgrades, Upgrade.MAGNET)){
+                        if (!player.inventory.add(drop.copy()))
+                            player.drop(drop.copy(), true);
+                    }else{
+                        world.addFreshEntity(new ItemEntity(world, blockPos.getX()+0.5, blockPos.getY()+0.5, blockPos.getZ()+0.5, drop.copy()));
                     }
                 });
             }
+            if (UpgradeUtil.containsUpgradeFromList(activeUpgrades, Upgrade.MAGNET))
+                player.giveExperiencePoints(blockXP);
+            else
+                blockState.getBlock().popExperience((ServerWorld) world, blockPos, blockXP);
         }
     }
 
@@ -162,22 +195,27 @@ public class BurnerGunMK2 extends Item {
     @Override
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack gun = player.getItemInHand(hand);
+        BurnerGunMK2Info info = getInfo(gun);
+        List<Upgrade> activeUpgrades = UpgradeUtil.getActiveUpgrades(gun);
+        BlockRayTraceResult blockRayTraceResult = WorldUtil.getLookingAt(world, player, RayTraceContext.FluidMode.NONE, info.getRaycastRange());
+        BlockPos blockPos = blockRayTraceResult.getBlockPos();
+        BlockState blockState = world.getBlockState(blockPos);
+        List<Item> smeltFilter = UpgradeUtil.getItemsFromList(info.getSmeltNBTFilter());
+        List<Item> trashFilter = UpgradeUtil.getItemsFromList(info.getTrashNBTFilter());
+        if (world.isClientSide)
+            player.playSound(SoundEvents.FIRECHARGE_USE, info.getVolume()*0.5f, 1.0f);
         if (!world.isClientSide){
-            BurnerGunMK2Info info = getInfo(gun);
-            List<Upgrade> upgrades = UpgradeUtil.getUpgradesFromNBT(info.getUpgradeNBTList());
-            BlockRayTraceResult blockRayTraceResult = WorldUtil.getLookingAt(world, player, RayTraceContext.FluidMode.NONE, info.getRaycastRange());
-            BlockPos blockPos = blockRayTraceResult.getBlockPos();
-            BlockState blockState = world.getBlockState(blockPos);
-            List<ItemStack> smeltFilter = UpgradeUtil.getItemStacksFromList(info.getSmeltNBTFilter());
-            List<ItemStack> trashFilter = UpgradeUtil.getItemStacksFromList(info.getTrashNBTFilter());
-            if (canMine(world, blockPos, blockState, player)){
+           if (canMine(world, blockPos, blockState, player)){
+               gun.enchant(Enchantments.BLOCK_FORTUNE, UpgradeUtil.containsUpgradeFromList(activeUpgrades, Upgrade.FORTUNE_1) ? UpgradeUtil.getUpgradeFromListByUpgrade(activeUpgrades, Upgrade.FORTUNE_1).getTier() : 0);
+               gun.enchant(Enchantments.SILK_TOUCH, UpgradeUtil.containsUpgradeFromList(activeUpgrades, Upgrade.SILK_TOUCH) ? 1 : 0);
                 if (player.isCrouching())
-                    mineBlock(world, gun, info, upgrades, smeltFilter, trashFilter, blockPos, blockState, player);
+                    mineBlock(world, gun, info, activeUpgrades, smeltFilter, trashFilter, blockPos, blockState, player);
                 else
                     mineArea();
             }
-
         }
+        UpgradeUtil.removeEnchantment(gun, Enchantments.BLOCK_FORTUNE);
+        UpgradeUtil.removeEnchantment(gun, Enchantments.SILK_TOUCH);
         return ActionResult.consume(gun);
     }
 

@@ -4,6 +4,8 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.nindybun.burnergun.common.BurnerGun;
 import com.nindybun.burnergun.common.containers.TrashContainer;
+import com.nindybun.burnergun.common.network.PacketHandler;
+import com.nindybun.burnergun.common.network.packets.PacketUpdateGun;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
@@ -44,6 +46,11 @@ public class TrashScreen extends ContainerScreen<TrashContainer> {
     @Override
     protected void renderLabels(MatrixStack matrixStack, int x, int y) {
         this.font.draw(matrixStack, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.trash_filter"), 2, -8, Color.WHITE.getRGB());
+    }
+
+    @Override
+    public void removed() {
+        PacketHandler.sendToServer(new PacketUpdateGun());
     }
 
     private static final Logger LOGGER = LogManager.getLogger();

@@ -6,19 +6,26 @@ import com.nindybun.burnergun.common.items.burnergunmk2.BurnerGunMK2;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.items.upgrades.UpgradeCard;
 import jdk.nashorn.internal.ir.EmptyNode;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.MapItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraft.util.IItemProvider;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -40,16 +47,36 @@ public class UpgradeUtil {
         return list;
     }
 
-    public static ListNBT setFiltersNBT(List<Item> items) {
+    public static ListNBT setFiltersNBT(List<ItemStack> items) {
         ListNBT list = new ListNBT();
 
         items.forEach(item -> {
             CompoundNBT compound = new CompoundNBT();
-            compound.putString(KEY_FILTER, item.toString());
+            compound.putInt(KEY_FILTER, MapItem.getId(item.getItem()));
             list.add(compound);
         });
 
         return list;
+    }
+
+    public static void removeEnchantment(ItemStack gun, Enchantment e){
+        Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(gun);
+        enchantments.remove(e);
+        EnchantmentHelper.setEnchantments(enchantments, gun);
+    }
+
+    public static List<Item> getItemsFromList(ListNBT list){
+        List<Item> items = new ArrayList<>();
+        if (list.isEmpty())
+            return items;
+        for (int i = 0; i < list.size(); i++) {
+            CompoundNBT listNBT = list.getCompound(i);
+            Item type = MapItem.byId(listNBT.getInt(KEY_FILTER));
+            if (type == null)
+                continue;
+            items.add(type);
+        }
+        return items;
     }
 
     public static Upgrade getUpgradeByName(String name){
@@ -59,12 +86,6 @@ public class UpgradeUtil {
         } catch (IllegalArgumentException ignored) {
             return null;
         }
-    }
-
-    public static Optional<Upgrade> getUpgradeFromList(List<Upgrade> upgrades, Upgrade type){
-        if (upgrades.isEmpty())
-            return Optional.empty();
-        return upgrades.stream().filter(e -> e.lazyIs(type)).findFirst();
     }
 
     public static Upgrade getUpgradeFromListByUpgrade(List<Upgrade> upgrades, Upgrade type){
@@ -165,20 +186,6 @@ public class UpgradeUtil {
             }
         }
         return upgrades;
-    }
-
-    public static List<ItemStack> getItemStacksFromList(ListNBT list){
-        List<ItemStack> items = new ArrayList<>();
-        if (list.isEmpty())
-            return items;
-        for (int i = 0; i < list.size(); i++) {
-            CompoundNBT listNBT = list.getCompound(i);
-            ItemStack type = ItemStack.of(listNBT.getCompound(KEY_FILTER));
-            if (type == null)
-                continue;
-            items.add(type);
-        }
-        return items;
     }
 
     //Returns upgrade stacks
