@@ -64,7 +64,6 @@ public class BurnerGun {
         ClientSetup.setup();
         Keybinds.register();
         MinecraftForge.EVENT_BUS.register(new KeyInputHandler());
-       // MinecraftForge.EVENT_BUS.register(ClientEvents.class);
     }
 
 
