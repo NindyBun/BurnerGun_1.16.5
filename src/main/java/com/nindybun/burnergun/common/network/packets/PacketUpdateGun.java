@@ -1,7 +1,9 @@
 package com.nindybun.burnergun.common.network.packets;
 
+import com.nindybun.burnergun.client.screens.ModScreens;
 import com.nindybun.burnergun.common.capabilities.burnergunmk1.BurnerGunMK1Info;
 import com.nindybun.burnergun.common.capabilities.burnergunmk2.BurnerGunMK2Info;
+import com.nindybun.burnergun.common.containers.ModContainers;
 import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1;
 import com.nindybun.burnergun.common.items.burnergunmk2.BurnerGunMK2;
 import com.nindybun.burnergun.common.items.upgrades.Auto_Smelt.AutoSmelt;
@@ -10,6 +12,7 @@ import com.nindybun.burnergun.common.items.upgrades.Trash.TrashHandler;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.items.upgrades.UpgradeCard;
 import com.nindybun.burnergun.util.UpgradeUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.AirItem;
 import net.minecraft.item.Item;
@@ -22,6 +25,9 @@ import net.minecraft.tags.Tag;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.thread.SidedThreadGroup;
+import net.minecraftforge.fml.common.thread.SidedThreadGroups;
+import net.minecraftforge.fml.network.FMLConnectionData;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -187,6 +193,8 @@ public class PacketUpdateGun {
                     infoMK1.setUpgradeNBTList(UpgradeUtil.setUpgradesNBT(currentUpgrades));
                 else
                     infoMK2.setUpgradeNBTList(UpgradeUtil.setUpgradesNBT(currentUpgrades));
+                if (Thread.currentThread().getThreadGroup() == SidedThreadGroups.SERVER)
+                    ModScreens.openGunSettingsScreen(gun);
             });
             ctx.get().setPacketHandled(true);
         }

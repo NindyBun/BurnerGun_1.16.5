@@ -78,7 +78,8 @@ public class BurnerGunMK1Screen extends ContainerScreen<BurnerGunMK1Container> {
         int y = this.height / 2;
         addButton(new Button(x-45, y+(130/2), 90, 20,
                 new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.openSettings"), (button) -> {
-            ModScreens.openGunSettingsScreen(gun);
+            //ModScreens.openGunSettingsScreen(gun);
+            PacketHandler.sendToServer(new PacketUpdateGun());
         }));
     }
 
