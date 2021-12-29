@@ -112,7 +112,7 @@ public class UpgradeUtil {
     }
 
     public static List<Upgrade> getUpgradesFromGun(ItemStack stack){
-        ListNBT nbt = BurnerGunMK2.getInfo(stack).getUpgradeNBTList();
+        ListNBT nbt = BurnerGunMK1.getInfo(stack) != null ? BurnerGunMK1.getInfo(stack).getUpgradeNBTList() : BurnerGunMK2.getInfo(stack).getUpgradeNBTList();
         return getUpgradesFromNBT(nbt);
     }
     public static boolean containsUpgradeFromList(List<Upgrade> upgradeList, Upgrade upgrade){
@@ -129,17 +129,6 @@ public class UpgradeUtil {
 
     public static List<Upgrade> getActiveUpgrades(ItemStack stack){
         return getUpgradesFromGun(stack).stream().filter(Upgrade::isActive).collect(Collectors.toList());
-    }
-
-    //Returns the upgrade card by upgrade
-    public static Upgrade getUpgradeByUpgrade(ItemStack stack, Upgrade upgrade){
-        List<Upgrade> upgrades = getUpgrades(stack);
-        for (Upgrade index : upgrades) {
-            if (index.getBaseName().equals(upgrade.getBaseName())){
-                return upgrade;
-            }
-        }
-        return null;
     }
 
     public static List<Upgrade> getUpgrades(ItemStack stack){
@@ -179,7 +168,7 @@ public class UpgradeUtil {
     }
 
     public static void updateUpgrade(ItemStack stack, Upgrade upgrade){
-        ListNBT upgrades = BurnerGunMK2.getInfo(stack).getUpgradeNBTList();
+        ListNBT upgrades = BurnerGunMK1.getInfo(stack) != null ? BurnerGunMK1.getInfo(stack).getUpgradeNBTList() : BurnerGunMK2.getInfo(stack).getUpgradeNBTList();
         upgrades.forEach(e -> {
             CompoundNBT compound = (CompoundNBT)e;
             String name = compound.getString(KEY_UPGRADE);

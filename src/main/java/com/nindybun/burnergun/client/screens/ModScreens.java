@@ -10,4 +10,7 @@ public class ModScreens {
     public static void openGunMk2SettingsScreen(ItemStack gun) {
         Minecraft.getInstance().setScreen(new mk2SettingsScreen(gun));
     }
+    public static void openGunSettingsScreen(ItemStack gun) {
+        Minecraft.getInstance().setScreen(new burnergunSettingsScreen(gun));
+    }
 }

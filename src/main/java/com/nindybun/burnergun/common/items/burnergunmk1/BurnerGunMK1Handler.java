@@ -6,6 +6,7 @@ import com.nindybun.burnergun.common.items.upgrades.UpgradeCard;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade_Bag.UpgradeBag;
 import com.nindybun.burnergun.common.network.PacketHandler;
 import com.nindybun.burnergun.common.network.packets.PacketRefuel;
+import com.nindybun.burnergun.common.network.packets.PacketUpdateGun;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraftforge.items.ItemStackHandler;

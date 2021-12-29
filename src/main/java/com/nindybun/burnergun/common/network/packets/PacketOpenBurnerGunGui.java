@@ -39,16 +39,15 @@ public class PacketOpenBurnerGunGui {
                 if (player == null)
                     return;
 
-                ItemStack stack = BurnerGunMK1.getGun(player);
-                if (stack.isEmpty())
-                    stack = BurnerGunMK2.getGun(player);
+                ItemStack stack = !BurnerGunMK2.getGun(player).isEmpty() ? BurnerGunMK2.getGun(player) : BurnerGunMK1.getGun(player);
                 if (stack.isEmpty())
                     return;
 
                 IItemHandler handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
                 if (stack.getItem() instanceof BurnerGunMK1)
                     player.openMenu(new SimpleNamedContainerProvider(
-                        (windowId, playerInv, playerEntity) -> new BurnerGunMK1Container(windowId, playerInv, (BurnerGunMK1Handler) handler),
+                        (windowId, playerInv, playerEntity) ->
+                            new BurnerGunMK1Container(windowId, playerInv, (BurnerGunMK1Handler) handler),
                         new StringTextComponent("")
                     ));
                 else if (stack.getItem() instanceof BurnerGunMK2)

@@ -1,5 +1,6 @@
 package com.nindybun.burnergun.common.containers;
 
+import com.nindybun.burnergun.common.capabilities.burnergunmk1.BurnerGunMK1Info;
 import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1;
 import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1Handler;
 import net.minecraft.entity.player.PlayerEntity;
@@ -9,15 +10,17 @@ import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.fml.client.gui.widget.Slider;
 import net.minecraftforge.items.SlotItemHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-public class BurnerGunMK1Container extends Container {
-    BurnerGunMK1Container(int windowId, PlayerInventory playerInv,
-                          PacketBuffer buf){
+public class BurnerGunMK1Container extends Container{
+    BurnerGunMK1Container(int windowId, PlayerInventory playerInv, PacketBuffer buf){
         this(windowId, playerInv, new BurnerGunMK1Handler(MAX_EXPECTED_GUN_SLOT_COUNT));
     }
 
@@ -142,5 +145,4 @@ public class BurnerGunMK1Container extends Container {
     }
 
     private static final Logger LOGGER = LogManager.getLogger();
-
 }

@@ -1,5 +1,6 @@
 package com.nindybun.burnergun.common.network.packets;
 
+import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1;
 import com.nindybun.burnergun.common.items.burnergunmk2.BurnerGunMK2;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.util.UpgradeUtil;
@@ -36,7 +37,7 @@ public class PacketUpdateUpgrade {
                 if( upgrade == null )
                     return;
 
-                ItemStack stack = BurnerGunMK2.getGun(player);
+                ItemStack stack = !BurnerGunMK2.getGun(player).isEmpty() ? BurnerGunMK2.getGun(player) : BurnerGunMK1.getGun(player);
                 if (stack.isEmpty())
                     return;
                 UpgradeUtil.updateUpgrade(stack, upgrade);

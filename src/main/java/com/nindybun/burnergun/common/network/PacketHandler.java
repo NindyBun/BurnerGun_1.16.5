@@ -36,6 +36,8 @@ public class PacketHandler {
         INSTANCE.registerMessage(id++, PacketUpdateGun.class, PacketUpdateGun::encode, PacketUpdateGun::decode, PacketUpdateGun.Handler::handle);
         INSTANCE.registerMessage(id++, PacketChangeSettings.class, PacketChangeSettings::encode, PacketChangeSettings::decode, PacketChangeSettings.Handler::handle);
         INSTANCE.registerMessage(id++, PacketRefuel.class, PacketRefuel::encode, PacketRefuel::decode, PacketRefuel.Handler::handle);
+        INSTANCE.registerMessage(id++, PacketSpawnLightAtPlayer.class, PacketSpawnLightAtPlayer::encode, PacketSpawnLightAtPlayer::decode, PacketSpawnLightAtPlayer.Handler::handle);
+        INSTANCE.registerMessage(id++, PacketSpawnLightAtRaycast.class, PacketSpawnLightAtRaycast::encode, PacketSpawnLightAtRaycast::decode, PacketSpawnLightAtRaycast.Handler::handle);
 
     }
 

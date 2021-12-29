@@ -79,6 +79,7 @@
   "tooltip.burnergun.screen.burnergunmk2": "Burner Gun MK2",
   "tooltip.burnergun.screen.autofuel_filter": "AutoFuel Filter",
   "tooltip.burnergun.screen.upgradebag": "Upgrade Bag",
+  "tooltip.burnergun.screen.openSettings": "Settings",
 
   "item.burnergun.burnergun_mk1":  "Burner Gun MK1",
   "item.burnergun.burnergun_mk2": "Burner Gun MK2",
@@ -88,7 +89,8 @@
   "itemGroup.burnergun": "Burner Gun",
 
   "key.burnergun_gui_key": "Burner Gun Gui",
-  "key.burnergun_screen_key": "Burner Gun Screen",
+  "key.burnergun_light_key": "Shoot Light",
+  "key.burnergun_lightplayer_key": "Spawn Light At Head",
   "key.categories.burnergun": "Burner Gun"
 
 }

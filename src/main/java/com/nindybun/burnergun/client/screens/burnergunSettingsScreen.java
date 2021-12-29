@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class mk2SettingsScreen extends Screen implements Slider.ISlider {
+public class burnergunSettingsScreen extends Screen implements Slider.ISlider {
     private ItemStack gun;
     private static final Logger LOGGER = LogManager.getLogger();
     private List<Upgrade> toggleableList = new ArrayList<>();
@@ -51,19 +51,20 @@ public class mk2SettingsScreen extends Screen implements Slider.ISlider {
                     verticalSlider,
                     horizontalSlider;
 
-    protected mk2SettingsScreen(ItemStack gun) {
+    protected burnergunSettingsScreen(ItemStack gun) {
         super(new StringTextComponent("Title"));
         this.gun = gun;
-        BurnerGunMK2Info infoMK2 = BurnerGunMK2.getInfo(gun);
-        this.volume = infoMK2.getVolume();
-        this.vertical = infoMK2.getVertical();
-        this.maxVertical = infoMK2.getMaxVertical();
-        this.horizontal = infoMK2.getHorizontal();
-        this.maxHorizontal = infoMK2.getMaxHorizontal();
-        this.raycastRange = infoMK2.getRaycastRange();
-        this.maxRaycastRange = infoMK2.getMaxRaycastRange();
-        this.trashFilterWhitelist = infoMK2.getTrashIsWhitelist();
-        this.smeltFilterWhitelist = infoMK2.getSmeltIsWhitelist();
+        BurnerGunMK1Info infoMK1 = gun.getItem() instanceof BurnerGunMK1 ? BurnerGunMK1.getInfo(gun) : null;
+        BurnerGunMK2Info infoMK2 = gun.getItem() instanceof BurnerGunMK2 ? BurnerGunMK2.getInfo(gun) : null;
+        this.volume = infoMK1 != null ? infoMK1.getVolume() : infoMK2.getVolume();
+        this.vertical = infoMK1 != null ? infoMK1.getVertical() : infoMK2.getVertical();
+        this.maxVertical = infoMK1 != null ? infoMK1.getMaxVertical() : infoMK2.getMaxVertical();
+        this.horizontal = infoMK1 != null ? infoMK1.getHorizontal() : infoMK2.getHorizontal();
+        this.maxHorizontal = infoMK1 != null ? infoMK1.getMaxHorizontal() : infoMK2.getMaxHorizontal();
+        this.raycastRange = infoMK1 != null ? infoMK1.getRaycastRange() : infoMK2.getRaycastRange();
+        this.maxRaycastRange = infoMK1 != null ? infoMK1.getMaxRaycastRange() : infoMK2.getMaxRaycastRange();
+        this.trashFilterWhitelist = infoMK1 != null ? infoMK1.getTrashIsWhitelist() : infoMK2.getTrashIsWhitelist();
+        this.smeltFilterWhitelist = infoMK1 != null ? infoMK1.getSmeltIsWhitelist() : infoMK2.getSmeltIsWhitelist();
 
         toggleableList.clear();
         toggleableList = UpgradeUtil.getToggleableUpgrades(gun);
@@ -109,9 +110,9 @@ public class mk2SettingsScreen extends Screen implements Slider.ISlider {
             addButton(new Button(x+25, y, 95, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.edit_filter"), (button) -> {
                 PacketHandler.sendToServer(new PacketOpenTrashGui());
             }));
-            addButton(new burnergunSettingsScreen.WhitelistButton(x+125, y, 20, 20, trashFilterWhitelist, (button) -> {
+            addButton(new WhitelistButton(x+125, y, 20, 20, trashFilterWhitelist, (button) -> {
                 trashFilterWhitelist = !trashFilterWhitelist;
-                ((burnergunSettingsScreen.WhitelistButton) button).setWhitelist(trashFilterWhitelist);
+                ((WhitelistButton) button).setWhitelist(trashFilterWhitelist);
                 PacketHandler.sendToServer(new PacketToggleTrashFilter());
             }));
         }
@@ -123,9 +124,9 @@ public class mk2SettingsScreen extends Screen implements Slider.ISlider {
             addButton(new Button(x+25, y+(containsTrash?25:0), 95, 20, new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.edit_filter"), (button) -> {
                 PacketHandler.sendToServer(new PacketOpenAutoSmeltGui());
             }));
-            addButton(new burnergunSettingsScreen.WhitelistButton(x+125, y+(containsTrash?25:0), 20, 20, smeltFilterWhitelist, (button) -> {
+            addButton(new WhitelistButton(x+125, y+(containsTrash?25:0), 20, 20, smeltFilterWhitelist, (button) -> {
                 smeltFilterWhitelist = !smeltFilterWhitelist;
-                ((burnergunSettingsScreen.WhitelistButton) button).setWhitelist(smeltFilterWhitelist);
+                ((WhitelistButton) button).setWhitelist(smeltFilterWhitelist);
                 PacketHandler.sendToServer(new PacketToggleSmeltFilter());
             }));
         }

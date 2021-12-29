@@ -53,30 +53,23 @@ public class PacketUpdateGun {
                 if (player == null)
                     return;
 
-                BurnerGunMK1Info infoMK1 = null;
-                BurnerGunMK2Info infoMK2 = null;
-                ItemStack stack = BurnerGunMK1.getGun(player);
-                if (!stack.isEmpty()){
-                    infoMK1 = BurnerGunMK1.getInfo(stack);
-                }else{
-                    stack = BurnerGunMK2.getGun(player);
-                    if (!stack.isEmpty())
-                        infoMK2 = BurnerGunMK2.getInfo(stack);
-                }
-                if (stack.isEmpty())
+                ItemStack gun = !BurnerGunMK2.getGun(player).isEmpty() ? BurnerGunMK2.getGun(player) : BurnerGunMK1.getGun(player);
+                if (gun.isEmpty())
                     return;
+                BurnerGunMK1Info infoMK1 = BurnerGunMK1.getInfo(gun);
+                BurnerGunMK2Info infoMK2 = BurnerGunMK2.getInfo(gun);
 
-                IItemHandler handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElse(null);
+                IItemHandler handler = gun.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElse(null);
                 List<Upgrade> currentUpgrades = new ArrayList<>();
                 IItemHandler trashHandler = null;
                 IItemHandler smeltHandler = null;
 
-                int type = stack.getItem() instanceof BurnerGunMK1 ? 1 : 0;
+                int type = gun.getItem() instanceof BurnerGunMK1 ? 1 : 0;
                 for (int i = type; i < handler.getSlots()-type; i++) {
                     if (!handler.getStackInSlot(i).getItem().equals(Items.AIR)){
-                        if (UpgradeUtil.getStackByUpgrade(stack, Upgrade.TRASH) != null)
+                        if (UpgradeUtil.getStackByUpgrade(gun, Upgrade.TRASH) != null)
                             trashHandler = Trash.getHandler(handler.getStackInSlot(i));
-                        if (UpgradeUtil.getStackByUpgrade(stack, Upgrade.AUTO_SMELT) != null)
+                        if (UpgradeUtil.getStackByUpgrade(gun, Upgrade.AUTO_SMELT) != null)
                             smeltHandler = AutoSmelt.getHandler(handler.getStackInSlot(i));
                         currentUpgrades.add(((UpgradeCard)handler.getStackInSlot(i).getItem()).getUpgrade());
                     }
@@ -119,7 +112,9 @@ public class PacketUpdateGun {
                 if (UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.FOCAL_POINT_1)){
                     Upgrade upgrade = UpgradeUtil.getUpgradeFromListByUpgrade(currentUpgrades, Upgrade.FOCAL_POINT_1);
                     if (infoMK1 != null){
-                        infoMK1.setRaycastRange((int)upgrade.getExtraValue());
+                        if (infoMK1.getRaycastRange() > (int)upgrade.getExtraValue())
+                            infoMK1.setRaycastRange((int)upgrade.getExtraValue());
+                        infoMK1.setMaxRaycastRange((int)upgrade.getExtraValue());
                     }else{
                         if (infoMK2.getRaycastRange() > (int)upgrade.getExtraValue())
                             infoMK2.setRaycastRange((int)upgrade.getExtraValue());
@@ -127,7 +122,10 @@ public class PacketUpdateGun {
                     }
                 }else if (!UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.FOCAL_POINT_1)){
                     if (infoMK1 != null){
-                        infoMK1.setRaycastRange(5);
+                        if (infoMK1.getRaycastRange() > 5)
+                            infoMK1.setRaycastRange(5);
+                        if (infoMK1.getMaxRaycastRange() > 5)
+                            infoMK1.setMaxRaycastRange(5);
                     }else{
                         if (infoMK2.getRaycastRange() > 5)
                             infoMK2.setRaycastRange(5);
@@ -140,7 +138,9 @@ public class PacketUpdateGun {
                 if (UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.VERTICAL_EXPANSION_1)){
                     Upgrade upgrade = UpgradeUtil.getUpgradeFromListByUpgrade(currentUpgrades, Upgrade.VERTICAL_EXPANSION_1);
                     if (infoMK1 != null){
-                        infoMK1.setVertical(upgrade.getTier());
+                        if (infoMK1.getVertical() > upgrade.getTier())
+                            infoMK1.setVertical(upgrade.getTier());
+                        infoMK1.setMaxVertical(upgrade.getTier());
                     }else{
                         if (infoMK2.getVertical() > upgrade.getTier())
                             infoMK2.setVertical(upgrade.getTier());
@@ -149,6 +149,7 @@ public class PacketUpdateGun {
                 }else if (!UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.VERTICAL_EXPANSION_1)){
                     if (infoMK1 != null){
                         infoMK1.setVertical(0);
+                        infoMK1.setMaxVertical(0);
                     }else{
                         infoMK2.setVertical(0);
                         infoMK2.setMaxVertical(0);
@@ -158,6 +159,8 @@ public class PacketUpdateGun {
                 if (UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.HORIZONTAL_EXPANSION_1)){
                     Upgrade upgrade = UpgradeUtil.getUpgradeFromListByUpgrade(currentUpgrades, Upgrade.HORIZONTAL_EXPANSION_1);
                     if (infoMK1 != null){
+                        if (infoMK1.getHorizontal() > upgrade.getTier())
+                            infoMK1.setHorizontal(upgrade.getTier());
                         infoMK1.setHorizontal(upgrade.getTier());
                     }else{
                         if (infoMK2.getHorizontal() > upgrade.getTier())
@@ -167,23 +170,23 @@ public class PacketUpdateGun {
                 }else if (!UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.HORIZONTAL_EXPANSION_1)){
                     if (infoMK1 != null){
                         infoMK1.setHorizontal(0);
+                        infoMK1.setMaxHorizontal(0);
                     }else{
                         infoMK2.setHorizontal(0);
                         infoMK2.setMaxHorizontal(0);
                     }
                 }
 
-                if (infoMK1 != null){
+                currentUpgrades.forEach(upgrade -> {
+                    if ((upgrade.lazyIs(Upgrade.FORTUNE_1) && upgrade.isActive() && currentUpgrades.contains(Upgrade.SILK_TOUCH))
+                            || (upgrade.lazyIs(Upgrade.SILK_TOUCH) && upgrade.isActive() && UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.FORTUNE_1))){
+                        upgrade.setActive(!upgrade.isActive());
+                    }
+                });
+                if (infoMK1 != null)
                     infoMK1.setUpgradeNBTList(UpgradeUtil.setUpgradesNBT(currentUpgrades));
-                }else{
-                    currentUpgrades.forEach(upgrade -> {
-                        if ((upgrade.lazyIs(Upgrade.FORTUNE_1) && upgrade.isActive() && currentUpgrades.contains(Upgrade.SILK_TOUCH))
-                                || (upgrade.lazyIs(Upgrade.SILK_TOUCH) && upgrade.isActive() && UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.FORTUNE_1))){
-                            upgrade.setActive(!upgrade.isActive());
-                        }
-                    });
+                else
                     infoMK2.setUpgradeNBTList(UpgradeUtil.setUpgradesNBT(currentUpgrades));
-                }
             });
             ctx.get().setPacketHandled(true);
         }

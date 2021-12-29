@@ -1,5 +1,6 @@
 package com.nindybun.burnergun.common.containers;
 
+import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1;
 import com.nindybun.burnergun.common.items.burnergunmk2.BurnerGunMK2;
 import com.nindybun.burnergun.common.items.upgrades.Auto_Smelt.AutoSmelt;
 import com.nindybun.burnergun.common.items.upgrades.Auto_Smelt.AutoSmeltHandler;
@@ -94,6 +95,8 @@ public class AutoSmeltContainer extends Container {
         ItemStack off = playerIn.getOffhandItem();
         return (!main.isEmpty() && main.getItem() instanceof AutoSmelt) ||
                 (!off.isEmpty() && off.getItem() instanceof AutoSmelt) ||
+                (!main.isEmpty() && main.getItem() instanceof BurnerGunMK1) ||
+                (!off.isEmpty() && off.getItem() instanceof BurnerGunMK1) ||
                 (!main.isEmpty() && main.getItem() instanceof BurnerGunMK2) ||
                 (!off.isEmpty() && off.getItem() instanceof BurnerGunMK2);
     }

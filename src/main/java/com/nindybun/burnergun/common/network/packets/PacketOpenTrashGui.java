@@ -1,7 +1,9 @@
 package com.nindybun.burnergun.common.network.packets;
 
+import com.nindybun.burnergun.common.capabilities.burnergunmk1.BurnerGunMK1Info;
 import com.nindybun.burnergun.common.capabilities.burnergunmk2.BurnerGunMK2Info;
 import com.nindybun.burnergun.common.containers.TrashContainer;
+import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1;
 import com.nindybun.burnergun.common.items.burnergunmk2.BurnerGunMK2;
 import com.nindybun.burnergun.common.items.upgrades.Auto_Smelt.AutoSmelt;
 import com.nindybun.burnergun.common.items.upgrades.Trash.Trash;
@@ -41,11 +43,12 @@ public class PacketOpenTrashGui {
                 if (player == null)
                     return;
 
-                ItemStack gun = BurnerGunMK2.getGun(player);
+                ItemStack gun = !BurnerGunMK2.getGun(player).isEmpty() ? BurnerGunMK2.getGun(player) : BurnerGunMK1.getGun(player);
                 ItemStack trash = player.getMainHandItem();
                 if (!gun.isEmpty()){
-                    BurnerGunMK2Info info = BurnerGunMK2.getInfo(gun);
-                    List<Upgrade> upgradeList = UpgradeUtil.getUpgradesFromNBT(info.getUpgradeNBTList());
+                    BurnerGunMK1Info infoMK1 = BurnerGunMK1.getInfo(gun);
+                    BurnerGunMK2Info infoMK2 = BurnerGunMK2.getInfo(gun);
+                    List<Upgrade> upgradeList = UpgradeUtil.getUpgradesFromNBT(infoMK1 != null ? infoMK1.getUpgradeNBTList() : infoMK2.getUpgradeNBTList());
                     if (upgradeList.contains(Upgrade.TRASH))
                         trash = UpgradeUtil.getStackByUpgrade(gun, Upgrade.TRASH);
                 }

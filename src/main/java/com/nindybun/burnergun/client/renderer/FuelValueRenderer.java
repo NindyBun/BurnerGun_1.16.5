@@ -51,7 +51,7 @@ public class FuelValueRenderer {
     public static void renderFuel(RenderGameOverlayEvent.Post event, ItemStack stack){
         BurnerGunMK1Info info = stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoMK1Capability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
         FontRenderer fontRenderer = Minecraft.getInstance().font;
-        int level = info.getFuelValue();
+        double level = info.getFuelValue();
         Color color;
         if (level > base_buffer*3/4)
                 color = Color.GREEN;
