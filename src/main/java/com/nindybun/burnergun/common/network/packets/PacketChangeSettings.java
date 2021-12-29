@@ -38,10 +38,9 @@ public class PacketChangeSettings {
                 if (player == null)
                     return;
                 ItemStack gun = BurnerGunMK2.getGun(player);
-                if (gun.equals(ItemStack.EMPTY))
+                if (gun.isEmpty())
                     return;
                 BurnerGunMK2Info info = BurnerGunMK2.getInfo(gun);
-                //info.setVolume( Math.min(100, msg.nbt.getFloat("Volume") * 100));
                 info.setVolume(msg.nbt.getFloat("Volume"));
                 info.setRaycastRange(msg.nbt.getInt("Raycast"));
                 info.setVertical(msg.nbt.getInt("Vertical"));

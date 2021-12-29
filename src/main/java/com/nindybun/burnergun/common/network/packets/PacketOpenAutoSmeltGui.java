@@ -43,22 +43,18 @@ public class PacketOpenAutoSmeltGui {
                     return;
 
                 ItemStack gun = BurnerGunMK2.getGun(player);
-                ItemStack smelt = ItemStack.EMPTY;
-                if (gun != ItemStack.EMPTY){
+                ItemStack smelt = player.getMainHandItem();
+                if (!gun.isEmpty()){
                     BurnerGunMK2Info info = BurnerGunMK2.getInfo(gun);
                     List<Upgrade> upgradeList = UpgradeUtil.getUpgradesFromNBT(info.getUpgradeNBTList());
                     if (upgradeList.contains(Upgrade.AUTO_SMELT))
                         smelt = UpgradeUtil.getStackByUpgrade(gun, Upgrade.AUTO_SMELT);
                 }
 
-                if (player.getMainHandItem().getItem() instanceof AutoSmelt)
-                    smelt = player.getMainHandItem();
-
-                if( smelt.isEmpty() )
+                if (!(smelt.getItem() instanceof AutoSmelt))
                     return;
 
                 IItemHandler handler = smelt.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
-
                 player.openMenu(new SimpleNamedContainerProvider(
                         (windowId, playerInv, playerEntity) -> new AutoSmeltContainer(windowId, playerInv, (AutoSmeltHandler) handler),
                         new StringTextComponent("")

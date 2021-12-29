@@ -1,5 +1,6 @@
 package com.nindybun.burnergun.common.items.burnergunmk2;
 
+import com.nindybun.burnergun.client.Keybinds;
 import com.nindybun.burnergun.common.BurnerGun;
 import com.nindybun.burnergun.common.blocks.Light;
 import com.nindybun.burnergun.common.blocks.ModBlocks;
@@ -53,6 +54,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -74,6 +76,8 @@ public class BurnerGunMK2 extends Item {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         tooltip.add(new StringTextComponent("Was is Worth it? What did it cost?").withStyle(TextFormatting.GOLD));
+        tooltip.add(new StringTextComponent("Press " + GLFW.glfwGetKeyName(Keybinds.burnergun_gui_key.getKey().getValue(), GLFW.glfwGetKeyScancode(Keybinds.burnergun_gui_key.getKey().getValue())).toUpperCase() + " to open GUI").withStyle(TextFormatting.GRAY));
+        tooltip.add(new StringTextComponent("Press " + GLFW.glfwGetKeyName(Keybinds.burnergun_screen_key.getKey().getValue(), GLFW.glfwGetKeyScancode(Keybinds.burnergun_screen_key.getKey().getValue())).toUpperCase() + " to open SETTINGS SCREEN").withStyle(TextFormatting.GRAY));
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
     }
 
@@ -85,6 +89,10 @@ public class BurnerGunMK2 extends Item {
 
     public static IItemHandler getHandler(ItemStack itemStack) {
         return itemStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
+    }
+
+    public static BurnerGunMK2Info getInfo(ItemStack gun) {
+        return gun.getCapability(BurnerGunMK2InfoProvider.burnerGunInfoMK2Capability, null).orElse(null);
     }
 
     private final String INFO_NBT_TAG = "burnergunMK2InfoNBT";
@@ -133,7 +141,7 @@ public class BurnerGunMK2 extends Item {
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
         return false;
     }
-
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public boolean canMine(World world, BlockPos pos, BlockState state, PlayerEntity player){
         if (state.getDestroySpeed(world, pos) == -1 || state.getBlock() instanceof Light
                 || !world.mayInteract(player, pos) || !player.mayBuild()
@@ -256,7 +264,5 @@ public class BurnerGunMK2 extends Item {
         return heldItem;
     }
 
-    public static BurnerGunMK2Info getInfo(ItemStack gun) {
-        return gun.getCapability(BurnerGunMK2InfoProvider.burnerGunInfoMK2Capability, null).orElse(null);
-    }
+
 }

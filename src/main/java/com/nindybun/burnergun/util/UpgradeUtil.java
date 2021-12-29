@@ -123,40 +123,6 @@ public class UpgradeUtil {
         return false;
     }
 
-    public static void setValues(List<Upgrade> currentUpgrades, BurnerGunMK2Info info){
-        if (UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.FOCAL_POINT_1)){
-            Upgrade upgrade = UpgradeUtil.getUpgradeFromListByUpgrade(currentUpgrades, Upgrade.FOCAL_POINT_1);
-            if (info.getRaycastRange() > upgrade.getExtraValue())
-                info.setRaycastRange((int)upgrade.getExtraValue());
-            info.setMaxRaycastRange((int)upgrade.getExtraValue());
-        }else if (!UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.FOCAL_POINT_1)){
-            if (info.getRaycastRange() > 5)
-                info.setRaycastRange(5);
-            if (info.getMaxRaycastRange() > 5)
-                info.setMaxRaycastRange(5);
-        }
-
-        if (UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.VERTICAL_EXPANSION_1)){
-            Upgrade upgrade = UpgradeUtil.getUpgradeFromListByUpgrade(currentUpgrades, Upgrade.VERTICAL_EXPANSION_1);
-            if (info.getVertical() > upgrade.getTier())
-                info.setVertical(upgrade.getTier());
-            info.setMaxVertical(upgrade.getTier());
-        }else if (!UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.VERTICAL_EXPANSION_1)){
-            info.setVertical(0);
-            info.setMaxVertical(0);
-        }
-
-        if (UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.HORIZONTAL_EXPANSION_1)){
-            Upgrade upgrade = UpgradeUtil.getUpgradeFromListByUpgrade(currentUpgrades, Upgrade.HORIZONTAL_EXPANSION_1);
-            if (info.getHorizontal() > upgrade.getTier())
-                info.setHorizontal(upgrade.getTier());
-            info.setMaxHorizontal(upgrade.getTier());
-        }else if (!UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.HORIZONTAL_EXPANSION_1)){
-            info.setHorizontal(0);
-            info.setMaxHorizontal(0);
-        }
-    }
-
     public static List<Upgrade> getToggleableUpgrades(ItemStack stack){
         return getUpgradesFromGun(stack).stream().filter(Upgrade::isToggleable).collect(Collectors.toList());
     }

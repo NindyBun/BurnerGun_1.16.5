@@ -1,6 +1,8 @@
 package com.nindybun.burnergun.common.network.packets;
 
+import com.nindybun.burnergun.common.capabilities.burnergunmk1.BurnerGunMK1Info;
 import com.nindybun.burnergun.common.capabilities.burnergunmk2.BurnerGunMK2Info;
+import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1;
 import com.nindybun.burnergun.common.items.burnergunmk2.BurnerGunMK2;
 import com.nindybun.burnergun.common.items.upgrades.Auto_Smelt.AutoSmelt;
 import com.nindybun.burnergun.common.items.upgrades.Trash.Trash;
@@ -50,16 +52,27 @@ public class PacketUpdateGun {
                 ServerPlayerEntity player = ctx.get().getSender();
                 if (player == null)
                     return;
-                ItemStack stack = BurnerGunMK2.getGun(player);
-                if (stack == ItemStack.EMPTY)
+
+                BurnerGunMK1Info infoMK1 = null;
+                BurnerGunMK2Info infoMK2 = null;
+                ItemStack stack = BurnerGunMK1.getGun(player);
+                if (!stack.isEmpty()){
+                    infoMK1 = BurnerGunMK1.getInfo(stack);
+                }else{
+                    stack = BurnerGunMK2.getGun(player);
+                    if (!stack.isEmpty())
+                        infoMK2 = BurnerGunMK2.getInfo(stack);
+                }
+                if (stack.isEmpty())
                     return;
-                IItemHandler handler = BurnerGunMK2.getHandler(stack);
-                BurnerGunMK2Info info = BurnerGunMK2.getInfo(stack);
+
+                IItemHandler handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElse(null);
                 List<Upgrade> currentUpgrades = new ArrayList<>();
                 IItemHandler trashHandler = null;
                 IItemHandler smeltHandler = null;
 
-                for (int i = 0; i < handler.getSlots(); i++) {
+                int type = stack.getItem() instanceof BurnerGunMK1 ? 1 : 0;
+                for (int i = type; i < handler.getSlots()-type; i++) {
                     if (!handler.getStackInSlot(i).getItem().equals(Items.AIR)){
                         if (UpgradeUtil.getStackByUpgrade(stack, Upgrade.TRASH) != null)
                             trashHandler = Trash.getHandler(handler.getStackInSlot(i));
@@ -75,9 +88,15 @@ public class PacketUpdateGun {
                         if (!trashHandler.getStackInSlot(i).getItem().equals(Items.AIR))
                             trashFilter.add(trashHandler.getStackInSlot(i));
                     }
-                    info.setTrashNBTFilter(UpgradeUtil.setFiltersNBT(trashFilter));
+                    if (infoMK1 != null)
+                        infoMK1.setTrashNBTFilter(UpgradeUtil.setFiltersNBT(trashFilter));
+                    else
+                        infoMK2.setTrashNBTFilter(UpgradeUtil.setFiltersNBT(trashFilter));
                 }else if (!UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.TRASH)){
-                    info.setTrashNBTFilter(new ListNBT());
+                    if (infoMK1 != null)
+                        infoMK1.setTrashNBTFilter(new ListNBT());
+                    else
+                        infoMK2.setTrashNBTFilter(new ListNBT());
                 }
 
                 if (UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.AUTO_SMELT)){
@@ -86,53 +105,86 @@ public class PacketUpdateGun {
                         if (!smeltHandler.getStackInSlot(i).getItem().equals(Items.AIR))
                             smeltFilter.add(smeltHandler.getStackInSlot(i));
                     }
-                    info.setSmeltNBTFilter(UpgradeUtil.setFiltersNBT(smeltFilter));
+                    if (infoMK1 != null)
+                        infoMK1.setSmeltNBTFilter(UpgradeUtil.setFiltersNBT(smeltFilter));
+                    else
+                        infoMK2.setSmeltNBTFilter(UpgradeUtil.setFiltersNBT(smeltFilter));
                 }else if (!UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.AUTO_SMELT)){
-                    info.setSmeltNBTFilter(new ListNBT());
+                    if (infoMK1 != null)
+                        infoMK1.setSmeltNBTFilter(new ListNBT());
+                    else
+                        infoMK2.setSmeltNBTFilter(new ListNBT());
                 }
 
                 if (UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.FOCAL_POINT_1)){
                     Upgrade upgrade = UpgradeUtil.getUpgradeFromListByUpgrade(currentUpgrades, Upgrade.FOCAL_POINT_1);
-                    if (info.getRaycastRange() > upgrade.getExtraValue())
-                        info.setRaycastRange((int)upgrade.getExtraValue());
-                    info.setMaxRaycastRange((int)upgrade.getExtraValue());
+                    if (infoMK1 != null){
+                        infoMK1.setRaycastRange((int)upgrade.getExtraValue());
+                    }else{
+                        if (infoMK2.getRaycastRange() > (int)upgrade.getExtraValue())
+                            infoMK2.setRaycastRange((int)upgrade.getExtraValue());
+                        infoMK2.setMaxRaycastRange((int)upgrade.getExtraValue());
+                    }
                 }else if (!UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.FOCAL_POINT_1)){
-                    if (info.getRaycastRange() > 5)
-                        info.setRaycastRange(5);
-                    if (info.getMaxRaycastRange() > 5)
-                        info.setMaxRaycastRange(5);
+                    if (infoMK1 != null){
+                        infoMK1.setRaycastRange(5);
+                    }else{
+                        if (infoMK2.getRaycastRange() > 5)
+                            infoMK2.setRaycastRange(5);
+                        if (infoMK2.getMaxRaycastRange() > 5)
+                            infoMK2.setMaxRaycastRange(5);
+                    }
+
                 }
 
                 if (UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.VERTICAL_EXPANSION_1)){
                     Upgrade upgrade = UpgradeUtil.getUpgradeFromListByUpgrade(currentUpgrades, Upgrade.VERTICAL_EXPANSION_1);
-                    if (info.getVertical() > upgrade.getTier())
-                        info.setVertical(upgrade.getTier());
-                    info.setMaxVertical(upgrade.getTier());
+                    if (infoMK1 != null){
+                        infoMK1.setVertical(upgrade.getTier());
+                    }else{
+                        if (infoMK2.getVertical() > upgrade.getTier())
+                            infoMK2.setVertical(upgrade.getTier());
+                        infoMK2.setMaxVertical(upgrade.getTier());
+                    }
                 }else if (!UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.VERTICAL_EXPANSION_1)){
-                    info.setVertical(0);
-                    info.setMaxVertical(0);
+                    if (infoMK1 != null){
+                        infoMK1.setVertical(0);
+                    }else{
+                        infoMK2.setVertical(0);
+                        infoMK2.setMaxVertical(0);
+                    }
                 }
 
                 if (UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.HORIZONTAL_EXPANSION_1)){
                     Upgrade upgrade = UpgradeUtil.getUpgradeFromListByUpgrade(currentUpgrades, Upgrade.HORIZONTAL_EXPANSION_1);
-                    if (info.getHorizontal() > upgrade.getTier())
-                        info.setHorizontal(upgrade.getTier());
-                    info.setMaxHorizontal(upgrade.getTier());
+                    if (infoMK1 != null){
+                        infoMK1.setHorizontal(upgrade.getTier());
+                    }else{
+                        if (infoMK2.getHorizontal() > upgrade.getTier())
+                            infoMK2.setHorizontal(upgrade.getTier());
+                        infoMK2.setHorizontal(upgrade.getTier());
+                    }
                 }else if (!UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.HORIZONTAL_EXPANSION_1)){
-                    info.setHorizontal(0);
-                    info.setMaxHorizontal(0);
+                    if (infoMK1 != null){
+                        infoMK1.setHorizontal(0);
+                    }else{
+                        infoMK2.setHorizontal(0);
+                        infoMK2.setMaxHorizontal(0);
+                    }
                 }
 
-                currentUpgrades.forEach(upgrade -> {
+                if (infoMK1 != null){
+                    infoMK1.setUpgradeNBTList(UpgradeUtil.setUpgradesNBT(currentUpgrades));
+                }else{
+                    currentUpgrades.forEach(upgrade -> {
                         if ((upgrade.lazyIs(Upgrade.FORTUNE_1) && upgrade.isActive() && currentUpgrades.contains(Upgrade.SILK_TOUCH))
                                 || (upgrade.lazyIs(Upgrade.SILK_TOUCH) && upgrade.isActive() && UpgradeUtil.containsUpgradeFromList(currentUpgrades, Upgrade.FORTUNE_1))){
                             upgrade.setActive(!upgrade.isActive());
                         }
                     });
-
-                info.setUpgradeNBTList(UpgradeUtil.setUpgradesNBT(currentUpgrades));
+                    infoMK2.setUpgradeNBTList(UpgradeUtil.setUpgradesNBT(currentUpgrades));
+                }
             });
-
             ctx.get().setPacketHandled(true);
         }
     }

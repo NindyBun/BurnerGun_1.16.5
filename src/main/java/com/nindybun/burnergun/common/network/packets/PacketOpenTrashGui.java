@@ -3,6 +3,7 @@ package com.nindybun.burnergun.common.network.packets;
 import com.nindybun.burnergun.common.capabilities.burnergunmk2.BurnerGunMK2Info;
 import com.nindybun.burnergun.common.containers.TrashContainer;
 import com.nindybun.burnergun.common.items.burnergunmk2.BurnerGunMK2;
+import com.nindybun.burnergun.common.items.upgrades.Auto_Smelt.AutoSmelt;
 import com.nindybun.burnergun.common.items.upgrades.Trash.Trash;
 import com.nindybun.burnergun.common.items.upgrades.Trash.TrashHandler;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
@@ -41,18 +42,15 @@ public class PacketOpenTrashGui {
                     return;
 
                 ItemStack gun = BurnerGunMK2.getGun(player);
-                ItemStack trash = ItemStack.EMPTY;
-                if (gun != ItemStack.EMPTY){
+                ItemStack trash = player.getMainHandItem();
+                if (!gun.isEmpty()){
                     BurnerGunMK2Info info = BurnerGunMK2.getInfo(gun);
                     List<Upgrade> upgradeList = UpgradeUtil.getUpgradesFromNBT(info.getUpgradeNBTList());
                     if (upgradeList.contains(Upgrade.TRASH))
                         trash = UpgradeUtil.getStackByUpgrade(gun, Upgrade.TRASH);
                 }
 
-                if (player.getMainHandItem().getItem() instanceof Trash)
-                    trash = player.getMainHandItem();
-
-                if( trash.isEmpty() )
+                if (!(trash.getItem() instanceof Trash))
                     return;
 
                 IItemHandler handler = trash.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);

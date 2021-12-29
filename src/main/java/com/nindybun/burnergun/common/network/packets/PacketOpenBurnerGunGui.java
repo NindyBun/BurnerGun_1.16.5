@@ -1,5 +1,7 @@
 package com.nindybun.burnergun.common.network.packets;
 
+import com.nindybun.burnergun.common.capabilities.burnergunmk1.BurnerGunMK1Info;
+import com.nindybun.burnergun.common.capabilities.burnergunmk2.BurnerGunMK2Info;
 import com.nindybun.burnergun.common.containers.BurnerGunMK2Container;
 import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1;
 import com.nindybun.burnergun.common.containers.BurnerGunMK1Container;
@@ -37,13 +39,10 @@ public class PacketOpenBurnerGunGui {
                 if (player == null)
                     return;
 
-                ItemStack stack = ItemStack.EMPTY;
-                if (player.getMainHandItem().getItem() instanceof BurnerGunMK1 || player.getMainHandItem().getItem() instanceof BurnerGunMK2)
-                    stack = player.getMainHandItem();
-                else if (player.getOffhandItem().getItem() instanceof BurnerGunMK1 || player.getOffhandItem().getItem() instanceof BurnerGunMK2)
-                    stack = player.getOffhandItem();
-
-                if( stack.isEmpty() )
+                ItemStack stack = BurnerGunMK1.getGun(player);
+                if (stack.isEmpty())
+                    stack = BurnerGunMK2.getGun(player);
+                if (stack.isEmpty())
                     return;
 
                 IItemHandler handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);

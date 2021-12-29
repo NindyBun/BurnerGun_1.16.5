@@ -24,7 +24,7 @@ public class BurnerGunMK2InfoStorage implements Capability.IStorage<BurnerGunMK2
             tag.putBoolean("Smelt", instance.getSmeltIsWhitelist());
             tag.put("Upgrades", instance.getUpgradeNBTList());
             tag.put("TrashFilter", instance.getTrashNBTFilter());
-        tag.put("SmeltFilter", instance.getSmeltNBTFilter());
+            tag.put("SmeltFilter", instance.getSmeltNBTFilter());
         return tag;
     }
 

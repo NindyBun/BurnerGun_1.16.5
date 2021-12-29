@@ -1,6 +1,7 @@
 package com.nindybun.burnergun.common.capabilities.burnergunmk1;
 
 import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -32,62 +33,84 @@ public class BurnerGunMK1InfoProvider implements BurnerGunMK1Info, ICapabilitySe
 
     }
 
-    public int fuelValue;
-    public int heatValue;
-    public int cooldown;
-    public int harvestLevel;
     public float volume = 1.0f;
-
+    public int fuel;
+    public int vertical;
+    public int horizontal;
+    public int raycast = 5;
+    public ListNBT upgrades = new ListNBT();
+    public ListNBT trashFilter = new ListNBT();
+    public ListNBT smeltFilter = new ListNBT();
 
     @Override
     public void setFuelValue(int value) {
-        fuelValue = value;
+        fuel = value;
     }
-
     @Override
     public int getFuelValue() {
-        return fuelValue;
-    }
-
-    @Override
-    public void setHeatValue(int value) {
-        heatValue = value;
-    }
-
-    @Override
-    public int getHeatValue() {
-        return heatValue;
-    }
-
-    @Override
-    public void setCooldown(int value) {
-        cooldown = value;
-    }
-
-    @Override
-    public int getCooldown() {
-        return cooldown;
-    }
-
-    @Override
-    public void setHarvestLevel(int value) {
-        harvestLevel = value;
-    }
-
-    @Override
-    public int getHarvestLevel() {
-        return harvestLevel;
+        return fuel;
     }
 
     @Override
     public void setVolume(float value) {
         volume = value;
     }
-
     @Override
     public float getVolume() {
         return volume;
     }
 
+    @Override
+    public void setVertical(int value) {
+        vertical = value;
+    }
+    @Override
+    public int getVertical() {
+        return vertical;
+    }
 
+    @Override
+    public void setHorizontal(int value) {
+        horizontal = value;
+    }
+    @Override
+    public int getHorizontal() {
+        return horizontal;
+    }
+
+    @Override
+    public void setRaycastRange(int value) {
+        raycast = value;
+    }
+    @Override
+    public int getRaycastRange() {
+        return raycast;
+    }
+
+    @Override
+    public void setUpgradeNBTList(ListNBT upgrades) {
+        this.upgrades = upgrades;
+    }
+    @Override
+    public ListNBT getUpgradeNBTList() {
+        return upgrades;
+    }
+
+    @Override
+    public void setTrashNBTFilter(ListNBT items) {
+        trashFilter = items;
+    }
+    @Override
+    public ListNBT getTrashNBTFilter() {
+        return trashFilter;
+    }
+
+    @Override
+    public void setSmeltNBTFilter(ListNBT items) {
+        smeltFilter = items;
+    }
+    @Override
+    public ListNBT getSmeltNBTFilter() {
+        return smeltFilter;
+    }
 }

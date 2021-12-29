@@ -29,27 +29,19 @@ public class BurnerGunMK1Handler extends ItemStackHandler {
         if (slot < 0 || slot >= MAX_SLOTS) {
             throw new IllegalArgumentException("Invalid slot number: " + slot);
         }
-        if ((isFuel(stack) || stack.getItem() == Items.BUCKET
-                || stack.getItem().equals(Upgrade.UNIFUEL.getCard().getItem())
-                || stack.getItem().equals(Upgrade.AMBIENCE.getCard().getItem())
-                || stack.getItem().equals(Upgrade.REACTOR.getCard().getItem())
-            ) && slot == 0 ) {
+        if ((isFuel(stack) || stack.getItem() == Items.BUCKET || stack.getItem().equals(Upgrade.AMBIENCE.getCard().getItem())) && slot == 0 ) {
+            LOGGER.info(slot);
             return true;
         }
-        if (slot != 0 && slot != 11 && stack.getItem() instanceof UpgradeCard && !(stack.getItem() instanceof UpgradeBag)
-                && !(stack.getItem().equals(Upgrade.UNIFUEL.getCard().getItem()))
-                && !(stack.getItem().equals(Upgrade.AMBIENCE.getCard().getItem()))
-                && !(stack.getItem().equals(Upgrade.REACTOR.getCard().getItem()))
-            ){
+        if (slot != 0 && slot != 11 && stack.getItem() instanceof UpgradeCard && !(stack.getItem() instanceof UpgradeBag) && !(stack.getItem().equals(Upgrade.AMBIENCE.getCard().getItem()))){
             if (getUpgradeByUpgrade(((UpgradeCard) stack.getItem()).getUpgrade()) != null){
-                return getUpgradeByUpgrade(((UpgradeCard) stack.getItem()).getUpgrade()).getUpgradeStack().getItem() == this.getStackInSlot(slot).getItem();
+                return false;
             }
             return canInsert(stack);
         }
         if (slot == 11 && stack.getItem() instanceof UpgradeBag){
             return true;
         }
-
         return false;
     }
 

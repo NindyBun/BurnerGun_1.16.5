@@ -37,7 +37,7 @@ public class PacketUpdateUpgrade {
                     return;
 
                 ItemStack stack = BurnerGunMK2.getGun(player);
-                if (stack == ItemStack.EMPTY)
+                if (stack.isEmpty())
                     return;
                 UpgradeUtil.updateUpgrade(stack, upgrade);
             });

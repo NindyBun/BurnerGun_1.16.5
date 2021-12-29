@@ -34,15 +34,11 @@ public class PacketOpenAutoFuelGui {
                 if (player == null)
                     return;
 
-                ItemStack stack = ItemStack.EMPTY;
-                if (player.getMainHandItem().getItem() instanceof AutoFuel)
-                    stack = player.getMainHandItem();
-
-                if( stack.isEmpty() )
+                ItemStack stack = player.getMainHandItem();
+                if (!(stack.getItem() instanceof AutoFuel))
                     return;
 
                 IItemHandler handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
-
                 player.openMenu(new SimpleNamedContainerProvider(
                         (windowId, playerInv, playerEntity) -> new AutoFuelContainer(windowId, playerInv, (AutoFuelHandler) handler),
                         new StringTextComponent("")

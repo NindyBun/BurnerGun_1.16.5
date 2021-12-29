@@ -30,26 +30,18 @@ public class PacketOpenUpgradeBagGui {
         public static void handle(PacketOpenUpgradeBagGui msg, Supplier<NetworkEvent.Context> ctx) {
             ctx.get().enqueueWork(() -> {
                 ServerPlayerEntity player = ctx.get().getSender();
-
                 if (player == null)
                     return;
-
-                ItemStack stack = ItemStack.EMPTY;
-                if (player.getMainHandItem().getItem() instanceof UpgradeBag)
-                    stack = player.getMainHandItem();
-
-                if( stack.isEmpty() )
+                ItemStack stack = player.getMainHandItem();
+                if (!(stack.getItem() instanceof UpgradeBag))
                     return;
 
                 IItemHandler handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
-
                 player.openMenu(new SimpleNamedContainerProvider(
                         (windowId, playerInv, playerEntity) -> new UpgradeBagContainer(windowId, playerInv, (UpgradeBagHandler) handler),
                         new StringTextComponent("")
                 ));
-
             });
-
             ctx.get().setPacketHandled(true);
         }
     }

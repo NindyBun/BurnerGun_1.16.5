@@ -27,10 +27,10 @@ public class PacketToggleSmeltFilter {
                 ServerPlayerEntity player = ctx.get().getSender();
                 if (player == null)
                     return;
-
                 ItemStack stack = BurnerGunMK2.getGun(player);
+                if (stack.isEmpty())
+                    return;
                 BurnerGunMK2Info info = BurnerGunMK2.getInfo(stack);
-                // Active toggle feature
                 info.setSmeltIsWhitelist(!info.getSmeltIsWhitelist());
             });
 

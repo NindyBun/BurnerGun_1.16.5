@@ -6,10 +6,13 @@ import com.nindybun.burnergun.common.blocks.Light;
 import com.nindybun.burnergun.common.blocks.ModBlocks;
 import com.nindybun.burnergun.common.capabilities.burnergunmk1.BurnerGunMK1Info;
 import com.nindybun.burnergun.common.capabilities.burnergunmk1.BurnerGunMK1InfoProvider;
+import com.nindybun.burnergun.common.capabilities.burnergunmk2.BurnerGunMK2Info;
+import com.nindybun.burnergun.common.capabilities.burnergunmk2.BurnerGunMK2InfoProvider;
 import com.nindybun.burnergun.common.items.upgrades.Auto_Fuel.AutoFuel;
 import com.nindybun.burnergun.common.items.upgrades.Trash.Trash;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.items.upgrades.UpgradeCard;
+import com.nindybun.burnergun.util.UpgradeUtil;
 import com.nindybun.burnergun.util.WorldUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -35,6 +38,7 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -43,11 +47,17 @@ import net.minecraft.world.Dimension;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWKeyCallback;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -57,97 +67,27 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class BurnerGunMK1 extends ToolItem{
-    private static final Set<Block> EFFECTIVE = Sets.newHashSet();
+public class BurnerGunMK1 extends Item{
     private static final int base_use = 100;
-    public static final int base_use_buffer = 100_000;
-    public static final int base_heat_buffer = 100_000;
-
-    IRecipeType<? extends AbstractCookingRecipe> recipeType = IRecipeType.SMELTING;
-    private static final List<Item> smeltingFilter = new ArrayList<Item>(){
-        {
-            add(Items.CHARCOAL);
-            add(Items.COAL);
-            add(Items.IRON_INGOT);
-            add(Items.GOLD_INGOT);
-        }
-    };
+    public static final int base_use_buffer = 10_000;
+    private static final Logger LOGGER = LogManager.getLogger();
+    private static final IRecipeType<? extends AbstractCookingRecipe> RECIPE_TYPE = IRecipeType.SMELTING;
 
     public BurnerGunMK1() {
-        super(0, 0, ModTier.TIER, EFFECTIVE,
-                new Properties().stacksTo(1).setNoRepair().tab(com.nindybun.burnergun.common.BurnerGun.itemGroup)
-                );
+        super(new Properties().stacksTo(1).setNoRepair().tab(com.nindybun.burnergun.common.BurnerGun.itemGroup));
     }
 
-    private enum ModTier implements IItemTier {
-        TIER(0, 0, 0, 4, 0, null);
-
-        private final int level;
-        private final int uses;
-        private final float speed;
-        private final float attackDamageBonus;
-        private final int enchantmentValue;
-        private final LazyValue<Ingredient> repairIngredient;
-
-        ModTier(int level, int uses, float speed, float attackDamageBonus, int enchantmentValue, Supplier<Ingredient> repairIngredient)
-        {
-            this.uses = uses;
-            this.speed = speed;
-            this.attackDamageBonus = attackDamageBonus;
-            this.enchantmentValue = enchantmentValue;
-            this.repairIngredient = new LazyValue<>(repairIngredient);
-            this.level = level;
-        }
-
-        @Override
-        public int getUses() {
-            return uses;
-        }
-
-        @Override
-        public float getSpeed() {
-            return speed;
-        }
-
-        @Override
-        public float getAttackDamageBonus() {
-            return attackDamageBonus;
-        }
-
-        @Override
-        public int getLevel() {
-            return level;
-        }
-
-        @Override
-        public int getEnchantmentValue() {
-            return enchantmentValue;
-        }
-
-        @Override
-        public Ingredient getRepairIngredient() {
-            return null;
-        }
-    }
-
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         IItemHandler handler = getHandler(stack);
-        if (!handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())
-                && !handler.getStackInSlot(0).getItem().equals(Upgrade.AMBIENCE.getCard().getItem())
-                && !handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())
-            )
-        {
+        if (!handler.getStackInSlot(0).getItem().equals(Upgrade.AMBIENCE.getCard().getItem())){
             tooltip.add(new StringTextComponent("Feed me fuel!").withStyle(TextFormatting.YELLOW));
         }else if (handler.getStackInSlot(0).getItem().equals(Upgrade.AMBIENCE.getCard().getItem())){
             tooltip.add(new StringTextComponent("Collecting heat from nearby sources!").withStyle(TextFormatting.YELLOW));
-        }else if (handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())){
-            tooltip.add(new StringTextComponent("Fusing Hydrogen into Helium!").withStyle(TextFormatting.YELLOW));
-        }else if (handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
-            tooltip.add(new StringTextComponent("Using the heat of the universe!").withStyle(TextFormatting.YELLOW));
         }
-        tooltip.add(new StringTextComponent("Press " + Keybinds.burnergun_gui_key.getKey().toString().toUpperCase() + " to open GUI").withStyle(TextFormatting.GRAY));
-
+        tooltip.add(new StringTextComponent("Press " + GLFW.glfwGetKeyName(Keybinds.burnergun_gui_key.getKey().getValue(), GLFW.glfwGetKeyScancode(Keybinds.burnergun_gui_key.getKey().getValue())).toUpperCase() + " to open GUI").withStyle(TextFormatting.GRAY));
+        tooltip.add(new StringTextComponent("Press " + GLFW.glfwGetKeyName(Keybinds.burnergun_screen_key.getKey().getValue(), GLFW.glfwGetKeyScancode(Keybinds.burnergun_screen_key.getKey().getValue())).toUpperCase() + " to open SETTINGS SCREEN").withStyle(TextFormatting.GRAY));
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
     }
 
@@ -161,484 +101,29 @@ public class BurnerGunMK1 extends ToolItem{
         return false;
     }
 
-////////////////////////////////////////////////////////////////////////
-    public void refuel(ItemStack stack, PlayerEntity player){
-        BurnerGunMK1Info info = stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoMK1Capability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
-        IItemHandler item = getHandler(stack);
-        if (item.getStackInSlot(0).getItem().equals(Upgrade.AMBIENCE.getCard().getItem())
-            || item.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())
-            || item.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem()))
-            return;
-        if (item.getStackInSlot(0).getCount() < 1  && getUpgradeByUpgrade(stack, Upgrade.AUTO_FUEL) != null){
-            IItemHandler autoHandler = AutoFuel.getHandler(getStackByUpgrade(stack, Upgrade.AUTO_FUEL));
-
-            for (int index = 0 ; index < autoHandler.getSlots() ; index++) {
-                if (player.inventory.contains(autoHandler.getStackInSlot(index))){
-                    ItemStack fuelStack = autoHandler.getStackInSlot(index);
-                    int slot = player.inventory.findSlotMatchingItem(fuelStack);
-                    ItemStack invStack = player.inventory.getItem(slot).getItem().getDefaultInstance();
-                    int fuelValue = net.minecraftforge.common.ForgeHooks.getBurnTime(invStack);
-
-                    while (player.inventory.contains(invStack) &&
-                            !(info.getFuelValue() + fuelValue > base_use_buffer)){
-                        info.setFuelValue(info.getFuelValue() + fuelValue);
-                        ItemStack containerItem = invStack.getContainerItem();
-                        player.inventory.removeItem(player.inventory.findSlotMatchingItem(fuelStack), 1);
-                        if (player.inventory.add(containerItem))
-                            player.drop(containerItem, true);
-                    }
-
-                }
-            }
-        }
-
-        while (item.getStackInSlot(0).getCount() > 0){
-            if (info.getFuelValue() + net.minecraftforge.common.ForgeHooks.getBurnTime(item.getStackInSlot(0)) > base_use_buffer)
-                break;
-            info.setFuelValue(info.getFuelValue() + net.minecraftforge.common.ForgeHooks.getBurnTime(item.getStackInSlot(0)));
-            ItemStack containerItem = item.getStackInSlot(0).getContainerItem();
-            item.getStackInSlot(0).shrink(1);
-            if (player.inventory.add(containerItem))
-                player.drop(containerItem, true);
-        }
-
-    }
-
-    public void setFuelValue(ItemStack stack, int use, PlayerEntity player, World world){
-        BurnerGunMK1Info info = stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoMK1Capability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
-        IItemHandler handler = getHandler(stack);
-        if (!handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())
-                && !handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
-            refuel(stack, player);
-            info.setFuelValue(info.getFuelValue()-(int)getUseValue(stack)*use);
-        }else if (handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())){
-            info.setHeatValue(info.getHeatValue()+(int)(use*getUseValue(stack)*3/2));
-            if (use == 1){
-                if (info.getHeatValue() >= base_heat_buffer){
-                    player.getCooldowns().addCooldown(this, 100);
-                    info.setCooldown(0);
-                }else{
-                    info.setCooldown(20); //about 2 seconds
-                }
-            }
-
-        }else if (handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
-            //Legit do nothing to any of the fuel values
-        }
-
-        //sendPacket(world, stack, player);
-
-    }
-
-    /*public void sendPacket(World world, ItemStack stack, PlayerEntity player){
-        BurnerGunInfo info = stack.getCapability(BurnerGunInfoProvider.burnerGunInfoCapability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
-
-        if (!world.isClientSide){
-            CompoundNBT nbt = new CompoundNBT();
-            nbt.putInt("FuelValue", info.getFuelValue());
-            nbt.putInt("HeatValue", info.getHeatValue());
-            nbt.putInt("CoolDown", info.getCooldown());
-            nbt.putInt("HarvestLevel", info.getHarvestLevel());
-            PacketFuelValue packet = new PacketFuelValue(nbt);
-            PacketHandler.sendTo(packet, (ServerPlayerEntity) player);
-        }
-    }*/
-/////////////////////////////////////////////////////////////////////////////
-    public double getFuelEfficiency(ItemStack stack){
-        return getUpgradeByUpgrade(stack, Upgrade.FUEL_EFFICIENCY_1) != null ? getUpgradeByUpgrade(stack, Upgrade.FUEL_EFFICIENCY_1).getExtraValue() : 0.00;
-    }
-    public double getHeatEfficiency(ItemStack stack){
-        return getUpgradeByUpgrade(stack, Upgrade.HEAT_EFFICIENCY_1) != null ? getUpgradeByUpgrade(stack, Upgrade.HEAT_EFFICIENCY_1).getExtraValue() : 0.00;
-    }
-    public double getCooldownMultiplier(ItemStack stack){
-        return getUpgradeByUpgrade(stack, Upgrade.COOLDOWN_MULTIPLIER_1) != null ? getUpgradeByUpgrade(stack, Upgrade.COOLDOWN_MULTIPLIER_1).getExtraValue() : 1.00;
-    }
-////////////////////////////////////////////////////////////////////////
-    public double getUseValue(ItemStack stack){
-        IItemHandler handler = getHandler(stack);
-        int extraUse = 0;
-        List<UpgradeCard> upgrades = getUpgrades(stack);
-        if (!upgrades.isEmpty()){
-            extraUse = upgrades.stream().mapToInt(upgradeCard -> upgradeCard.getUpgrade().getCost()).sum();
-        }
-        if (handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())) {
-            return (base_use + extraUse) - ((base_use + extraUse) * getHeatEfficiency(stack));
-        }
-        return (base_use + extraUse) - ((base_use + extraUse) * getFuelEfficiency(stack));
-    }
-////////////////////////////////////////////////////////////////////////
-    public int getFortune(ItemStack stack){
-        return getUpgradeByUpgrade(stack, Upgrade.FORTUNE_1) != null ? getUpgradeByUpgrade(stack, Upgrade.FORTUNE_1).getTier() : 0;
-    }
-////////////////////////////////////////////////////////////////////////
-    public int getSilkTouch(ItemStack stack){
-        return getUpgrades(stack).contains(Upgrade.SILK_TOUCH.getCard()) ? 1 : 0;
-    }
-////////////////////////////////////////////////////////////////////////
-    public Boolean getMagnet(ItemStack stack){
-        return getUpgrades(stack).contains(Upgrade.MAGNET.getCard());
-    }
-////////////////////////////////////////////////////////////////////////
-    public double getRange(ItemStack stack){
-        return getUpgradeByUpgrade(stack, Upgrade.FOCAL_POINT_1) != null ? getUpgradeByUpgrade(stack, Upgrade.FOCAL_POINT_1).getExtraValue() : 5;
-    }
-////////////////////////////////////////////////////////////////////////
-    //Returns Upgrade cards
-    public List<UpgradeCard> getUpgrades(ItemStack stack){
-        List<UpgradeCard> upgrades = new ArrayList<>();
-        IItemHandler handler = getHandler(stack);
-        for (int index  = 1; index < handler.getSlots()-1; index++){
-            if (handler.getStackInSlot(index).getItem() != Items.AIR){
-                upgrades.add((UpgradeCard)handler.getStackInSlot(index).getItem());
-            }
-        }
-        return upgrades;
-    }
-
-    //Returns the upgrade card by upgrade
-    public Upgrade getUpgradeByUpgrade(ItemStack stack, Upgrade upgrade){
-        List<UpgradeCard> upgrades = getUpgrades(stack);
-        for (UpgradeCard upgradeCard : upgrades) {
-            if (upgradeCard.getUpgrade().getBaseName().equals(upgrade.getBaseName())){
-                return upgradeCard.getUpgrade();
-            }
-        }
-        return null;
-    }
-
-    //Returns upgrade stacks
-    public List<ItemStack> getUpgradeStacks(ItemStack stack){
-        List<ItemStack> upgradeStacks = new ArrayList<>();
-        IItemHandler handler = getHandler(stack);
-        for (int index  = 1; index < handler.getSlots()-1; index++){
-            if (handler.getStackInSlot(index).getItem() != Items.AIR){
-                upgradeStacks.add(handler.getStackInSlot(index));
-            }
-        }
-        return upgradeStacks;
-    }
-
-    public ItemStack getStackByUpgrade(ItemStack stack, Upgrade upgrade){
-        List<ItemStack> upgradeStack = getUpgradeStacks(stack);
-        List<UpgradeCard> upgradeCard = getUpgrades(stack);
-        for (int index = 0 ; index < upgradeCard.size() ; index++) {
-            if (upgradeCard.get(index).getUpgrade().getBaseName().equals(upgrade.getBaseName())){
-                return upgradeStack.get(index);
-            }
-        }
-        return null;
-    }
-
-////////////////////////////////////////////////////////////////////////
-    public Vector3d getDim(BlockRayTraceResult ray, int xRad, int yRad, PlayerEntity player){
-        //Z Face mining by default
-        int xRange = xRad;
-        int yRange = yRad;
-        int zRange = 0;
-        //X Face Mining
-        if (Math.abs(ray.getDirection().getNormal().getX()) == 1){
-            zRange = xRad;
-            xRange = 0;
-        }
-        //Vertical Mining needs to act like the Horizontal but based on yaw
-        if (Math.abs(ray.getDirection().getNormal().getY()) == 1){
-            yRange = 0;
-            xRange = yRad;
-            if (yRad >= 0 && xRad >= 0){
-                int yaw = (int)player.getYHeadRot();
-                if (yaw <0)
-                    yaw += 360;
-                int facing = yaw / 45;
-
-                if (facing == 6 || facing == 5 || facing == 2 || facing == 1) { //X axis
-                    xRange = yRad;
-                    zRange = xRad;
-                }
-                if (facing == 7 || facing == 8 || facing == 0 || facing == 4 || facing == 3) { //Z axis
-                    zRange = yRad;
-                    xRange = xRad;
-                }
-            }
-        }
-        return new Vector3d(xRange, yRange, zRange);
-    }
-
-    public void spawnLight(World world, BlockRayTraceResult lookingAt){
-        Direction side = lookingAt.getDirection();
-        BlockPos thepos = lookingAt.getBlockPos().relative(side);
-        if (world.getBrightness(LightType.BLOCK, thepos) <= 8){
-            Material mat = world.getBlockState(thepos).getMaterial();
-            if (mat == Material.AIR || mat == Material.WATER || mat == Material.LAVA)
-                world.setBlockAndUpdate(thepos.relative(side, -1), ModBlocks.LIGHT.get().defaultBlockState());
-            else
-                world.setBlockAndUpdate(thepos, ModBlocks.LIGHT.get().defaultBlockState());
-        }
-    }
-
-    public void magnetOn(List<ItemStack> list, BlockState state, World world, ItemStack stack, BlockPos pos, PlayerEntity player){
-        if (!world.isClientSide) {
-            if (!list.isEmpty()){
-                list.forEach(loot -> {
-                    if (getUpgradeByUpgrade(stack, Upgrade.AUTO_SMELT) != null) {
-                        IInventory inv = new Inventory(1);
-                        inv.setItem(0, loot.copy());
-                        Optional<? extends AbstractCookingRecipe> recipe = world.getRecipeManager().getRecipeFor(recipeType, inv, world);
-                        loot = recipe.isPresent() ? recipe.get().getResultItem().copy() : loot.copy();
-                    }
-
-                    //for (int num = 0; num < getFortune(stack)+1; num++) {
-                        if (getUpgradeByUpgrade(stack, Upgrade.TRASH) == null){
-                            if (!player.inventory.add(loot.copy())) {
-                                player.drop(loot.copy(), true);
-                            }
-                        }else{
-                            IItemHandler trashHandler = Trash.getHandler(getStackByUpgrade(stack, Upgrade.TRASH));
-                            List<Item> filter = new ArrayList<>();
-                            for (int index = 0; index < trashHandler.getSlots(); index++) {
-                                if (trashHandler.getStackInSlot(index).getItem() != Items.AIR) {
-                                    filter.add(trashHandler.getStackInSlot(index).getItem());
-                                }
-                            }
-                            if (!filter.contains(loot.getItem())) {
-                                if (!player.inventory.add(loot.copy())) {
-                                    player.drop(loot.copy(), true);
-                                }
-                                //break;
-                            }
-                        }
-                        //if (!smeltingFilter.contains(loot.copy().getItem()))
-                        //    break;
-                    //}
-                });
-            }
-            player.giveExperiencePoints(state.getBlock().getExpDrop(state, world, pos, getFortune(stack), getSilkTouch(stack)));
-        }
-    }
-
-    public void breakBlock(ItemStack stack, BlockState state, Block block, BlockPos pos, PlayerEntity player, World world, BlockRayTraceResult ray){
-        BurnerGunMK1Info info = stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoMK1Capability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
-        IItemHandler handler = getHandler(stack);
-        List<ItemStack> list = state.getDrops(new LootContext.Builder((ServerWorld) world)
-                .withParameter(LootParameters.TOOL, stack)
-                .withParameter(LootParameters.ORIGIN, new Vector3d(pos.getX(), pos.getY(), pos.getZ()))
-                .withParameter(LootParameters.BLOCK_STATE, state)
-        );
-        if ((info.getFuelValue() >= getUseValue(stack) || handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem()) || handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())) && !(block instanceof Light)){
-            setFuelValue(stack, 1, player, world);
-            if (state.getDestroySpeed(world, pos) == -1.0 || state.getHarvestLevel() > info.getHarvestLevel())
-                return;
-            world.destroyBlock(pos, false);
-            if (getMagnet(stack)){
-                magnetOn(list, state, world, stack, pos, player);
-            }else{
-                if (!list.isEmpty()) {
-                    list.forEach(loot -> {
-                        if (getUpgradeByUpgrade(stack, Upgrade.AUTO_SMELT) != null) {
-                            IInventory inv = new Inventory(1);
-                            inv.setItem(0, loot.copy());
-                            Optional<? extends AbstractCookingRecipe> recipe = world.getRecipeManager().getRecipeFor(recipeType, inv, world);
-                            loot = recipe.isPresent() ? recipe.get().getResultItem().copy() : loot.copy();
-                        }
-                        //for (int num = 0; num < getFortune(stack) + 1; num++) {
-                            if (getUpgradeByUpgrade(stack, Upgrade.TRASH) == null){
-                                world.addFreshEntity(new ItemEntity(world, pos.getX()+0.5, pos.getY()+0.5, pos.getZ()+0.5, loot.copy()));
-                            }else{
-                                IItemHandler trashHandler = Trash.getHandler(getStackByUpgrade(stack, Upgrade.TRASH));
-                                List<Item> filter = new ArrayList<>();
-                                for (int index = 0; index < trashHandler.getSlots(); index++) {
-                                    if (trashHandler.getStackInSlot(index).getItem() != Items.AIR) {
-                                        filter.add(trashHandler.getStackInSlot(index).getItem());
-                                    }
-                                }
-                                if (!filter.contains(loot.getItem())) {
-                                    world.addFreshEntity(new ItemEntity(world, pos.getX()+0.5, pos.getY()+0.5, pos.getZ()+0.5, loot.copy()));
-                                   // break;
-                                }
-                            }
-                            //if (!smeltingFilter.contains(loot.copy().getItem()))
-                            //    break;
-                        //}
-                    });
-                    block.popExperience((ServerWorld) world, pos, state.getBlock().getExpDrop(state, world, pos, getFortune(stack), getSilkTouch(stack)));
-                }
-            }
-            if (getUpgradeByUpgrade(stack, Upgrade.LIGHT) != null)
-                spawnLight(world, ray);
-            return;
-        }
-        return;
-    }
-
-    public void areaMine(BlockState state, World world, ItemStack stack, BlockPos pos, PlayerEntity player, BlockRayTraceResult ray){
-        int xRad = 0;
-        int yRad = 0;
-
-        if (getUpgradeByUpgrade(stack, Upgrade.HORIZONTAL_EXPANSION_1) != null){
-            xRad = getUpgradeByUpgrade(stack, Upgrade.HORIZONTAL_EXPANSION_1).getTier();
-        }
-        if (getUpgradeByUpgrade(stack, Upgrade.VERTICAL_EXPANSION_1) != null) {
-            yRad = getUpgradeByUpgrade(stack, Upgrade.VERTICAL_EXPANSION_1).getTier();
-        }
-
-        if (ray == null)
-            return;
-        Vector3d size = getDim(ray, xRad, yRad, player);
-        for (int xPos = pos.getX() - (int)size.x(); xPos <= pos.getX() + (int)size.x(); ++xPos){
-            for (int yPos = pos.getY() - (int)size.y(); yPos <= pos.getY() + (int)size.y(); ++yPos){
-                for (int zPos = pos.getZ() - (int)size.z(); zPos <= pos.getZ() + (int)size.z(); ++zPos){
-                    if (!pos.equals(new BlockPos(xPos, yPos, zPos))){
-                        BlockPos thePos = new BlockPos(xPos, yPos, zPos);
-                        BlockState theState = world.getBlockState(thePos);
-                        Block theBlock = theState.getBlock();
-                        setFuelValue(stack, 0, player, world);
-                        if (world.getBlockState(thePos).getMaterial() != Material.AIR){
-                            breakBlock(stack, theState, theBlock, thePos, player, world, ray);
-                        }
-                    }
-                }
-            }
-        }
+    @Override
+    public UseAction getUseAnimation(ItemStack p_77661_1_) {
+        return UseAction.NONE;
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
-        super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
-        BurnerGunMK1Info info = stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoMK1Capability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
-        /*
-            Harvest Level : 0 -> wood/gold
-                            1 -> stone
-                            2 -> iron
-                            3 -> diamond
-                            4 -> stronk
-         */
-        IItemHandler handler = getHandler(stack);
-        if (!worldIn.isClientSide){
-            if (handler.getStackInSlot(0).getItem().equals(Upgrade.AMBIENCE.getCard().getItem())){
-                int light = worldIn.getBrightness(LightType.BLOCK, entityIn.blockPosition());
-                long day = worldIn.getDayTime();
-                boolean dayTime = (day >= 0 || day == 24000) && day <= 12040;
-                boolean isDirectSky = worldIn.getBrightness(LightType.SKY, entityIn.blockPosition()) >= 12;
-                boolean canSeeSky = worldIn.canSeeSky(entityIn.blockPosition());
-                if (dayTime && ((isDirectSky && light < 10) || canSeeSky)){
-                    info.setFuelValue(info.getFuelValue()+2);
-                }else{
-                    double multiplyer = 1;
-                    ResourceLocation dim = worldIn.dimension().location();
-                    if (dim.equals(Dimension.NETHER.location()))
-                        multiplyer = 2;
-                    else if (dim.equals(Dimension.END.location()))
-                        multiplyer = 0.5;
-
-                    info.setFuelValue(info.getFuelValue() + (light >= 10 ? (int)multiplyer*light*1/2 : 0 ));
-                }
-
-            }
-
-            if (info.getCooldown() > 0){
-                info.setCooldown((info.getCooldown() - 1) < 0 ? 0 : (info.getCooldown() - 1));
-            }
-
-            if (info.getCooldown() == 0
-                    && !((PlayerEntity)entityIn).getCooldowns().isOnCooldown(this)
-                    && handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())){
-                info.setHeatValue((info.getHeatValue() - (int)(25*getCooldownMultiplier(stack))) < 0 ? 0 : (info.getHeatValue() - (int)(25*getCooldownMultiplier(stack))));
-            }
-
-            if (info.getFuelValue() >= base_use_buffer *3/4
-                    || getHandler(stack).getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())
-                    || getHandler(stack).getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())){
-                info.setHarvestLevel(4);
-            }else if (info.getFuelValue() < base_use_buffer *3/4){
-                info.setHarvestLevel(2);
-            }
-
-            //sendPacket(worldIn, stack, (ServerPlayerEntity) entityIn);
-
-            int fortune = EnchantmentHelper.getEnchantments(stack).get(Enchantments.BLOCK_FORTUNE) != null ? EnchantmentHelper.getEnchantments(stack).get(Enchantments.BLOCK_FORTUNE) : 0;
-            int silk = EnchantmentHelper.getEnchantments(stack).get(Enchantments.SILK_TOUCH) != null ? EnchantmentHelper.getEnchantments(stack).get(Enchantments.SILK_TOUCH) : 0;
-            stack.getEnchantmentTags().clear();
-
-            if (EnchantmentHelper.getEnchantments(stack).get(Enchantments.FIRE_ASPECT) == null){
-                if (info.getFuelValue() >= base_use_buffer /2 && info.getFuelValue() < base_use_buffer *3/4){
-                    stack.enchant(Enchantments.FIRE_ASPECT, 1);
-                }else if (info.getFuelValue() >= base_use_buffer *3/4
-                        || getHandler(stack).getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())
-                        || getHandler(stack).getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())){
-                    stack.enchant(Enchantments.FIRE_ASPECT, 2);
-                }
-            }else if (EnchantmentHelper.getEnchantments(stack).get(Enchantments.FIRE_ASPECT) == 2){
-                if (info.getFuelValue() >= base_use_buffer /2 && info.getFuelValue() < base_use_buffer *3/4)
-                    stack.enchant(Enchantments.FIRE_ASPECT, 1);
-            }
-
-            if (fortune != 0)
-                stack.enchant(Enchantments.BLOCK_FORTUNE, fortune);
-            if (silk != 0)
-                stack.enchant(Enchantments.SILK_TOUCH, silk);
-        }
-
+    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+        return false;
     }
-
-    @Override
-    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        BurnerGunMK1Info info = stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoMK1Capability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
-
-        int fireAspect = EnchantmentHelper.getEnchantments(stack).get(Enchantments.FIRE_ASPECT) != null ? EnchantmentHelper.getEnchantments(stack).get(Enchantments.FIRE_ASPECT) : 0;
-        if (!getHandler(stack).getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())
-                && !getHandler(stack).getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())) {
-            if ((info.getFuelValue()-base_use*(fireAspect == 0 ? 1 : fireAspect*2)) <= 0)
-                info.setFuelValue(0);
-            else
-                info.setFuelValue(info.getFuelValue()-base_use*(fireAspect == 0 ? 1 : fireAspect*2));
-        }else if (getHandler(stack).getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())) {
-            if ((info.getFuelValue()-base_use*(fireAspect == 0 ? 1 : fireAspect*2)) >= base_heat_buffer)
-                ((PlayerEntity)attacker).getCooldowns().addCooldown(this, 100);
-            else
-                info.setHeatValue(info.getHeatValue()+base_use*(fireAspect == 0 ? 1 : fireAspect*2));
-        }
-        return super.hurtEnemy(stack, target, attacker);
-    }
-
-    ////////////////////////////////////////////////////////////////////////
 
     @Nonnull
     @Override
-    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand handIn) {
-        ItemStack stack = player.getItemInHand(handIn);
-        BurnerGunMK1Info info = stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoMK1Capability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
-        IItemHandler handler = getHandler(stack);
-        if (!world.isClientSide){
-            BlockRayTraceResult ray = WorldUtil.getLookingAt(world, player, RayTraceContext.FluidMode.NONE, getRange(stack));
-            BlockPos pos = ray.getBlockPos();
-            BlockState state = world.getBlockState(pos);
-            Block block = state.getBlock();
-            setFuelValue(stack, 0, player, world);
-            if (state.getMaterial() != Material.AIR && !(block instanceof Light)){
-                stack.enchant(Enchantments.BLOCK_FORTUNE, getFortune(stack));
-                stack.enchant(Enchantments.SILK_TOUCH, getSilkTouch(stack));
-
-                if (handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem()) && info.getHeatValue() >= base_heat_buffer){
-                    return ActionResult.consume(stack);
-                }else if (info.getFuelValue() < getUseValue(stack)
-                        && !handler.getStackInSlot(0).getItem().equals(Upgrade.REACTOR.getCard().getItem())
-                        && !handler.getStackInSlot(0).getItem().equals(Upgrade.UNIFUEL.getCard().getItem())){
-                    return ActionResult.consume(stack);
-                }
-                if (world.isClientSide)
-                    player.playNotifySound(SoundEvents.FIRECHARGE_USE, SoundCategory.MASTER, info.getVolume()*0.5f, 1.0f);
-                if (player.isCrouching() || player.isShiftKeyDown()){
-                    breakBlock(stack, state, block, pos, player, world, ray);
-                }else{
-                    breakBlock(stack, state, block, pos, player, world, ray);
-                    areaMine(state, world, stack,  pos, player, ray);
-                }
-
-                stack.getEnchantmentTags().clear();
-            }
-        }
-        return ActionResult.consume(stack);
+    public ICapabilityProvider initCapabilities(ItemStack stack, CompoundNBT oldCapNbt) {
+        return new BurnerGunMK1Provider();
     }
 
+    public static BurnerGunMK1Info getInfo(ItemStack gun) {
+        return gun.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoMK1Capability, null).orElse(null);
+    }
+
+    public static IItemHandler getHandler(ItemStack itemStack) {
+        return itemStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
+    }
     public static ItemStack getGun(PlayerEntity player) {
         ItemStack heldItem = player.getMainHandItem();
         if (!(heldItem.getItem() instanceof BurnerGunMK1)) {
@@ -648,26 +133,6 @@ public class BurnerGunMK1 extends ToolItem{
             }
         }
         return heldItem;
-    }
-
-    @Override
-    public boolean showDurabilityBar(ItemStack stack) {
-        return false;
-    }
-
-    @Override
-    public double getDurabilityForDisplay(ItemStack stack) {
-        return 1;
-    }
-
-    @Nonnull
-    @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, CompoundNBT oldCapNbt) {
-        return new BurnerGunMK1Provider();
-    }
-
-    public static IItemHandler getHandler(ItemStack itemStack) {
-        return itemStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
     }
 
     private final String INFO_NBT_TAG = "burnergunMK1InfoNBT";
@@ -697,14 +162,147 @@ public class BurnerGunMK1 extends ToolItem{
         }
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public void refuel(BurnerGunMK1Info info, List<Upgrade> upgrades, ItemStack stack, PlayerEntity player){
+        IItemHandler handler = getHandler(stack);
+        if (!UpgradeUtil.containsUpgradeFromList(upgrades, Upgrade.AMBIENCE)) {
+            while (handler.getStackInSlot(0).getCount() > 0){
+                if (info.getFuelValue() + net.minecraftforge.common.ForgeHooks.getBurnTime(handler.getStackInSlot(0)) > base_use_buffer)
+                    break;
+                info.setFuelValue(info.getFuelValue() + net.minecraftforge.common.ForgeHooks.getBurnTime(handler.getStackInSlot(0)));
+                ItemStack containerItem = handler.getStackInSlot(0).getContainerItem();
+                handler.getStackInSlot(0).shrink(1);
+                if (player.inventory.add(containerItem))
+                    player.drop(containerItem, true);
+            }
+        }
+    }
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    public void useFuel(BurnerGunMK1Info info, ItemStack stack, PlayerEntity player, List<Upgrade> upgrades){
+        if (!UpgradeUtil.containsUpgradeFromList(upgrades, Upgrade.AMBIENCE)){
+            refuel(info, upgrades, stack, player);
+            info.setFuelValue(info.getFuelValue() - Math.toIntExact(Math.round(getUseValue(upgrades))));
+        }
+    }
 
+    public double getUseValue(List<Upgrade> upgrades){
+        int extraUse = 0;
+        if (!upgrades.isEmpty()){
+            extraUse = upgrades.stream().mapToInt(upgrade -> upgrade.getCost()).sum();
+        }
+        return (base_use + extraUse) * (1.0 - ((UpgradeUtil.containsUpgradeFromList(upgrades, Upgrade.FUEL_EFFICIENCY_1)) ? UpgradeUtil.getUpgradeFromListByUpgrade(upgrades, Upgrade.FUEL_EFFICIENCY_1).getExtraValue() : 0));
+    }
 
+    public boolean canMine(World world, BlockPos pos, BlockState state, PlayerEntity player, BurnerGunMK1Info info, List<Upgrade> upgrades){
+        if (state.getDestroySpeed(world, pos) == -1 || state.getBlock() instanceof Light
+                || !world.mayInteract(player, pos) || !player.mayBuild()
+                || MinecraftForge.EVENT_BUS.post(new BlockEvent.BreakEvent(world, pos, state, player))
+                || info.getFuelValue() < getUseValue(upgrades))
+            return false;
+        return true;
+    }
 
+    public ItemStack trashItem(List<Item> trashList, ItemStack drop){
+        if (trashList.contains(drop.getItem()))
+            return ItemStack.EMPTY;
+        return drop;
+    }
 
+    public ItemStack smeltItem(World world, List<Item> smeltList, ItemStack drop){
+        IInventory inv = new Inventory(1);
+        inv.setItem(0, drop);
+        Optional<? extends AbstractCookingRecipe> recipe = world.getRecipeManager().getRecipeFor(RECIPE_TYPE, inv, world);
+        if (recipe.isPresent()){
+            ItemStack smelted = recipe.get().getResultItem().copy();
+            if (smeltList.contains(smelted.getItem()))
+                return smelted;
+        }
+        return drop;
+    }
 
+    public void spawnLight(World world, BlockRayTraceResult ray){
+        if (world.getBrightness(LightType.BLOCK, ray.getBlockPos().relative(ray.getDirection())) <= 8 && ray.getType() == RayTraceResult.Type.BLOCK)
+            world.setBlockAndUpdate(ray.getBlockPos(), ModBlocks.LIGHT.get().defaultBlockState());
+    }
 
+    public void mineBlock(World world, BlockRayTraceResult ray, ItemStack gun, BurnerGunMK1Info info, List<Upgrade> upgrades, List<Item> smeltFilter, List<Item> trashFilter, BlockPos blockPos, BlockState blockState, PlayerEntity player){
+        if (canMine(world, blockPos, blockState, player, info, upgrades)){
+            useFuel(info, gun, player, upgrades);
+            List<ItemStack> blockDrops = blockState.getDrops(new LootContext.Builder((ServerWorld) world)
+                    .withParameter(LootParameters.TOOL, gun)
+                    .withParameter(LootParameters.ORIGIN, new Vector3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()))
+                    .withParameter(LootParameters.BLOCK_STATE, blockState)
+            );
+            world.destroyBlock(blockPos, false);
+            int blockXP = blockState.getExpDrop(world, blockPos, UpgradeUtil.containsUpgradeFromList(upgrades, Upgrade.FORTUNE_1) ? UpgradeUtil.getUpgradeFromListByUpgrade(upgrades, Upgrade.FORTUNE_1).getTier() : 0, UpgradeUtil.containsUpgradeFromList(upgrades, Upgrade.SILK_TOUCH) ? 1 : 0);
+            if (!blockDrops.isEmpty()){
+                blockDrops.forEach(drop -> {
+                    if (UpgradeUtil.containsUpgradeFromList(upgrades, Upgrade.AUTO_SMELT))
+                        drop = smeltItem(world, smeltFilter, drop.copy());
+                    if (UpgradeUtil.containsUpgradeFromList(upgrades, Upgrade.TRASH))
+                        drop = trashItem(trashFilter, drop.copy());
+                    if (UpgradeUtil.containsUpgradeFromList(upgrades, Upgrade.MAGNET)){
+                        if (!player.inventory.add(drop.copy()))
+                            player.drop(drop.copy(), true);
+                    }else{
+                        world.addFreshEntity(new ItemEntity(world, blockPos.getX()+0.5, blockPos.getY()+0.5, blockPos.getZ()+0.5, drop.copy()));
+                    }
+                });
+            }
+            if (UpgradeUtil.containsUpgradeFromList(upgrades, Upgrade.MAGNET))
+                player.giveExperiencePoints(blockXP);
+            else
+                blockState.getBlock().popExperience((ServerWorld) world, blockPos, blockXP);
+            if (UpgradeUtil.containsUpgradeFromList(upgrades, Upgrade.LIGHT))
+                spawnLight(world, ray);
+        }
+    }
+
+    public void mineArea(World world, BlockRayTraceResult ray, ItemStack gun, BurnerGunMK1Info info, List<Upgrade> activeUpgrades, List<Item> smeltFilter, List<Item> trashFilter, BlockPos blockPos, BlockState blockState, PlayerEntity player){
+        int xRad = info.getHorizontal();
+        int yRad = info.getVertical();
+        Vector3d size = WorldUtil.getDim(ray, xRad, yRad, player);
+        for (int xPos = blockPos.getX() - (int)size.x(); xPos <= blockPos.getX() + (int)size.x(); ++xPos){
+            for (int yPos = blockPos.getY() - (int)size.y(); yPos <= blockPos.getY() + (int)size.y(); ++yPos){
+                for (int zPos = blockPos.getZ() - (int)size.z(); zPos <= blockPos.getZ() + (int)size.z(); ++zPos){
+                    BlockPos thePos = new BlockPos(xPos, yPos, zPos);
+                    if (thePos.equals(blockPos))
+                        continue;
+                    BlockState theState = world.getBlockState(thePos);
+                    mineBlock(world, ray, gun, info, activeUpgrades, smeltFilter, trashFilter, thePos, theState, player);
+                }
+            }
+        }
+        mineBlock(world, ray, gun, info, activeUpgrades, smeltFilter, trashFilter, blockPos, blockState, player);
+    }
+
+    @Override
+    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        ItemStack gun = player.getItemInHand(hand);
+        BurnerGunMK1Info info = getInfo(gun);
+        List<Upgrade> upgrades = UpgradeUtil.getUpgrades(gun);
+        BlockRayTraceResult blockRayTraceResult = WorldUtil.getLookingAt(world, player, RayTraceContext.FluidMode.NONE, info.getRaycastRange());
+        BlockPos blockPos = blockRayTraceResult.getBlockPos();
+        BlockState blockState = world.getBlockState(blockPos);
+        List<Item> smeltFilter = UpgradeUtil.getItemsFromList(info.getSmeltNBTFilter());
+        List<Item> trashFilter = UpgradeUtil.getItemsFromList(info.getTrashNBTFilter());
+        if (world.isClientSide)
+            player.playSound(SoundEvents.FIRECHARGE_USE, info.getVolume()*0.5f, 1.0f);
+        if (!world.isClientSide){
+            refuel(info, upgrades, gun, player);
+            if (canMine(world, blockPos, blockState, player, info, upgrades)){
+                gun.enchant(Enchantments.BLOCK_FORTUNE, UpgradeUtil.containsUpgradeFromList(upgrades, Upgrade.FORTUNE_1) ? UpgradeUtil.getUpgradeFromListByUpgrade(upgrades, Upgrade.FORTUNE_1).getTier() : 0);
+                gun.enchant(Enchantments.SILK_TOUCH, UpgradeUtil.containsUpgradeFromList(upgrades, Upgrade.SILK_TOUCH) ? 1 : 0);
+                if (player.isCrouching())
+                    mineBlock(world, blockRayTraceResult, gun, info, upgrades, smeltFilter, trashFilter, blockPos, blockState, player);
+                else
+                    mineArea(world, blockRayTraceResult, gun, info, upgrades, smeltFilter, trashFilter, blockPos, blockState, player);
+            }
+        }
+        UpgradeUtil.removeEnchantment(gun, Enchantments.BLOCK_FORTUNE);
+        UpgradeUtil.removeEnchantment(gun, Enchantments.SILK_TOUCH);
+        return ActionResult.consume(gun);
+    }
 
 
 }
