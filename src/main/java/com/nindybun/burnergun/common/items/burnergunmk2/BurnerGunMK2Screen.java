@@ -57,7 +57,7 @@ public class BurnerGunMK2Screen extends ContainerScreen<BurnerGunMK2Container> {
 
     @Override
     public void removed() {
-        PacketHandler.sendToServer(new PacketUpdateGun());
+        PacketHandler.sendToServer(new PacketUpdateGun(false));
         super.removed();
     }
 
@@ -70,7 +70,7 @@ public class BurnerGunMK2Screen extends ContainerScreen<BurnerGunMK2Container> {
         addButton(new Button(x-45, y+(130/2), 90, 20,
                 new TranslationTextComponent("tooltip." + BurnerGun.MOD_ID + ".screen.openSettings"), (button) -> {
             //ModScreens.openGunSettingsScreen(gun);
-            PacketHandler.sendToServer(new PacketUpdateGun());
+            PacketHandler.sendToServer(new PacketUpdateGun(true));
         }));
     }
 

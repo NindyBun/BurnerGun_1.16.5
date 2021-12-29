@@ -41,15 +41,17 @@ import java.util.function.Supplier;
 
 public class PacketUpdateGun {
     private static final Logger LOGGER = LogManager.getLogger();
-
-    public PacketUpdateGun() {
+    private static boolean open;
+    public PacketUpdateGun(boolean open) {
+        this.open = open;
     }
 
     public static void encode(PacketUpdateGun msg, PacketBuffer buffer) {
+        buffer.writeBoolean(msg.open);
     }
 
     public static PacketUpdateGun decode(PacketBuffer buffer) {
-        return new PacketUpdateGun();
+        return new PacketUpdateGun(buffer.readBoolean());
     }
 
     public static class Handler {
@@ -193,7 +195,7 @@ public class PacketUpdateGun {
                     infoMK1.setUpgradeNBTList(UpgradeUtil.setUpgradesNBT(currentUpgrades));
                 else
                     infoMK2.setUpgradeNBTList(UpgradeUtil.setUpgradesNBT(currentUpgrades));
-                if (Thread.currentThread().getThreadGroup() == SidedThreadGroups.SERVER)
+                if (Thread.currentThread().getThreadGroup() == SidedThreadGroups.SERVER && open)
                     ModScreens.openGunSettingsScreen(gun);
             });
             ctx.get().setPacketHandled(true);

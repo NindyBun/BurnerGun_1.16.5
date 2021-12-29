@@ -51,7 +51,7 @@ public class AutoSmeltScreen extends ContainerScreen<AutoSmeltContainer> {
 
     @Override
     public void removed() {
-        PacketHandler.sendToServer(new PacketUpdateGun());
+        PacketHandler.sendToServer(new PacketUpdateGun(false));
     }
 
     private static final Logger LOGGER = LogManager.getLogger();

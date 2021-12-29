@@ -50,7 +50,7 @@ public class TrashScreen extends ContainerScreen<TrashContainer> {
 
     @Override
     public void removed() {
-        PacketHandler.sendToServer(new PacketUpdateGun());
+        PacketHandler.sendToServer(new PacketUpdateGun(false));
     }
 
     private static final Logger LOGGER = LogManager.getLogger();
