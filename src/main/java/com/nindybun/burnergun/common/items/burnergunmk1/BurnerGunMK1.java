@@ -16,6 +16,7 @@ import com.nindybun.burnergun.util.UpgradeUtil;
 import com.nindybun.burnergun.util.WorldUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
@@ -197,7 +198,8 @@ public class BurnerGunMK1 extends Item{
         if (state.getDestroySpeed(world, pos) == -1 || state.getBlock() instanceof Light
                 || !world.mayInteract(player, pos) || !player.mayBuild()
                 || MinecraftForge.EVENT_BUS.post(new BlockEvent.BreakEvent(world, pos, state, player))
-                || info.getFuelValue() < getUseValue(upgrades))
+                || info.getFuelValue() < getUseValue(upgrades)
+                ||  state.getBlock().equals(Blocks.AIR))
             return false;
         return true;
     }

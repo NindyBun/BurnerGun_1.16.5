@@ -35,6 +35,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(id++, PacketUpdateUpgrade.class, PacketUpdateUpgrade::encode, PacketUpdateUpgrade::decode, PacketUpdateUpgrade.Handler::handle);
         INSTANCE.registerMessage(id++, PacketUpdateGun.class, PacketUpdateGun::encode, PacketUpdateGun::decode, PacketUpdateGun.Handler::handle);
         INSTANCE.registerMessage(id++, PacketChangeSettings.class, PacketChangeSettings::encode, PacketChangeSettings::decode, PacketChangeSettings.Handler::handle);
+        INSTANCE.registerMessage(id++, PacketRefuel.class, PacketRefuel::encode, PacketRefuel::decode, PacketRefuel.Handler::handle);
 
     }
 

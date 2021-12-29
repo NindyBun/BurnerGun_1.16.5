@@ -20,6 +20,8 @@ public class KeyInputHandler {
     public void onKeyInput(InputEvent.KeyInputEvent event)
     {
         PlayerEntity player = Minecraft.getInstance().player;
+        if (Keybinds.burnergun_light_key.isDown() && Minecraft.getInstance().screen == null)
+            LOGGER.info("PLACE LIGHT");
         if (Keybinds.burnergun_gui_key.isDown() && Minecraft.getInstance().screen == null
                 && (player.getMainHandItem().getItem() instanceof BurnerGunMK1 || player.getOffhandItem().getItem() instanceof BurnerGunMK1
                 || player.getMainHandItem().getItem() instanceof BurnerGunMK2 || player.getOffhandItem().getItem() instanceof BurnerGunMK2)){

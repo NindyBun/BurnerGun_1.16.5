@@ -4,6 +4,8 @@ import com.nindybun.burnergun.common.containers.BurnerGunMK1Container;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.common.items.upgrades.UpgradeCard;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade_Bag.UpgradeBag;
+import com.nindybun.burnergun.common.network.PacketHandler;
+import com.nindybun.burnergun.common.network.packets.PacketRefuel;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraftforge.items.ItemStackHandler;
@@ -30,7 +32,7 @@ public class BurnerGunMK1Handler extends ItemStackHandler {
             throw new IllegalArgumentException("Invalid slot number: " + slot);
         }
         if ((isFuel(stack) || stack.getItem() == Items.BUCKET || stack.getItem().equals(Upgrade.AMBIENCE.getCard().getItem())) && slot == 0 ) {
-            LOGGER.info(slot);
+            PacketHandler.sendToServer(new PacketRefuel());
             return true;
         }
         if (slot != 0 && slot != 11 && stack.getItem() instanceof UpgradeCard && !(stack.getItem() instanceof UpgradeBag) && !(stack.getItem().equals(Upgrade.AMBIENCE.getCard().getItem()))){

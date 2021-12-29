@@ -21,11 +21,10 @@ public class UpgradeCard extends Item {
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
         if (stack.getItem() instanceof UpgradeCard){
             Upgrade upgrade = ((UpgradeCard)stack.getItem()).upgrade;
-            tooltip.add(new StringTextComponent("Cost: " +  (!(this.getUpgrade().equals(Upgrade.AUTO_SMELT)) ? upgrade.getCost()+"" : "[0, 75]")).withStyle(TextFormatting.AQUA));
+            tooltip.add(new StringTextComponent("Cost: " +  (!(this.getUpgrade().equals(Upgrade.AUTO_SMELT)) ? upgrade.getCost()+"" : "[50, 175]")).withStyle(TextFormatting.AQUA));
             tooltip.add(new TranslationTextComponent(this.upgrade.getToolTip())
                     .append(this.getUpgrade().getBaseName().equals(Upgrade.FOCAL_POINT_1.getBaseName()) ? this.upgrade.getExtraValue() + " blocks." : "")
-                    .append(this.getUpgrade().getBaseName().equals(Upgrade.COOLDOWN_MULTIPLIER_1.getBaseName()) ? this.upgrade.getExtraValue() + "" : "")
-                    .append(this.getUpgrade().getBaseName().equals(Upgrade.FUEL_EFFICIENCY_1.getBaseName()) || this.getUpgrade().getBaseName().equals(Upgrade.HEAT_EFFICIENCY_1.getBaseName()) ? this.upgrade.getExtraValue()*100 + "%" : "")
+                    .append(this.getUpgrade().getBaseName().equals(Upgrade.FUEL_EFFICIENCY_1.getBaseName()) ? this.upgrade.getExtraValue()*100 + "%" : "")
                     .append(this.getUpgrade().getBaseName().equals(Upgrade.HORIZONTAL_EXPANSION_1.getBaseName()) ||
                             this.getUpgrade().getBaseName().equals(Upgrade.VERTICAL_EXPANSION_1.getBaseName()) ? this.upgrade.getTier()*2+1 + "" : "")
                     .withStyle(TextFormatting.GRAY));

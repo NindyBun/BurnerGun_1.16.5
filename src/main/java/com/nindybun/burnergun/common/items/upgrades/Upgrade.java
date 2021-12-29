@@ -39,8 +39,8 @@ public enum Upgrade {
 
     MAGNET("magnet", -1, 75, 1, 0, true),
     SILK_TOUCH("silk_touch", -1, 150, 1, 0, true),
-    LIGHT("light", -1, 0, 1, 0, true),
-    AUTO_SMELT("auto_smelt", -1, (int)Math.floor(Math.random()*75), 1, 0, true),
+    LIGHT("light", -1, 50, 1, 0, true),
+    AUTO_SMELT("auto_smelt", -1, 50 + (int)(Math.random() * ((175 - 50) + 1)), 1, 0, true),
     TRASH("trash", -1, 75, 1, 0, true),
     UPGRADE_BAG("upgrade_bag", -1, 0, 1, 0, false),
     AMBIENCE("ambience", -1, 0, 1, 0, false),
