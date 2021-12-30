@@ -14,13 +14,17 @@ import com.nindybun.burnergun.common.capabilities.burnergunmk2.BurnerGunMK2Info;
 import com.nindybun.burnergun.common.capabilities.burnergunmk2.BurnerGunMK2InfoProvider;
 import com.nindybun.burnergun.common.capabilities.burnergunmk2.BurnerGunMK2InfoStorage;
 import com.nindybun.burnergun.common.containers.ModContainers;
+import com.nindybun.burnergun.common.entities.ModEntities;
+import com.nindybun.burnergun.common.entities.renders.MegaBlazeRenderer;
 import com.nindybun.burnergun.common.items.ModItems;
 import com.nindybun.burnergun.common.network.PacketHandler;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -29,7 +33,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Mod(BurnerGun.MOD_ID)
-public class BurnerGun {
+public class BurnerGun{
 
     private static final Logger LOGGER = LogManager.getLogger();
     public static final String MOD_ID = "burnergun";
@@ -43,6 +47,7 @@ public class BurnerGun {
         ModItems.UPGRADE_ITEMS.register(modEventBus);
         ModContainers.CONTAINERS.register(modEventBus);
         ModParticles.PARTICLE.register(modEventBus);
+        ModEntities.ENTITIES.register(modEventBus);
 
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::setupClient);
@@ -64,6 +69,7 @@ public class BurnerGun {
         ClientSetup.setup();
         Keybinds.register();
         MinecraftForge.EVENT_BUS.register(new KeyInputHandler());
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.MEGA_BLAZE.get(), MegaBlazeRenderer::new);
     }
 
 

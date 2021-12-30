@@ -2,9 +2,9 @@ package com.nindybun.burnergun.common.items;
 
 import com.nindybun.burnergun.common.BurnerGun;
 import com.nindybun.burnergun.common.blocks.ModBlocks;
+import com.nindybun.burnergun.common.entities.ModEntities;
 import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1;
 import com.nindybun.burnergun.common.items.burnergunmk2.BurnerGunMK2;
-import com.nindybun.burnergun.common.items.upgrades.Auto_Fuel.AutoFuel;
 import com.nindybun.burnergun.common.items.upgrades.Auto_Smelt.AutoSmelt;
 import com.nindybun.burnergun.common.items.upgrades.Trash.Trash;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
@@ -22,6 +22,11 @@ public class ModItems {
     // We have a separate register just to contain all of the upgrades for quick reference
     public static final DeferredRegister<Item> UPGRADE_ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, BurnerGun.MOD_ID);
 
+    public static final RegistryObject<ModSpawnEggs> MEGA_BLAZE_SPAWN_EGG = ITEMS.register("mega_blaze_spawn_egg",
+            () -> new ModSpawnEggs(ModEntities.MEGA_BLAZE, 0x000000, 0xffa200, ITEM_GROUP.stacksTo(64)));
+
+    public static final RegistryObject<Item> BLAZE_CAGE = ITEMS.register("blaze_cage", () -> new BlazeCage());
+    public static final RegistryObject<Item> CAGED_BLAZE= ITEMS.register("caged_blaze", () -> new Item(new Item.Properties().tab(BurnerGun.itemGroup).stacksTo(1)));
     public static final RegistryObject<Item> BURNER_GUN_MK1 = ITEMS.register("burnergun_mk1", () ->  new BurnerGunMK1());
     public static final RegistryObject<Item> BURNER_GUN_MK2 = ITEMS.register("burnergun_mk2", () -> new BurnerGunMK2());
     public static final RegistryObject<Item> LIGHT_ITEM = ITEMS.register("light", () -> new BlockItem(ModBlocks.LIGHT.get(), ITEM_GROUP.stacksTo(1)));
