@@ -240,6 +240,7 @@ public class MegaBlazeEntity extends BlazeEntity {
                     double d1 = livingentity.getX() - this.megaBlaze.getX();
                     double d2 = livingentity.getY(0.5D) - this.megaBlaze.getY(0.5D);
                     double d3 = livingentity.getZ() - this.megaBlaze.getZ();
+
                     if (this.attackTime <= 0) {
                         ++this.attackStep;
                         if (this.attackStep == 1) {
@@ -266,13 +267,13 @@ public class MegaBlazeEntity extends BlazeEntity {
                                 this.megaBlaze.level.addFreshEntity(megaBlazeFireballEntity);
                             }
                             //SmallFireballEntity smallfireballentity = new SmallFireballEntity(this.megaBlaze.level, this.megaBlaze, d1 + this.megaBlaze.getRandom().nextGaussian() * (double)f, d2, d3 + this.megaBlaze.getRandom().nextGaussian() * (double)f);
-                            SmallFireballEntity smallfireballentity = new SmallFireballEntity(this.megaBlaze.level, this.megaBlaze, d1 + this.megaBlaze.getRandom().nextGaussian() * (double)f, d2, d3 + this.megaBlaze.getRandom().nextGaussian() * (double)f);
-                            smallfireballentity.setPos(smallfireballentity.getX(), this.megaBlaze.getY(0.5D) + 0.5D, smallfireballentity.getZ());
+                            SmallFireballEntity smallfireballentity = new SmallFireballEntity(this.megaBlaze.level, this.megaBlaze, d1+this.megaBlaze.getRandom().nextGaussian() , d2, d3+this.megaBlaze.getRandom().nextGaussian());
+                            smallfireballentity.setPos(smallfireballentity.getX(), this.megaBlaze.getY(0.5D), smallfireballentity.getZ());
                             this.megaBlaze.level.addFreshEntity(smallfireballentity);
                         }
                     }
 
-                    this.megaBlaze.getLookControl().setLookAt(livingentity.getX(), livingentity.getY(), livingentity.getZ(), 500F, 500F);
+                    this.megaBlaze.getLookControl().setLookAt(livingentity.getX(), livingentity.getY(), livingentity.getZ(), 10F, 10F);
                 } else if (this.lastSeen < 5) {
                     this.megaBlaze.getMoveControl().setWantedPosition(livingentity.getX(), livingentity.getY(), livingentity.getZ(), 1.0D);
                 }
