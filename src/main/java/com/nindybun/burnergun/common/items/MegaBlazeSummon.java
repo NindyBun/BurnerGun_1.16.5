@@ -5,6 +5,6 @@ import net.minecraft.item.Item;
 
 public class MegaBlazeSummon extends Item {
     public MegaBlazeSummon() {
-        super(new Properties().tab(BurnerGun.itemGroup).stacksTo(64));
+        super(new Properties().tab(BurnerGun.itemGroup).fireResistant().stacksTo(64));
     }
 }

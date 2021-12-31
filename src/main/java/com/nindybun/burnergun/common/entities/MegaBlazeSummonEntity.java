@@ -2,8 +2,11 @@ package com.nindybun.burnergun.common.entities;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
+import net.minecraft.world.DimensionType;
+import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -24,7 +27,10 @@ public class MegaBlazeSummonEntity extends ItemEntity {
 
     @Override
     public void tick() {
-        LOGGER.info(this::isInLava);
+        if (this.isInLava() && this.level.dimension() == World.NETHER){
+            LOGGER.info(this.level);
+            this.remove();
+        }
         super.tick();
     }
 
