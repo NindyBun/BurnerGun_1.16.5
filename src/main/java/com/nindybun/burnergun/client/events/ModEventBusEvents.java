@@ -2,6 +2,7 @@ package com.nindybun.burnergun.client.events;
 
 import com.nindybun.burnergun.common.BurnerGun;
 import com.nindybun.burnergun.common.entities.MegaBlazeEntity;
+import com.nindybun.burnergun.common.entities.MegaBlazeSummonEntity;
 import com.nindybun.burnergun.common.entities.ModEntities;
 import com.nindybun.burnergun.common.items.ModSpawnEggs;
 import net.minecraft.entity.EntityType;
