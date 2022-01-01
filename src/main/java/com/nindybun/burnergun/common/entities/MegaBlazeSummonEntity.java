@@ -42,7 +42,7 @@ public class MegaBlazeSummonEntity extends ItemEntity {
         //Chunk chunk = this.level.getChunkAt(this.getOnPos());
         World world = this.level;
         Chunk chunk = world.getChunk(this.xChunk, this.zChunk);
-        StructureStart<?> structureStart = chunk.getStartForFeature(Structure.NETHER_BRIDGE);
+        StructureStart<?> structureStart = chunk.getStartForFeature(Structure.NETHER_BRIDGE.getStructure());
         List<StructurePiece> structurePieces = structureStart.getPieces();
         LOGGER.info(structurePieces);
         /*if (this.isInLava() && this.level.dimension() == World.NETHER){
