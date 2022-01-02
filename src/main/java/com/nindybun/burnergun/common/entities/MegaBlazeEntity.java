@@ -51,6 +51,7 @@ public class MegaBlazeEntity extends BlazeEntity {
         this.setPathfindingMalus(PathNodeType.DAMAGE_FIRE, 0.0F);
         this.xpReward = 100;
     }
+
     protected void registerGoals() {
         this.goalSelector.addGoal(4, new FireballAttackGoal(this));
         this.goalSelector.addGoal(5, new MoveTowardsRestrictionGoal(this, 1.0D));
@@ -260,22 +261,26 @@ public class MegaBlazeEntity extends BlazeEntity {
                                 this.megaBlaze.level.levelEvent((PlayerEntity)null, 1018, this.megaBlaze.blockPosition(), 0);
                             }
 
-                            if (this.megaBlaze.getHealth() < this.megaBlaze.getMaxHealth()/2 && specialTime <= 0){
+                            /*if (this.megaBlaze.getHealth() < this.megaBlaze.getMaxHealth()/2 && specialTime <= 0){
                                 this.specialTime = 20*10 + (int)(Math.random() * ((20 - 10)*10 + 1));
                                 MegaBlazeFireballEntity megaBlazeFireballEntity = new MegaBlazeFireballEntity(this.megaBlaze.level, this.megaBlaze, d1 + this.megaBlaze.getRandom().nextGaussian() * (double)f, d2, d3 + this.megaBlaze.getRandom().nextGaussian() * (double)f);
                                 megaBlazeFireballEntity.setPos(megaBlazeFireballEntity.getX(), this.megaBlaze.getY(0.5D) + 0.5D, megaBlazeFireballEntity.getZ());
                                 this.megaBlaze.level.addFreshEntity(megaBlazeFireballEntity);
-                            }
+                            }*/
                             //SmallFireballEntity smallfireballentity = new SmallFireballEntity(this.megaBlaze.level, this.megaBlaze, d1 + this.megaBlaze.getRandom().nextGaussian() * (double)f, d2, d3 + this.megaBlaze.getRandom().nextGaussian() * (double)f);
+                            //MegaBlazeProjectileEntity megaBlazeProjectileEntity = new MegaBlazeProjectileEntity(this.megaBlaze.level, this.megaBlaze, d1+this.megaBlaze.getRandom().nextGaussian() , d2, d3+this.megaBlaze.getRandom().nextGaussian());
+                            //megaBlazeProjectileEntity.setPos(megaBlazeProjectileEntity.getX(), this.megaBlaze.getY(0.5D), megaBlazeProjectileEntity.getZ());
+                            //this.megaBlaze.level.addFreshEntity(megaBlazeProjectileEntity);
                             SmallFireballEntity smallfireballentity = new SmallFireballEntity(this.megaBlaze.level, this.megaBlaze, d1+this.megaBlaze.getRandom().nextGaussian() , d2, d3+this.megaBlaze.getRandom().nextGaussian());
                             smallfireballentity.setPos(smallfireballentity.getX(), this.megaBlaze.getY(0.5D), smallfireballentity.getZ());
                             this.megaBlaze.level.addFreshEntity(smallfireballentity);
                         }
                     }
-
                     this.megaBlaze.getLookControl().setLookAt(livingentity.getX(), livingentity.getY(), livingentity.getZ(), 10F, 10F);
-                } else if (this.lastSeen < 5) {
-                    this.megaBlaze.getMoveControl().setWantedPosition(livingentity.getX(), livingentity.getY(), livingentity.getZ(), 1.0D);
+                } else if (lastSeen > 5){
+                    this.megaBlaze.playSound(SoundEvents.CHORUS_FRUIT_TELEPORT, 0.8f, 1.0f);
+                    this.megaBlaze.setPos(livingentity.getX(), livingentity.getY(), livingentity.getZ());
+                    //this.megaBlaze.getMoveControl().setWantedPosition(livingentity.getX(), livingentity.getY(), livingentity.getZ(), 1.0D);
                 }
 
                 super.tick();

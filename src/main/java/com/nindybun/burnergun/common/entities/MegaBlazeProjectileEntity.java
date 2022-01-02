@@ -20,13 +20,13 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
 
-public class MegaBlazeFireballEntity extends DamagingProjectileEntity {
-    public MegaBlazeFireballEntity(EntityType<? extends MegaBlazeFireballEntity> p_i50171_1_, World p_i50171_2_) {
+public class MegaBlazeProjectileEntity extends DamagingProjectileEntity {
+    public MegaBlazeProjectileEntity(EntityType<? extends MegaBlazeProjectileEntity> p_i50171_1_, World p_i50171_2_) {
         super(p_i50171_1_, p_i50171_2_);
     }
 
-    public MegaBlazeFireballEntity(World world, LivingEntity livingEntity, double x, double y, double z) {
-        super(ModEntities.MEGA_BLAZE_FIREBALL.get(), livingEntity, x, y, z, world);
+    public MegaBlazeProjectileEntity(World world, LivingEntity livingEntity, double x, double y, double z) {
+        super(ModEntities.MEGA_BLAZE_PROJECTILE.get(), livingEntity, x, y, z, world);
     }
 
     protected void onHit(RayTraceResult p_70227_1_) {
@@ -41,9 +41,9 @@ public class MegaBlazeFireballEntity extends DamagingProjectileEntity {
                 }
 
                 areaeffectcloudentity.setParticle(ModParticles.MEGA_BLAZE_FIREBALL_PARTICLE.get());
-                areaeffectcloudentity.setRadius(3.0F);
-                areaeffectcloudentity.setDuration(200);
-                areaeffectcloudentity.addEffect(new EffectInstance(Effects.WITHER, 100, 1));
+                areaeffectcloudentity.setRadius(0.5F);
+                areaeffectcloudentity.setDuration(10);
+                areaeffectcloudentity.addEffect(new EffectInstance(Effects.WITHER, 10, 1));
                 if (!list.isEmpty()) {
                     for(LivingEntity livingentity : list) {
                         double d0 = this.distanceToSqr(livingentity);

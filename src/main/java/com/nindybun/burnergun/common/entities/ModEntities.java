@@ -17,4 +17,6 @@ public class ModEntities {
             EntityClassification.MISC).sized(1.0F, 1.0F).clientTrackingRange(4).updateInterval(10).build(new ResourceLocation(BurnerGun.MOD_ID, "textures/entities/megablaze/mega_blaze_fireball.png").toString()));
     public static final RegistryObject<EntityType<MegaBlazeSummonEntity>> MEGA_BLAZE_SUMMON = ENTITIES.register("mega_blaze_summon", () -> EntityType.Builder.<MegaBlazeSummonEntity>of(MegaBlazeSummonEntity::new,
             EntityClassification.MISC).fireImmune().build(new ResourceLocation(BurnerGun.MOD_ID, "textures/entities/mega_blaze_summon.png").toString()));
+    public static final RegistryObject<EntityType<MegaBlazeProjectileEntity>> MEGA_BLAZE_PROJECTILE = ENTITIES.register("mega_blaze_projectile", () -> EntityType.Builder.<MegaBlazeProjectileEntity>of(MegaBlazeProjectileEntity::new,
+            EntityClassification.MISC).sized(0.5f, 0.5f).clientTrackingRange(4).updateInterval(10).build(new ResourceLocation(BurnerGun.MOD_ID, "textures/entities/megablaze/mega_blaze_projectile.png").toString()));
 }

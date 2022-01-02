@@ -3,8 +3,12 @@ package com.nindybun.burnergun.common.entities;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.Minecraft;
 import net.minecraft.dispenser.IBlockSource;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityPredicate;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -19,8 +23,11 @@ import net.minecraft.world.gen.feature.structure.StructurePiece;
 import net.minecraft.world.gen.feature.structure.StructureStart;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.IFluidBlock;
+import net.minecraftforge.fml.network.FMLPlayMessages;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
 
 public class MegaBlazeSummonEntity extends ItemEntity {
 
@@ -39,13 +46,7 @@ public class MegaBlazeSummonEntity extends ItemEntity {
 
     @Override
     public void tick() {
-        //Chunk chunk = this.level.getChunkAt(this.getOnPos());
-        World world = this.level;
-        Chunk chunk = world.getChunk(this.xChunk, this.zChunk);
-        StructureStart<?> structureStart = chunk.getStartForFeature(Structure.NETHER_BRIDGE.getStructure());
-        List<StructurePiece> structurePieces = structureStart.getPieces();
-        LOGGER.info(structurePieces);
-        /*if (this.isInLava() && this.level.dimension() == World.NETHER){
+        if (this.isInLava() && this.level.dimension() == World.NETHER){
             BlockState state = this.getBlockStateOn();
             if (state.getFluidState().isSource()){
                 Block north = this.level.getBlockState(this.getOnPos().north()).getBlock();
@@ -54,11 +55,15 @@ public class MegaBlazeSummonEntity extends ItemEntity {
                 Block south = this.level.getBlockState(this.getOnPos().south()).getBlock();
                 Block bottom = this.level.getBlockState(this.getOnPos().below()).getBlock();
                 if (north == Blocks.NETHER_BRICKS && west == Blocks.NETHER_BRICKS && east == Blocks.NETHER_BRICKS
-                        && south == Blocks.NETHER_BRICKS && bottom == Blocks.NETHER_BRICKS)
-                    LOGGER.info("SUMMONABLE");
+                        && south == Blocks.NETHER_BRICKS && bottom == Blocks.NETHER_BRICKS){
+                    MegaBlazeEntity megaBlaze = new MegaBlazeEntity(ModEntities.MEGA_BLAZE.get(), this.level);
+                    megaBlaze.setPos(this.getX(), this.getY()+1, this.getZ());
+                    this.level.addFreshEntity(megaBlaze);
+                }
+
             }
             this.remove();
-        }*/
+        }
         super.tick();
     }
 
