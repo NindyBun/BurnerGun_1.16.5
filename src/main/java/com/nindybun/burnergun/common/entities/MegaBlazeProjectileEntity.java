@@ -27,6 +27,11 @@ public class MegaBlazeProjectileEntity extends DamagingProjectileEntity {
         super(p_i50171_1_, p_i50171_2_);
     }
 
+    @OnlyIn(Dist.CLIENT)
+    public MegaBlazeProjectileEntity(World p_i46775_1_, double p_i46775_2_, double p_i46775_4_, double p_i46775_6_, double p_i46775_8_, double p_i46775_10_, double p_i46775_12_) {
+        super(ModEntities.MEGA_BLAZE_PROJECTILE.get(), p_i46775_2_, p_i46775_4_, p_i46775_6_, p_i46775_8_, p_i46775_10_, p_i46775_12_, p_i46775_1_);
+    }
+
     public MegaBlazeProjectileEntity(World world, LivingEntity livingEntity, double x, double y, double z) {
         super(ModEntities.MEGA_BLAZE_PROJECTILE.get(), livingEntity, x, y, z, world);
     }
