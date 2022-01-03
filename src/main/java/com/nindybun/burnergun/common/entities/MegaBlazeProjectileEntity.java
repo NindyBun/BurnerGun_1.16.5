@@ -22,7 +22,7 @@ import net.minecraftforge.fml.network.NetworkHooks;
 
 import java.util.List;
 
-public class MegaBlazeProjectileEntity extends AbstractFireballEntity {
+public class MegaBlazeProjectileEntity extends DamagingProjectileEntity {
     public MegaBlazeProjectileEntity(EntityType<? extends MegaBlazeProjectileEntity> p_i50171_1_, World p_i50171_2_) {
         super(p_i50171_1_, p_i50171_2_);
     }
@@ -43,7 +43,7 @@ public class MegaBlazeProjectileEntity extends AbstractFireballEntity {
                 }
 
                 areaeffectcloudentity.setParticle(ModParticles.MEGA_BLAZE_FIREBALL_PARTICLE.get());
-                areaeffectcloudentity.setRadius(0.5F);
+                areaeffectcloudentity.setRadius(1.0F);
                 areaeffectcloudentity.setDuration(10);
                 areaeffectcloudentity.addEffect(new EffectInstance(Effects.WITHER, 10, 1));
                 if (!list.isEmpty()) {
