@@ -15,9 +15,12 @@ import com.nindybun.burnergun.common.capabilities.burnergunmk2.BurnerGunMK2InfoP
 import com.nindybun.burnergun.common.capabilities.burnergunmk2.BurnerGunMK2InfoStorage;
 import com.nindybun.burnergun.common.containers.ModContainers;
 import com.nindybun.burnergun.common.entities.ModEntities;
+import com.nindybun.burnergun.common.entities.renders.MegaBlazeProjectileRenderer;
 import com.nindybun.burnergun.common.entities.renders.MegaBlazeRenderer;
 import com.nindybun.burnergun.common.items.ModItems;
 import com.nindybun.burnergun.common.network.PacketHandler;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.entity.SpriteRenderer;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
@@ -68,6 +71,7 @@ public class BurnerGun{
         ClientSetup.setup();
         Keybinds.register();
         MinecraftForge.EVENT_BUS.register(new KeyInputHandler());
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.MEGA_BLAZE_PROJECTILE.get(), MegaBlazeProjectileRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntities.MEGA_BLAZE.get(), MegaBlazeRenderer::new);
     }
 

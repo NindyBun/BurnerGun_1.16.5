@@ -1,12 +1,13 @@
 package com.nindybun.burnergun.common.entities;
 
 import com.nindybun.burnergun.client.particles.ModParticles;
-import net.minecraft.entity.AreaEffectCloudEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
+import net.minecraft.entity.projectile.AbstractFireballEntity;
 import net.minecraft.entity.projectile.DamagingProjectileEntity;
 import net.minecraft.entity.projectile.DragonFireballEntity;
+import net.minecraft.entity.projectile.FireballEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.IPacket;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.potion.EffectInstance;
@@ -17,10 +18,11 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 import java.util.List;
 
-public class MegaBlazeProjectileEntity extends DamagingProjectileEntity {
+public class MegaBlazeProjectileEntity extends AbstractFireballEntity {
     public MegaBlazeProjectileEntity(EntityType<? extends MegaBlazeProjectileEntity> p_i50171_1_, World p_i50171_2_) {
         super(p_i50171_1_, p_i50171_2_);
     }
@@ -77,4 +79,5 @@ public class MegaBlazeProjectileEntity extends DamagingProjectileEntity {
     protected boolean shouldBurn() {
         return false;
     }
+
 }

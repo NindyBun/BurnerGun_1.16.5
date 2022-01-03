@@ -268,12 +268,12 @@ public class MegaBlazeEntity extends BlazeEntity {
                                 this.megaBlaze.level.addFreshEntity(megaBlazeFireballEntity);
                             }*/
                             //SmallFireballEntity smallfireballentity = new SmallFireballEntity(this.megaBlaze.level, this.megaBlaze, d1 + this.megaBlaze.getRandom().nextGaussian() * (double)f, d2, d3 + this.megaBlaze.getRandom().nextGaussian() * (double)f);
-                            //MegaBlazeProjectileEntity megaBlazeProjectileEntity = new MegaBlazeProjectileEntity(this.megaBlaze.level, this.megaBlaze, d1+this.megaBlaze.getRandom().nextGaussian() , d2, d3+this.megaBlaze.getRandom().nextGaussian());
-                            //megaBlazeProjectileEntity.setPos(megaBlazeProjectileEntity.getX(), this.megaBlaze.getY(0.5D), megaBlazeProjectileEntity.getZ());
-                            //this.megaBlaze.level.addFreshEntity(megaBlazeProjectileEntity);
-                            SmallFireballEntity smallfireballentity = new SmallFireballEntity(this.megaBlaze.level, this.megaBlaze, d1+this.megaBlaze.getRandom().nextGaussian() , d2, d3+this.megaBlaze.getRandom().nextGaussian());
-                            smallfireballentity.setPos(smallfireballentity.getX(), this.megaBlaze.getY(0.5D), smallfireballentity.getZ());
-                            this.megaBlaze.level.addFreshEntity(smallfireballentity);
+                            MegaBlazeProjectileEntity megaBlazeProjectileEntity = new MegaBlazeProjectileEntity(this.megaBlaze.level, this.megaBlaze, d1+this.megaBlaze.getRandom().nextGaussian() , d2, d3+this.megaBlaze.getRandom().nextGaussian());
+                            megaBlazeProjectileEntity.setPos(megaBlazeProjectileEntity.getX(), this.megaBlaze.getY(0.5D), megaBlazeProjectileEntity.getZ());
+                            this.megaBlaze.level.addFreshEntity(megaBlazeProjectileEntity);
+                            //SmallFireballEntity smallfireballentity = new SmallFireballEntity(this.megaBlaze.level, this.megaBlaze, d1+this.megaBlaze.getRandom().nextGaussian() , d2, d3+this.megaBlaze.getRandom().nextGaussian());
+                            //smallfireballentity.setPos(smallfireballentity.getX(), this.megaBlaze.getY(0.5D), smallfireballentity.getZ());
+                            //this.megaBlaze.level.addFreshEntity(smallfireballentity);
                         }
                     }
                     this.megaBlaze.getLookControl().setLookAt(livingentity.getX(), livingentity.getY(), livingentity.getZ(), 10F, 10F);
