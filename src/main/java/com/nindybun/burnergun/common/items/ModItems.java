@@ -24,10 +24,10 @@ public class ModItems {
     // We have a separate register just to contain all of the upgrades for quick reference
     public static final DeferredRegister<Item> UPGRADE_ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, BurnerGun.MOD_ID);
 
-    public static final RegistryObject<ModSpawnEggs> MEGA_BLAZE_SPAWN_EGG = ITEMS.register("mega_blaze_spawn_egg",
-            () -> new ModSpawnEggs(ModEntities.MEGA_BLAZE, 0x000000, 0xffa200, ITEM_GROUP.stacksTo(64)));
+    /* public static final RegistryObject<ModSpawnEggs> MEGA_BLAZE_SPAWN_EGG = ITEMS.register("mega_blaze_spawn_egg",
+            () -> new ModSpawnEggs(ModEntities.MEGA_BLAZE, 0x000000, 0xffa200, ITEM_GROUP.stacksTo(64)));*/
 
-    public static final RegistryObject<Item> MEGA_BLAZE_SUMMON_ITEM = ITEMS.register("mega_blaze_summon", () -> new MegaBlazeSummon());
+    //public static final RegistryObject<Item> MEGA_BLAZE_SUMMON_ITEM = ITEMS.register("mega_blaze_summon", () -> new MegaBlazeSummon());
 
     public static final RegistryObject<Item> BLAZE_CAGE = ITEMS.register("blaze_cage", () -> new BlazeCage());
     public static final RegistryObject<Item> CAGED_BLAZE= ITEMS.register("caged_blaze", () -> new Item(new Item.Properties().tab(BurnerGun.itemGroup).stacksTo(1)));

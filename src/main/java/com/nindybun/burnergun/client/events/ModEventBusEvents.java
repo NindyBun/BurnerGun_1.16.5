@@ -15,11 +15,11 @@ import net.minecraftforge.fml.common.Mod;
 public class ModEventBusEvents {
     @SubscribeEvent
     public static void addEntityAttributes(EntityAttributeCreationEvent event) {
-        event.put(ModEntities.MEGA_BLAZE.get(), MegaBlazeEntity.createAttributes().build());
+        //event.put(ModEntities.MEGA_BLAZE.get(), MegaBlazeEntity.createAttributes().build());
     }
 
     @SubscribeEvent
     public static void onRegisterEntities(RegistryEvent.Register<EntityType<?>> event) {
-        ModSpawnEggs.initSpawnEggs();
+        //ModSpawnEggs.initSpawnEggs();
     }
 }

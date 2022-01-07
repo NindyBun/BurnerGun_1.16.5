@@ -49,7 +49,7 @@ public class BurnerGun{
         ModItems.UPGRADE_ITEMS.register(modEventBus);
         ModContainers.CONTAINERS.register(modEventBus);
         ModParticles.PARTICLE.register(modEventBus);
-        ModEntities.ENTITIES.register(modEventBus);
+        //ModEntities.ENTITIES.register(modEventBus);
 
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::setupClient);
@@ -71,8 +71,8 @@ public class BurnerGun{
         ClientSetup.setup();
         Keybinds.register();
         MinecraftForge.EVENT_BUS.register(new KeyInputHandler());
-        RenderingRegistry.registerEntityRenderingHandler(ModEntities.MEGA_BLAZE_PROJECTILE.get(), MegaBlazeProjectileRenderer::new);
-        RenderingRegistry.registerEntityRenderingHandler(ModEntities.MEGA_BLAZE.get(), MegaBlazeRenderer::new);
+        //RenderingRegistry.registerEntityRenderingHandler(ModEntities.MEGA_BLAZE_PROJECTILE.get(), MegaBlazeProjectileRenderer::new);
+        //RenderingRegistry.registerEntityRenderingHandler(ModEntities.MEGA_BLAZE.get(), MegaBlazeRenderer::new);
     }
 
 
