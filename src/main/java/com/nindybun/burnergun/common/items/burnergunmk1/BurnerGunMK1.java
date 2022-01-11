@@ -284,6 +284,17 @@ public class BurnerGunMK1 extends Item{
     }
 
     @Override
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean held) {
+        super.inventoryTick(stack, world, entity, slot, held);
+        if (held && entity instanceof PlayerEntity && stack.getItem() instanceof BurnerGunMK1){
+            IItemHandler handler = getHandler(stack);
+            if (handler.getStackInSlot(0).getItem().equals(Upgrade.AMBIENCE.getCard().getItem())){
+                LOGGER.info("TRUE");
+            }
+        }
+    }
+
+    @Override
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack gun = player.getItemInHand(hand);
         BurnerGunMK1Info info = getInfo(gun);
