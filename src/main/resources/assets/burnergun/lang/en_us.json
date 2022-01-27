@@ -48,6 +48,11 @@
   "item.burnergun.cooldown_multiplier_1_upgrade": "Overclock 1 Upgrade",
   "item.burnergun.cooldown_multiplier_2_upgrade": "Overclock 2 Upgrade",
   "item.burnergun.cooldown_multiplier_3_upgrade": "Overclock 3 Upgrade",
+  "item.burnergun.condensed_blaze_1": "Compressed Blaze",
+  "item.burnergun.condensed_blaze_2": "Condensed Blaze",
+  "item.burnergun.condensed_blaze_3": "Blaze Point",
+  "item.burnergun.condensed_blaze_4": "Blaze Nebula",
+  "item.burnergun.condensed_blaze_5": "Blaze Singularity",
 
   "tooltip.burnergun.unifuel": "Uses the heat from the universe. It's so clean it's practically environmentally friendly!",
   "tooltip.burnergun.ambience": "Absorbs heat from nearby light sources.",

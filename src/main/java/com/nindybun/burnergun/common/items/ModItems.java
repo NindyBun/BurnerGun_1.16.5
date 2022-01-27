@@ -30,11 +30,17 @@ public class ModItems {
     //public static final RegistryObject<Item> MEGA_BLAZE_SUMMON_ITEM = ITEMS.register("mega_blaze_summon", () -> new MegaBlazeSummon());
 
     public static final RegistryObject<Item> BLAZE_CAGE = ITEMS.register("blaze_cage", () -> new BlazeCage());
-    public static final RegistryObject<Item> CAGED_BLAZE= ITEMS.register("caged_blaze", () -> new Item(new Item.Properties().tab(BurnerGun.itemGroup).stacksTo(1)));
+    public static final RegistryObject<Item> CAGED_BLAZE= ITEMS.register("caged_blaze", () -> new Item(ITEM_GROUP.stacksTo(1)));
     public static final RegistryObject<Item> BURNER_GUN_MK1 = ITEMS.register("burnergun_mk1", () ->  new BurnerGunMK1());
     public static final RegistryObject<Item> BURNER_GUN_MK2 = ITEMS.register("burnergun_mk2", () -> new BurnerGunMK2());
     public static final RegistryObject<Item> LIGHT_ITEM = ITEMS.register("light", () -> new BlockItem(ModBlocks.LIGHT.get(), ITEM_GROUP.stacksTo(1)));
     //public static final RegistryObject<Item> GLITTERING_DIAMOND = ITEMS.register("glittering_diamond", () -> new Item(new Item.Properties().stacksTo(64).tab(BurnerGun.itemGroup)));
+
+    public static final RegistryObject<Item> CONDENSED_BLAZE_1 = ITEMS.register("condensed_blaze_1", () -> new Item(ITEM_GROUP.stacksTo(64)));
+    public static final RegistryObject<Item> CONDENSED_BLAZE_2 = ITEMS.register("condensed_blaze_2", () -> new Item(ITEM_GROUP.stacksTo(64)));
+    public static final RegistryObject<Item> CONDENSED_BLAZE_3 = ITEMS.register("condensed_blaze_3", () -> new Item(ITEM_GROUP.stacksTo(64)));
+    public static final RegistryObject<Item> CONDENSED_BLAZE_4 = ITEMS.register("condensed_blaze_4", () -> new Item(ITEM_GROUP.stacksTo(64)));
+    public static final RegistryObject<Item> CONDENSED_BLAZE_5 = ITEMS.register("condensed_blaze_5", () -> new Item(ITEM_GROUP.stacksTo(64)));
 
     public static final RegistryObject<Item> BASE_TIER_1 = UPGRADE_ITEMS.register("base_tier_1", Upgrade.TIER_1::getCard);
     public static final RegistryObject<Item> BASE_TIER_2 = UPGRADE_ITEMS.register("base_tier_2", Upgrade.TIER_2::getCard);
