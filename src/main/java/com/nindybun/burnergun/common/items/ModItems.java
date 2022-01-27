@@ -47,7 +47,7 @@ public class ModItems {
     public static final RegistryObject<Item> LIGHT = UPGRADE_ITEMS.register("light_upgrade", Upgrade.LIGHT::getCard);
     public static final RegistryObject<Item> AUTO_SMELT = UPGRADE_ITEMS.register("auto_smelt_upgrade", () -> new AutoSmelt(Upgrade.AUTO_SMELT));
     public static final RegistryObject<Item> TRASH = UPGRADE_ITEMS.register("trash_upgrade", () -> new Trash(Upgrade.TRASH));
-    public static final RegistryObject<Item> UPGRADE_BAG = UPGRADE_ITEMS.register("upgrade_bag", () -> new UpgradeBag(Upgrade.UPGRADE_BAG));
+    //public static final RegistryObject<Item> UPGRADE_BAG = UPGRADE_ITEMS.register("upgrade_bag", () -> new UpgradeBag(Upgrade.UPGRADE_BAG));
     //public static final RegistryObject<Item> UNIFUEL = UPGRADE_ITEMS.register("unifuel", Upgrade.UNIFUEL::getCard);
     public static final RegistryObject<Item> AMBIENCE = UPGRADE_ITEMS.register("ambience", Upgrade.AMBIENCE::getCard);
     //public static final RegistryObject<Item> REACTOR = UPGRADE_ITEMS.register("reactor", Upgrade.REACTOR::getCard);
