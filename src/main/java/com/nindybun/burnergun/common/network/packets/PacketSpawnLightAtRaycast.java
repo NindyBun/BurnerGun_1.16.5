@@ -8,14 +8,17 @@ import com.nindybun.burnergun.common.items.burnergunmk2.BurnerGunMK2;
 import com.nindybun.burnergun.common.items.upgrades.Upgrade;
 import com.nindybun.burnergun.util.UpgradeUtil;
 import com.nindybun.burnergun.util.WorldUtil;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraftforge.fml.common.thread.SidedThreadGroups;
 import net.minecraftforge.fml.network.NetworkEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,8 +53,24 @@ public class PacketSpawnLightAtRaycast {
                 BurnerGunMK2Info infoMK2 = BurnerGunMK2.getInfo(gun);
                 List<Upgrade> upgrades = infoMK1 != null ? UpgradeUtil.getUpgradesFromNBT(infoMK1.getUpgradeNBTList()) : UpgradeUtil.getUpgradesFromNBT(infoMK2.getUpgradeNBTList());
                 if (UpgradeUtil.containsUpgradeFromList(upgrades, Upgrade.LIGHT)){
+                    if (infoMK1 != null && infoMK1.getFuelValue() < Upgrade.LIGHT.getCost())
+                        return;
                     BlockRayTraceResult ray = WorldUtil.getLookingAt(player.level, player, RayTraceContext.FluidMode.NONE, infoMK1 != null ? infoMK1.getRaycastRange() : infoMK2.getRaycastRange());
-                    player.level.setBlockAndUpdate(player.level.getBlockState(ray.getBlockPos()) == Blocks.AIR.defaultBlockState() ? ray.getBlockPos() : ray.getBlockPos().relative(ray.getDirection()), ModBlocks.LIGHT.get().defaultBlockState());
+                    if (Thread.currentThread().getThreadGroup() == SidedThreadGroups.SERVER)
+                        player.playSound(SoundEvents.WOOL_PLACE, infoMK1 != null ? infoMK1.getVolume()*0.5f : infoMK2.getVolume()*0.5f, 1.0f);
+                    BlockState state = player.level.getBlockState(ray.getBlockPos());
+                    if (infoMK1 != null && (state == Blocks.AIR.defaultBlockState() || player.level.getBlockState(ray.getBlockPos().relative(ray.getDirection())) == Blocks.AIR.defaultBlockState())){
+                        if (infoMK1.getFuelValue() >= Upgrade.LIGHT.getCost())
+                            infoMK1.setFuelValue(infoMK1.getFuelValue()-Upgrade.LIGHT.getCost());
+                        else
+                            return;
+                    }
+                    if (state == Blocks.AIR.defaultBlockState()) {
+                        player.level.setBlockAndUpdate(ray.getBlockPos(), ModBlocks.LIGHT.get().defaultBlockState());
+                        return;
+                    }
+                    if (state != Blocks.AIR.defaultBlockState() && player.level.getBlockState(ray.getBlockPos().relative(ray.getDirection())) == Blocks.AIR.defaultBlockState())
+                        player.level.setBlockAndUpdate(ray.getBlockPos().relative(ray.getDirection()), ModBlocks.LIGHT.get().defaultBlockState());
                 }
             });
             ctx.get().setPacketHandled(true);

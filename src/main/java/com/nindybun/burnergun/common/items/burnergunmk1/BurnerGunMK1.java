@@ -189,7 +189,7 @@ public class BurnerGunMK1 extends Item{
     public double getUseValue(List<Upgrade> upgrades){
         int extraUse = 0;
         if (!upgrades.isEmpty()){
-            extraUse = upgrades.stream().mapToInt(upgrade -> upgrade.getCost()).sum();
+            extraUse = upgrades.stream().mapToInt(upgrade -> upgrade.lazyIs(Upgrade.LIGHT) ? 0 : upgrade.getCost()).sum();
         }
         return (base_use + extraUse) * (1.0 - ((UpgradeUtil.containsUpgradeFromList(upgrades, Upgrade.FUEL_EFFICIENCY_1)) ? UpgradeUtil.getUpgradeFromListByUpgrade(upgrades, Upgrade.FUEL_EFFICIENCY_1).getExtraValue() : 0));
     }
@@ -226,9 +226,11 @@ public class BurnerGunMK1 extends Item{
         return drop;
     }
 
-    public void spawnLight(World world, BlockRayTraceResult ray){
-        if (world.getBrightness(LightType.BLOCK, ray.getBlockPos().relative(ray.getDirection())) <= 8 && ray.getType() == RayTraceResult.Type.BLOCK)
+    public void spawnLight(World world, BlockRayTraceResult ray, BurnerGunMK1Info info){
+        if (world.getBrightness(LightType.BLOCK, ray.getBlockPos().relative(ray.getDirection())) < 8 && ray.getType() == RayTraceResult.Type.BLOCK && info.getFuelValue() >= Upgrade.LIGHT.getCost()){
+            info.setFuelValue(info.getFuelValue()-Upgrade.LIGHT.getCost());
             world.setBlockAndUpdate(ray.getBlockPos(), ModBlocks.LIGHT.get().defaultBlockState());
+        }
     }
 
     public void mineBlock(World world, BlockRayTraceResult ray, ItemStack gun, BurnerGunMK1Info info, List<Upgrade> activeUpgrades, List<Item> smeltFilter, List<Item> trashFilter, BlockPos blockPos, BlockState blockState, PlayerEntity player){
@@ -260,7 +262,7 @@ public class BurnerGunMK1 extends Item{
             else
                 blockState.getBlock().popExperience((ServerWorld) world, blockPos, blockXP);
             if (UpgradeUtil.containsUpgradeFromList(activeUpgrades, Upgrade.LIGHT))
-                spawnLight(world, ray);
+                spawnLight(world, ray, info);
         }
     }
 
