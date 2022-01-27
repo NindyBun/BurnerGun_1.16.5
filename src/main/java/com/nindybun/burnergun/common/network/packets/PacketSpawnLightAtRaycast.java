@@ -56,8 +56,6 @@ public class PacketSpawnLightAtRaycast {
                     if (infoMK1 != null && infoMK1.getFuelValue() < Upgrade.LIGHT.getCost())
                         return;
                     BlockRayTraceResult ray = WorldUtil.getLookingAt(player.level, player, RayTraceContext.FluidMode.NONE, infoMK1 != null ? infoMK1.getRaycastRange() : infoMK2.getRaycastRange());
-                    if (Thread.currentThread().getThreadGroup() == SidedThreadGroups.SERVER)
-                        player.playSound(SoundEvents.WOOL_PLACE, infoMK1 != null ? infoMK1.getVolume()*0.5f : infoMK2.getVolume()*0.5f, 1.0f);
                     BlockState state = player.level.getBlockState(ray.getBlockPos());
                     if (infoMK1 != null && (state == Blocks.AIR.defaultBlockState() || player.level.getBlockState(ray.getBlockPos().relative(ray.getDirection())) == Blocks.AIR.defaultBlockState())){
                         if (infoMK1.getFuelValue() >= Upgrade.LIGHT.getCost())

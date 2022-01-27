@@ -51,8 +51,6 @@ public class PacketSpawnLightAtPlayer {
                 List<Upgrade> upgrades = infoMK1 != null ? UpgradeUtil.getUpgradesFromNBT(infoMK1.getUpgradeNBTList()) : UpgradeUtil.getUpgradesFromNBT(infoMK2.getUpgradeNBTList());
                 BlockState state = player.level.getBlockState(new BlockPos(player.position().add(new Vector3d(0, 1, 0))));
                 if (UpgradeUtil.containsUpgradeFromList(upgrades, Upgrade.LIGHT)){
-                    if (Thread.currentThread().getThreadGroup() == SidedThreadGroups.SERVER)
-                        player.playSound(SoundEvents.WOOL_PLACE, infoMK1 != null ? infoMK1.getVolume()*0.5f : infoMK2.getVolume()*0.5f, 1.0f);
                     if (infoMK1 != null && state == Blocks.AIR.defaultBlockState()){
                         if (infoMK1.getFuelValue() >= Upgrade.LIGHT.getCost())
                             infoMK1.setFuelValue(infoMK1.getFuelValue()-Upgrade.LIGHT.getCost());
