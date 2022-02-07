@@ -2,10 +2,7 @@ package com.nindybun.burnergun.common.blocks;
 
 //import com.nindybun.burnergun.client.particles.ModParticles;
 import com.nindybun.burnergun.client.particles.ModParticles;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.Direction;
@@ -26,6 +23,7 @@ public class Light extends Block {
         super(
                 Properties
                         .of(Material.BARRIER)
+                        .sound(SoundType.WOOL)
                         .noCollission()
                         .instabreak()
                         .lightLevel(value -> 15)

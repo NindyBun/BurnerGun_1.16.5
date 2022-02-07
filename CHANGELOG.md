@@ -27,3 +27,6 @@
 - Adjusted some bits and pieces regarding fuel gen and usage
 - Removed Burner Gun use sound
 - Added back permanent particles to the light block
+### v3.0.0
+- Completely reworked from previous versions
+- Is subject to future changes

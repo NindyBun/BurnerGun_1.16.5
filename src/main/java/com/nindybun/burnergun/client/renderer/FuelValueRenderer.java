@@ -30,7 +30,7 @@ import java.util.List;
 @Mod.EventBusSubscriber(modid = BurnerGun.MOD_ID, value = Dist.CLIENT)
 public class FuelValueRenderer {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final int base_buffer = BurnerGunMK1.base_use_buffer;
+    private static final double base_buffer = BurnerGunMK1.base_use_buffer;
 
     @SubscribeEvent
     public static void renderOverlay(@Nonnull RenderGameOverlayEvent.Post event){
@@ -51,7 +51,7 @@ public class FuelValueRenderer {
     public static void renderFuel(RenderGameOverlayEvent.Post event, ItemStack stack){
         BurnerGunMK1Info info = stack.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoMK1Capability, null).orElseThrow(()->new IllegalArgumentException("No capability found!"));
         FontRenderer fontRenderer = Minecraft.getInstance().font;
-        double level = info.getFuelValue();
+        int level = (int)info.getFuelValue();
         Color color;
         if (level > base_buffer*3/4)
                 color = Color.GREEN;

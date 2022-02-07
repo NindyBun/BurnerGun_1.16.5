@@ -44,18 +44,18 @@ public class BurnerGunMK1Container extends Container{
     private final int SLOT_X_SPACING = 18;
     private final int SLOT_Y_SPACING = 18;
 
-    public static int MAX_EXPECTED_GUN_SLOT_COUNT = 7;
+    public static int MAX_EXPECTED_GUN_SLOT_COUNT = 6;
 
     private void setup(PlayerInventory playerInv){
         final int GUN_INVENTORY_YPOS = 8;
-        final int GUN_INVENTORY_XPOS = 44;
+        final int GUN_INVENTORY_XPOS = 62;
         final int PLAYER_INVENTORY_YPOS = 48;
         final int PLAYER_INVENTORY_XPOS = 8;
         final int HOTBAR_XPOS = 8;
         final int HOTBAR_YPOS = 106;
         final int GUN_SLOTS_PER_ROW = 5;
         final int GUN_FUELSLOT_YPOS = 8;
-        final int GUN_FUELSLOT_XPOS = 8;
+        final int GUN_FUELSLOT_XPOS = 26;
         final int GUN_BAGSLOT_YPOS = 8;
         final int GUN_BAGSLOT_XPOS = 152;
 
@@ -84,13 +84,13 @@ public class BurnerGunMK1Container extends Container{
         addSlot(new SlotItemHandler(handler, 0, GUN_FUELSLOT_XPOS, GUN_FUELSLOT_YPOS));
 
         // Add the tile inventory container to the gui
-        for (int gunSlot = 1; gunSlot < gunSlotCount-1; gunSlot++) {
+        for (int gunSlot = 1; gunSlot < gunSlotCount; gunSlot++) {
             int xpos = GUN_INVENTORY_XPOS + SLOT_X_SPACING * (gunSlot-1);
             addSlot(new SlotItemHandler(handler, gunSlot, xpos, GUN_INVENTORY_YPOS));
         }
 
         //Adds the upgrade bag slots
-        addSlot(new SlotItemHandler(handler, MAX_EXPECTED_GUN_SLOT_COUNT-1, GUN_BAGSLOT_XPOS, GUN_BAGSLOT_YPOS));
+        //addSlot(new SlotItemHandler(handler, MAX_EXPECTED_GUN_SLOT_COUNT-1, GUN_BAGSLOT_XPOS, GUN_BAGSLOT_YPOS));
     }
 
     @Override

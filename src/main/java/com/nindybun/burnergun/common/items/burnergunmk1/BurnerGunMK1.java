@@ -69,8 +69,8 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 public class BurnerGunMK1 extends Item{
-    private static final int base_use = 100;
-    public static final int base_use_buffer = 10_000;
+    private static final double base_use = 100;
+    public static final double base_use_buffer = 10_000;
     private static final Logger LOGGER = LogManager.getLogger();
     private static final IRecipeType<? extends AbstractCookingRecipe> RECIPE_TYPE = IRecipeType.SMELTING;
 
@@ -165,9 +165,9 @@ public class BurnerGunMK1 extends Item{
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public void refuel(BurnerGunMK1Info info, List<Upgrade> upgrades, ItemStack stack, PlayerEntity player){
+    public void refuel(BurnerGunMK1Info info, ItemStack stack, PlayerEntity player){
         IItemHandler handler = getHandler(stack);
-        if (!UpgradeUtil.containsUpgradeFromList(upgrades, Upgrade.AMBIENCE)) {
+        if (!handler.getStackInSlot(0).getItem().equals(Upgrade.AMBIENCE.getCard().getItem())) {
             while (handler.getStackInSlot(0).getCount() > 0){
                 if (info.getFuelValue() + net.minecraftforge.common.ForgeHooks.getBurnTime(handler.getStackInSlot(0)) > base_use_buffer)
                     break;
@@ -181,16 +181,15 @@ public class BurnerGunMK1 extends Item{
     }
 
     public void useFuel(BurnerGunMK1Info info, ItemStack stack, PlayerEntity player, List<Upgrade> upgrades){
-        if (!UpgradeUtil.containsUpgradeFromList(upgrades, Upgrade.AMBIENCE)){
-            refuel(info, upgrades, stack, player);
-            info.setFuelValue(info.getFuelValue() - Math.toIntExact(Math.round(getUseValue(upgrades))));
-        }
+        if (!getHandler(stack).getStackInSlot(0).getItem().equals(Upgrade.AMBIENCE.getCard().getItem()))
+            refuel(info, stack, player);
+        info.setFuelValue(info.getFuelValue() - getUseValue(upgrades));
     }
 
     public double getUseValue(List<Upgrade> upgrades){
         int extraUse = 0;
         if (!upgrades.isEmpty()){
-            extraUse = upgrades.stream().mapToInt(upgrade -> upgrade.getCost()).sum();
+            extraUse = upgrades.stream().mapToInt(upgrade -> upgrade.lazyIs(Upgrade.LIGHT) ? 0 : upgrade.getCost()).sum();
         }
         return (base_use + extraUse) * (1.0 - ((UpgradeUtil.containsUpgradeFromList(upgrades, Upgrade.FUEL_EFFICIENCY_1)) ? UpgradeUtil.getUpgradeFromListByUpgrade(upgrades, Upgrade.FUEL_EFFICIENCY_1).getExtraValue() : 0));
     }
@@ -227,9 +226,11 @@ public class BurnerGunMK1 extends Item{
         return drop;
     }
 
-    public void spawnLight(World world, BlockRayTraceResult ray){
-        if (world.getBrightness(LightType.BLOCK, ray.getBlockPos().relative(ray.getDirection())) <= 8 && ray.getType() == RayTraceResult.Type.BLOCK)
+    public void spawnLight(World world, BlockRayTraceResult ray, BurnerGunMK1Info info){
+        if (world.getBrightness(LightType.BLOCK, ray.getBlockPos().relative(ray.getDirection())) < 8 && ray.getType() == RayTraceResult.Type.BLOCK && info.getFuelValue() >= Upgrade.LIGHT.getCost()){
+            info.setFuelValue(info.getFuelValue()-Upgrade.LIGHT.getCost());
             world.setBlockAndUpdate(ray.getBlockPos(), ModBlocks.LIGHT.get().defaultBlockState());
+        }
     }
 
     public void mineBlock(World world, BlockRayTraceResult ray, ItemStack gun, BurnerGunMK1Info info, List<Upgrade> activeUpgrades, List<Item> smeltFilter, List<Item> trashFilter, BlockPos blockPos, BlockState blockState, PlayerEntity player){
@@ -261,7 +262,7 @@ public class BurnerGunMK1 extends Item{
             else
                 blockState.getBlock().popExperience((ServerWorld) world, blockPos, blockXP);
             if (UpgradeUtil.containsUpgradeFromList(activeUpgrades, Upgrade.LIGHT))
-                spawnLight(world, ray);
+                spawnLight(world, ray, info);
         }
     }
 
@@ -286,10 +287,13 @@ public class BurnerGunMK1 extends Item{
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean held) {
         super.inventoryTick(stack, world, entity, slot, held);
-        if (held && entity instanceof PlayerEntity && stack.getItem() instanceof BurnerGunMK1){
+        boolean heldgun = ((PlayerEntity)entity).getMainHandItem().getItem() instanceof BurnerGunMK1 || ((PlayerEntity)entity).getOffhandItem().getItem() instanceof BurnerGunMK1 ? true : false;
+        if (heldgun && entity instanceof PlayerEntity && stack.getItem() instanceof BurnerGunMK1){
             IItemHandler handler = getHandler(stack);
             if (handler.getStackInSlot(0).getItem().equals(Upgrade.AMBIENCE.getCard().getItem())){
-                LOGGER.info("TRUE");
+                BurnerGunMK1Info info = getInfo(stack);
+                if (info.getFuelValue() < base_use_buffer && world.getMaxLocalRawBrightness((entity.blockPosition())) >= 8)
+                    info.setFuelValue(info.getFuelValue()+1.0);
             }
         }
     }
@@ -307,7 +311,7 @@ public class BurnerGunMK1 extends Item{
         if (world.isClientSide)
             player.playSound(SoundEvents.FIRECHARGE_USE, info.getVolume()*0.5f, 1.0f);
         if (!world.isClientSide){
-            refuel(info, activeUpgrades, gun, player);
+            refuel(info, gun, player);
             if (canMine(world, blockPos, blockState, player, info, activeUpgrades)){
                 gun.enchant(Enchantments.BLOCK_FORTUNE, UpgradeUtil.containsUpgradeFromList(activeUpgrades, Upgrade.FORTUNE_1) ? UpgradeUtil.getUpgradeFromListByUpgrade(activeUpgrades, Upgrade.FORTUNE_1).getTier() : 0);
                 gun.enchant(Enchantments.SILK_TOUCH, UpgradeUtil.containsUpgradeFromList(activeUpgrades, Upgrade.SILK_TOUCH) ? 1 : 0);

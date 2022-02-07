@@ -36,14 +36,11 @@ public class BurnerGunMK1Handler extends ItemStackHandler {
             PacketHandler.sendToServer(new PacketRefuel());
             return true;
         }
-        if (slot != 0 && slot != 11 && stack.getItem() instanceof UpgradeCard && !(stack.getItem() instanceof UpgradeBag) && !(stack.getItem().equals(Upgrade.AMBIENCE.getCard().getItem()))){
+        if (slot != 0 && stack.getItem() instanceof UpgradeCard && !(stack.getItem() instanceof UpgradeBag) && !(stack.getItem().equals(Upgrade.AMBIENCE.getCard().getItem()))){
             if (getUpgradeByUpgrade(((UpgradeCard) stack.getItem()).getUpgrade()) != null){
                 return false;
             }
             return canInsert(stack);
-        }
-        if (slot == 11 && stack.getItem() instanceof UpgradeBag){
-            return true;
         }
         return false;
     }
