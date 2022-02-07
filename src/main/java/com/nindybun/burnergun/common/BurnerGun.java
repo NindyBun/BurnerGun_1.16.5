@@ -4,6 +4,7 @@ import com.nindybun.burnergun.client.ClientSetup;
 import com.nindybun.burnergun.client.KeyInputHandler;
 import com.nindybun.burnergun.client.Keybinds;
 //import com.nindybun.burnergun.client.particles.ModParticles;
+import com.nindybun.burnergun.client.events.DrawBlockVoxelShape;
 import com.nindybun.burnergun.client.particles.ModParticles;
 import com.nindybun.burnergun.common.blocks.ModBlocks;
 import com.nindybun.burnergun.common.capabilities.*;
