@@ -3,12 +3,23 @@ package com.nindybun.burnergun.client.renderer;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.nindybun.burnergun.common.BurnerGun;
+import com.nindybun.burnergun.common.capabilities.burnergunmk1.BurnerGunMK1Info;
+import com.nindybun.burnergun.common.capabilities.burnergunmk2.BurnerGunMK2Info;
+import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1;
+import com.nindybun.burnergun.common.items.burnergunmk2.BurnerGunMK2;
+import com.nindybun.burnergun.util.WorldUtil;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Matrix4f;
@@ -44,7 +55,7 @@ public class BlockRenderer {
 
         voxelShape.forAllEdges((x0, y0, z0, x1, y1, z1) -> {
             bufferIn.vertex(matrix4f, (float) (x0 + originX), (float) (y0 + originY), (float) (z0 + originZ)).color(red, green, blue, alpha).endVertex();
-            bufferIn.vertex(matrix4f, (float) (x1 + originX), (float) (y1 + originY), (float) (z1 + originZ)).color(red, green, blue, alpha).endVertex();
+            //bufferIn.vertex(matrix4f, (float) (x1 + originX), (float) (y0 + originY), (float) (z1 + originZ)).color(red, green, blue, alpha).endVertex();
         });
 
         renderTypeBuffer.endBatch(RenderType.lines());
@@ -53,10 +64,19 @@ public class BlockRenderer {
     @SubscribeEvent
     public static void onRenderWorldEvent(RenderWorldLastEvent e) {
         final GameRenderer gameRenderer = Minecraft.getInstance().gameRenderer;
+        PlayerEntity player = Minecraft.getInstance().player;
+        ItemStack gun = !BurnerGunMK2.getGun(player).isEmpty() ? BurnerGunMK2.getGun(player) : BurnerGunMK1.getGun(player);
+        if (gun.isEmpty())
+            return;
+        BurnerGunMK1Info infoMK1 = BurnerGunMK1.getInfo(gun);
+        BurnerGunMK2Info infoMK2 = BurnerGunMK2.getInfo(gun);
+        BlockRayTraceResult ray = WorldUtil.getLookingAt(player.level, player, RayTraceContext.FluidMode.NONE, infoMK1 != null ? infoMK1.getRaycastRange() : infoMK2.getRaycastRange());
+        if (player.level.getBlockState(ray.getBlockPos()) == Blocks.AIR.defaultBlockState())
+            return;
         gameRenderer.resetProjectionMatrix(e.getProjectionMatrix());
 
         final AxisAlignedBB test = new AxisAlignedBB(0,0,0,1,1,1);
-        drawBoundingBoxAtBlockPos(e.getMatrixStack(), test, 1.0F, 0.0F, 0.0F, 1.0F, new BlockPos(0,64,0));
+        drawBoundingBoxAtBlockPos(e.getMatrixStack(), test, 1.0F, 0.0F, 0.0F, 1.0F, new BlockPos(0, 64, 0));
     }
 
 }

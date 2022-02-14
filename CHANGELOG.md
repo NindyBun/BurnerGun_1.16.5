@@ -30,3 +30,4 @@
 ### v3.0.0
 - Completely reworked from previous versions
 - Is subject to future changes
+- Updated Forge to 1.16.5-36.2.20
