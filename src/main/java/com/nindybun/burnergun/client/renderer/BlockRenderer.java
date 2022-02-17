@@ -4,10 +4,14 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.nindybun.burnergun.common.BurnerGun;
 import com.nindybun.burnergun.common.capabilities.burnergunmk1.BurnerGunMK1Info;
+import com.nindybun.burnergun.common.capabilities.burnergunmk1.BurnerGunMK1InfoProvider;
 import com.nindybun.burnergun.common.capabilities.burnergunmk2.BurnerGunMK2Info;
+import com.nindybun.burnergun.common.capabilities.burnergunmk2.BurnerGunMK2InfoProvider;
 import com.nindybun.burnergun.common.items.burnergunmk1.BurnerGunMK1;
 import com.nindybun.burnergun.common.items.burnergunmk2.BurnerGunMK2;
 import com.nindybun.burnergun.util.WorldUtil;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -29,42 +33,65 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL11;
 
 
 @Mod.EventBusSubscriber(modid = BurnerGun.MOD_ID, value = Dist.CLIENT)
 public class BlockRenderer {
-    public static void drawBoundingBoxAtBlockPos(MatrixStack matrixStackIn, AxisAlignedBB aabbIn, float red, float green, float blue, float alpha, BlockPos pos) {
+    private static final Logger LOGGER = LogManager.getLogger();
+    public static void drawBoundingBoxAtBlockPos(MatrixStack matrixStackIn, AxisAlignedBB aabbIn, float red, float green, float blue, float alpha, BlockPos pos, BlockPos aimed) {
         Vector3d cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
 
         double camX = cam.x, camY = cam.y, camZ = cam.z;
 
         matrixStackIn.pushPose();
         GL11.glDisable(GL11.GL_DEPTH_TEST);
-        drawShapeOutline(matrixStackIn, VoxelShapes.create(aabbIn), pos.getX() - camX, pos.getY() - camY, pos.getZ() - camZ, red, green, blue, alpha);
+        drawShapeOutline(matrixStackIn, VoxelShapes.create(aabbIn), pos.getX() - camX, pos.getY() - camY, pos.getZ() - camZ, red, green, blue, alpha, pos, aimed);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
 
         matrixStackIn.popPose();
     }
 
-    private static void drawShapeOutline(MatrixStack matrixStack, VoxelShape voxelShape, double originX, double originY, double originZ, float red, float green, float blue, float alpha) {
+    private static void drawShapeOutline(MatrixStack matrixStack, VoxelShape voxelShape, double originX, double originY, double originZ, float red, float green, float blue, float alpha, BlockPos pos, BlockPos aimed) {
         Matrix4f matrix4f = matrixStack.last().pose();
 
         IRenderTypeBuffer.Impl renderTypeBuffer = Minecraft.getInstance().renderBuffers().bufferSource();
         IVertexBuilder bufferIn = renderTypeBuffer.getBuffer(RenderType.lines());
 
-        /*voxelShape.forAllEdges((x0, y0, z0, x1, y1, z1) -> {
-            bufferIn.vertex(matrix4f, (float) (x0 + originX), (float) (y0 + originY), (float) (z0 + originZ)).color(red, green, blue, alpha).endVertex();
-            bufferIn.vertex(matrix4f, (float) (x1 + originX), (float) (y0 + originY), (float) (z1 + originZ)).color(red, green, blue, alpha).endVertex();
-        });*/
-
         voxelShape.forAllEdges((x0, y0, z0, x1, y1, z1) -> {
-            bufferIn.vertex(matrix4f, (float) (x0 + originX), (float) (y0 + originY), (float) (z0 + originZ)).color(red, green, blue, alpha).endVertex();
-            bufferIn.vertex(matrix4f, (float) (x0 + originX), (float) (y0 + originY), (float) (z0 + originZ)).color(red, green, blue, alpha).endVertex();
+            if (!pos.equals(aimed)){
+                bufferIn.vertex(matrix4f, (float) (x0 + originX), (float) (y0 + originY), (float) (z0 + originZ)).color(red, green, blue, alpha).endVertex();
+                bufferIn.vertex(matrix4f, (float) (x1 + originX), (float) (y1 + originY), (float) (z1 + originZ)).color(red, green, blue, alpha).endVertex();
+            }
 
         });
 
         renderTypeBuffer.endBatch(RenderType.lines());
+    }
+
+    public static void drawArea(ItemStack gun, PlayerEntity player, AxisAlignedBB test, MatrixStack matrixStack){
+        BurnerGunMK1Info infoMK1 = gun.getCapability(BurnerGunMK1InfoProvider.burnerGunInfoMK1Capability).orElse(null);
+        BurnerGunMK2Info infoMK2 = gun.getCapability(BurnerGunMK2InfoProvider.burnerGunInfoMK2Capability).orElse(null);
+        BlockRayTraceResult ray = WorldUtil.getLookingAt(player.level, player, RayTraceContext.FluidMode.NONE, infoMK1 != null ? infoMK1.getRaycastRange() : infoMK2.getRaycastRange());
+        if (player.level.getBlockState(ray.getBlockPos()) == Blocks.AIR.defaultBlockState())
+            return;
+        int xRad = infoMK1 != null ? infoMK1.getHorizontal() : infoMK2.getHorizontal();
+        int yRad = infoMK1 != null ? infoMK1.getVertical() : infoMK2.getVertical();
+        BlockPos aimedPos = ray.getBlockPos();
+        Vector3d size = WorldUtil.getDim(ray, xRad, yRad, player);
+        drawBoundingBoxAtBlockPos(matrixStack, test, 1.0F, 0.0F, 0.0F, 1.0F, aimedPos.relative(ray.getDirection()), aimedPos.relative(ray.getDirection()));
+        drawBoundingBoxAtBlockPos(matrixStack, test, 1.0F, 0.0F, 0.0F, 1.0F, aimedPos, aimedPos.relative(ray.getDirection()));
+        for (int xPos = aimedPos.getX() - (int)size.x(); xPos <= aimedPos.getX() + (int)size.x(); ++xPos){
+            for (int yPos = aimedPos.getY() - (int)size.y(); yPos <= aimedPos.getY() + (int)size.y(); ++yPos){
+                for (int zPos = aimedPos.getZ() - (int)size.z(); zPos <= aimedPos.getZ() + (int)size.z(); ++zPos){
+                    BlockPos thePos = new BlockPos(xPos, yPos, zPos);
+                    if (thePos != aimedPos && player.level.getBlockState(thePos) != Blocks.AIR.defaultBlockState())
+                        drawBoundingBoxAtBlockPos(matrixStack, test, 1.0F, 0.0F, 0.0F, 1.0F, thePos, aimedPos);
+                }
+            }
+        }
     }
 
     @SubscribeEvent
@@ -74,15 +101,23 @@ public class BlockRenderer {
         ItemStack gun = !BurnerGunMK2.getGun(player).isEmpty() ? BurnerGunMK2.getGun(player) : BurnerGunMK1.getGun(player);
         if (gun.isEmpty())
             return;
-        BurnerGunMK1Info infoMK1 = BurnerGunMK1.getInfo(gun);
-        BurnerGunMK2Info infoMK2 = BurnerGunMK2.getInfo(gun);
-        BlockRayTraceResult ray = WorldUtil.getLookingAt(player.level, player, RayTraceContext.FluidMode.NONE, infoMK1 != null ? infoMK1.getRaycastRange() : infoMK2.getRaycastRange());
-        if (player.level.getBlockState(ray.getBlockPos()) == Blocks.AIR.defaultBlockState())
-            return;
         gameRenderer.resetProjectionMatrix(e.getProjectionMatrix());
 
         final AxisAlignedBB test = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
+        drawArea(gun, player, test, e.getMatrixStack());
+
+        //drawBoundingBoxAtBlockPos(e.getMatrixStack(), test, 1.0F, 0.0F, 0.0F, 1.0F, new BlockPos(0, 65, 0), new BlockPos(0, 65, 0));
+        //drawBoundingBoxAtBlockPos(e.getMatrixStack(), test, 1.0F, 0.0F, 0.0F, 1.0F, new BlockPos(1, 65, 0), new BlockPos(0, 65, 0));
+        /*drawBoundingBoxAtBlockPos(e.getMatrixStack(), test, 1.0F, 0.0F, 0.0F, 1.0F, new BlockPos(0, 65, 1));
+        drawBoundingBoxAtBlockPos(e.getMatrixStack(), test, 1.0F, 0.0F, 0.0F, 1.0F, new BlockPos(0, 65, -1));
+
         drawBoundingBoxAtBlockPos(e.getMatrixStack(), test, 1.0F, 0.0F, 0.0F, 1.0F, new BlockPos(0, 64, 0));
+        drawBoundingBoxAtBlockPos(e.getMatrixStack(), test, 1.0F, 0.0F, 0.0F, 1.0F, new BlockPos(0, 64, 1));
+        drawBoundingBoxAtBlockPos(e.getMatrixStack(), test, 1.0F, 0.0F, 0.0F, 1.0F, new BlockPos(0, 64, -1));
+
+        drawBoundingBoxAtBlockPos(e.getMatrixStack(), test, 1.0F, 0.0F, 0.0F, 1.0F, new BlockPos(0, 66, 0));
+        drawBoundingBoxAtBlockPos(e.getMatrixStack(), test, 1.0F, 0.0F, 0.0F, 1.0F, new BlockPos(0, 66, 1));
+        drawBoundingBoxAtBlockPos(e.getMatrixStack(), test, 1.0F, 0.0F, 0.0F, 1.0F, new BlockPos(0, 66, -1));*/
     }
 
 }
