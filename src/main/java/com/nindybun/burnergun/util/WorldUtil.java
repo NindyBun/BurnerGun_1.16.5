@@ -29,13 +29,11 @@ public final class WorldUtil {
             zRange = xRad;
             xRange = 0;
         }
-        //Vertical Mining needs to act like the Horizontal but based on yaw
+        //Vertical and Horizontal Mining needs to be based on yaw
         if (Math.abs(ray.getDirection().getNormal().getY()) == 1){
             yRange = 0;
-            int yaw = (int)player.getYHeadRot();
-            if (yaw <0)
-                yaw += 360;
-            int facing = yaw / 45;
+            int yaw = (int)player.getYHeadRot()%360;
+            int facing = Math.abs(yaw / 45);
 
             if (facing == 6 || facing == 5 || facing == 2 || facing == 1) { //X axis
                 xRange = yRad;

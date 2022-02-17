@@ -83,6 +83,8 @@ public class BlockRenderer {
         Vector3d size = WorldUtil.getDim(ray, xRad, yRad, player);
         drawBoundingBoxAtBlockPos(matrixStack, test, 1.0F, 0.0F, 0.0F, 1.0F, aimedPos.relative(ray.getDirection()), aimedPos.relative(ray.getDirection()));
         drawBoundingBoxAtBlockPos(matrixStack, test, 1.0F, 0.0F, 0.0F, 1.0F, aimedPos, aimedPos.relative(ray.getDirection()));
+        if (player.isCrouching())
+            return;
         for (int xPos = aimedPos.getX() - (int)size.x(); xPos <= aimedPos.getX() + (int)size.x(); ++xPos){
             for (int yPos = aimedPos.getY() - (int)size.y(); yPos <= aimedPos.getY() + (int)size.y(); ++yPos){
                 for (int zPos = aimedPos.getZ() - (int)size.z(); zPos <= aimedPos.getZ() + (int)size.z(); ++zPos){
